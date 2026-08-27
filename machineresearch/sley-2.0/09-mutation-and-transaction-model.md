@@ -21,3 +21,16 @@ candidate builder, precondition evaluator, mutation applier, repository write,
 workspace/root/session authority, policy/capability judgment, transaction,
 receipt, or CAS surface. S20-350 must construct actual fully bound candidates;
 S20-360 through S20-390 remain required before M3/M4 or accepted-state changes.
+
+S20-350 is explicitly deferred after architecture review. Hashing caller claims
+for workspace, roots, principal, capability summary, and expiry would be
+possible, but would not make a candidate schema-typed. The current descriptors
+provide canonical type names and eligibility only; they are not codecs or value
+models for all eighteen entity kinds. Opaque bytes, type-name strings, or the
+twelve restricted runtime bodies are forbidden substitutes.
+
+Implementation may resume only after the full candidate record/digest preimage,
+all-entity typed mutation value codecs, bound precondition payloads,
+`Principal`, validation profile, expiry representation, capability-summary
+digest contract, and proposal-versus-authority boundary are frozen. This
+deferral does not block independent S20-370 policy design and implementation.
