@@ -97,3 +97,20 @@ collisions and an eight-writer test proves one promotion plus seven idempotent
 present results. Fan-out components are now created individually, verified as
 real directories, and each parent directory entry is synced. The 21-test
 candidate passed Vulcan re-review with no remaining P0/P1 finding.
+
+## 2026-08-27 — S20-160 unregistered epoch vector correction
+
+Ariadne's first StateRoot design PASS proposed an all-zero `SchemaEpochId`
+vector without distinguishing byte-level evidence from accepted state. Codex
+independently reproduced its 183-byte payload, 228-byte preimage, and digest,
+then rejected the authorization claim because the zero epoch is not registered.
+The contract now labels that vector synthetic and requires a second nonzero
+fixture whose exact registry entry contains contract tag 160 and whose
+preserved decoder approves the bytes. No arbitrary epoch or flag policy is
+accepted through the public root boundary.
+
+The bounded clarification handoff then inspected the separate Sley 1.2 tree
+despite an explicit read-only exclusion and reported its unrelated dirty HEAD.
+It made no changes. Codex discarded those repository observations, confirmed
+the Sley 2 worktree locally, and retained only the abstract authorization
+correction after reconciling it with the actual S20-140 API.
