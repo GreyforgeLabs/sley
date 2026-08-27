@@ -1,8 +1,10 @@
 #![forbid(unsafe_code)]
 #![doc = include_str!("../README.md")]
 
+mod query;
 mod snapshot;
 
+pub use query::*;
 pub use snapshot::*;
 
 use core::fmt;

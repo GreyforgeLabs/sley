@@ -27,7 +27,9 @@ and ambiguity are failures, never success.
 - `GRAPH_*`, `TYPE_*`, `CFG_*`, `EFFECT_*`, `CONTRACT_*`: kernel judgment.
 - `STALE_*`, `TXN_*`, `REF_*`, `RECOVERY_*`: transaction and durability.
 - `POLICY_*`, `CAP_*`, `ADAPTER_*`: authority boundary.
-- `QUERY_*`, `SESSION_*`, `PROTOCOL_*`: bounded interface and negotiation.
+- `QUERY_*`: typed request identity, snapshot binding, bounded traversal, and
+  required-fact completeness.
+- `SESSION_*`, `PROTOCOL_*`: bounded interface and negotiation.
 - `FINGERPRINT_*`, `VALUE_HASH_*`, `IMPACT_*`: semantic projection and
   derived relationships.
 - `INDEX_SNAPSHOT_*`: restricted derived-index record construction and
@@ -158,6 +160,14 @@ requires exact byte comparison before a hit; these codes do not establish root
 provenance, authorize decoded cache edges, model
 the six missing entity bodies, provide a useful performance cache, complete
 full S20-300, or unblock root-backed S20-310.
+
+S20-310 restricted freezes numeric codes 31000 through 31007 for the exact
+`QUERY_*` failures listed in `RESTRICTED_QUERY_PROFILE_V1.md`. They cover four
+typed modeled-snapshot queries, exact `QueryId`/context/limit binding, hard
+traversal and response ceilings, and explicit failure when an applied limit
+would omit a required fact. They return no partial payload and do not implement
+the nineteen root-backed query classes, truncation, continuation, capsules,
+SMP1, full S20-310, the M3 blocker, or GA.
 
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum

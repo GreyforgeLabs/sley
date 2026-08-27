@@ -41,7 +41,11 @@ without claiming canonical persistence, policy/resource finality, test pass,
 or the M2 exit. S20-300 now adds a restricted `SLEYIDX1` index-snapshot
 conformance profile whose candidate records can match only an already-fresh
 explicit modeled-request rebuild. It provides no trusted cache hydration,
-root-provenance proof, query authority, or full S20-300/M3 completion. Every
+root-provenance proof, query authority, or full S20-300/M3 completion. S20-310
+now adds four restricted typed queries over opaque freshly derived
+snapshots, with exact QueryId/response records and hard failure when limits
+would omit facts. It does not claim the nineteen root-backed query classes,
+truncation/continuation, capsules, SMP1, full S20-310, or M3 completion. Every
 next package must follow `docs/WORK_PACKAGES.md`.
 
 ## Authority
@@ -65,7 +69,7 @@ work belongs to a separate session and repository worktree.
 
 `make quick` and `make check-changed` validate the implemented M0/M1 and
 current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering/
-execution/reference-adapter/report-envelope/index-snapshot surface. Later
+execution/reference-adapter/report-envelope/index-snapshot/restricted-query surface. Later
 profiles are present but intentionally fail closed until their corresponding
 work packages land.
 `make v2` remains the eventual authoritative full gate.
