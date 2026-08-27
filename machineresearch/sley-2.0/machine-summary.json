@@ -383,6 +383,16 @@
     "vulcan_review": "PASS_NO_OPEN_P0_P1_P2_P3_P4",
     "implementation_complete": true
   },
+  "session_handle_profile": {
+    "status": "S20_330_DEFERRED_AUTHORITY_PREREQUISITES_MISSING",
+    "implementation_started": false,
+    "restricted_profile_viable": false,
+    "required_binding": ["negotiated_session", "workspace", "verified_root", "schema_epoch"],
+    "forbidden_substitutes": ["claimed_root_context", "restricted_capsule_id", "caller_declared_session"],
+    "threat_gate": "T15_SESSION_STALE_HANDLE_ROOT_SESSION_EPOCH_MATRIX",
+    "nabu_architecture_review": "DEFER",
+    "unblocked_by_restricted_s20_320": false
+  },
   "schema_epoch": {
     "status": "S20_140_COMPLETE",
     "bootstrap_magic": "SLEYEP01",
@@ -592,6 +602,7 @@
     "S20-300 is a restricted modeled-request conformance cache only; six entity bodies, strict root/object extraction, complete-root indexes, useful safe reuse, and root-backed S20-310 remain blocked",
     "S20-310 exposes only four modeled-snapshot queries with hard no-partial limits; nineteen root-backed query classes, truncation/continuation, capsules, SMP1, full M3, and GA remain blocked",
     "S20-320 is only a complete restricted-query evidence envelope with a distinct ID; master context capsules, verified workspace/root/session facts, lawful omission/continuation, downstream S20-330/S20-400/S20-620, M3, M5, and GA remain blocked",
+    "S20-330 is deliberately unimplemented until negotiated session, verified workspace/root, and epoch authority exist; claimed roots and capsule IDs are forbidden substitutes",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]
 }

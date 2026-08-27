@@ -12,3 +12,8 @@ only rebuild-first snapshot, four exact hard-bounded query kinds, and a
 complete-response-only evidence capsule with raw-ID dictionaries. They provide
 no root provenance, useful cache hydration, partial output, lawful omission or
 continuation, master context capsule, handle, SMP1, or full M3/M5 evidence.
+
+S20-330 is explicitly deferred. A handle cannot be introduced until a
+negotiated session, verified workspace/root, and live epoch binding exist;
+neither a claimed root nor a restricted capsule digest may substitute for that
+authority. This preserves the T15 cross-root stale-handle gate.
