@@ -3,10 +3,12 @@
 #![doc = include_str!("../README.md")]
 
 use core::fmt;
+use std::collections::{BTreeMap, BTreeSet};
 
 use sley_check::contracts::{ContractTestReport, TestPlanFinality};
 use sley_id::{
-    EntityId, PolicyRootId, PrincipalId, ReferenceAdapterId, SchemaEpochId, WorkspaceId,
+    CapabilityTokenDigest, EntityId, PolicyRootId, PrincipalId, ReferenceAdapterId, SchemaEpochId,
+    StateRoot, ValueHash, WorkspaceId,
 };
 use sley_mutate::MutationClass;
 use sley_scb1::{
@@ -29,8 +31,13 @@ const ID_LEN: usize = 32;
 const FIELD_COUNT: u64 = 11;
 const GRANT_FIELD_COUNT: u64 = 4;
 const RESOURCE_FIELD_COUNT: u64 = 6;
+const CAPABILITY_TOKEN_FIELD_COUNT: u64 = 16;
+const CAPABILITY_BUDGET_FIELD_COUNT: u64 = 6;
 const POLICY_SCHEMA_VERSION: u32 = 1;
 const TRANSITION_MODE_EXTERNAL_HIGHER_AUTHORITY_ONLY: u32 = 1;
+const CAPABILITY_TOKEN_VERSION: u32 = 1;
+const CAPABILITY_DIGEST_MAGIC: &[u8; 8] = b"SLEYCAPD";
+const CAPABILITY_MAC_MAGIC: &[u8; 8] = b"SLEYCAPM";
 
 /// Maximum principal grants in one S20-370 root.
 pub const MAX_POLICY_PRINCIPAL_GRANTS: usize = 65_535;
@@ -277,6 +284,725 @@ impl PolicyResourceCeilings {
             Err(PolicyRootErrorCode::ResourceLimit)
         }
     }
+}
+
+/// Stable S20-380 capability-token and runtime-ledger failure code.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(u32)]
+pub enum CapabilityErrorCode {
+    /// `CAP_VERSION_UNSUPPORTED`
+    VersionUnsupported = 38_000,
+    /// `CAP_ISSUER_UNTRUSTED`
+    IssuerUntrusted = 38_001,
+    /// `CAP_KEY_UNTRUSTED`
+    KeyUntrusted = 38_002,
+    /// `CAP_AUTHENTICATOR_INVALID`
+    AuthenticatorInvalid = 38_003,
+    /// `CAP_POLICY_ROOT_MISMATCH`
+    PolicyRootMismatch = 38_004,
+    /// `CAP_WORKSPACE_MISMATCH`
+    WorkspaceMismatch = 38_005,
+    /// `CAP_PRINCIPAL_MISMATCH`
+    PrincipalMismatch = 38_006,
+    /// `CAP_STATE_ROOT_MISMATCH`
+    StateRootMismatch = 38_007,
+    /// `CAP_EFFECT_MISMATCH`
+    EffectMismatch = 38_008,
+    /// `CAP_SCOPE_MISMATCH`
+    ScopeMismatch = 38_009,
+    /// `CAP_ADAPTER_MISMATCH`
+    AdapterMismatch = 38_010,
+    /// `CAP_EXPIRED`
+    Expired = 38_011,
+    /// `CAP_TIME_INVALID`
+    TimeInvalid = 38_012,
+    /// `CAP_BUDGET_ZERO`
+    BudgetZero = 38_013,
+    /// `CAP_BUDGET_EXCEEDED`
+    BudgetExceeded = 38_014,
+    /// `CAP_GRANT_DENIED`
+    GrantDenied = 38_015,
+    /// `CAP_REPLAY`
+    Replay = 38_016,
+    /// `CAP_LEDGER_EXHAUSTED`
+    LedgerExhausted = 38_017,
+    /// `CAP_CANONICAL_INVALID`
+    CanonicalInvalid = 38_018,
+    /// `CAP_INTERNAL_INVARIANT`
+    InternalInvariant = 38_019,
+}
+
+impl CapabilityErrorCode {
+    /// Returns the exact stable symbolic code.
+    #[must_use]
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::VersionUnsupported => "CAP_VERSION_UNSUPPORTED",
+            Self::IssuerUntrusted => "CAP_ISSUER_UNTRUSTED",
+            Self::KeyUntrusted => "CAP_KEY_UNTRUSTED",
+            Self::AuthenticatorInvalid => "CAP_AUTHENTICATOR_INVALID",
+            Self::PolicyRootMismatch => "CAP_POLICY_ROOT_MISMATCH",
+            Self::WorkspaceMismatch => "CAP_WORKSPACE_MISMATCH",
+            Self::PrincipalMismatch => "CAP_PRINCIPAL_MISMATCH",
+            Self::StateRootMismatch => "CAP_STATE_ROOT_MISMATCH",
+            Self::EffectMismatch => "CAP_EFFECT_MISMATCH",
+            Self::ScopeMismatch => "CAP_SCOPE_MISMATCH",
+            Self::AdapterMismatch => "CAP_ADAPTER_MISMATCH",
+            Self::Expired => "CAP_EXPIRED",
+            Self::TimeInvalid => "CAP_TIME_INVALID",
+            Self::BudgetZero => "CAP_BUDGET_ZERO",
+            Self::BudgetExceeded => "CAP_BUDGET_EXCEEDED",
+            Self::GrantDenied => "CAP_GRANT_DENIED",
+            Self::Replay => "CAP_REPLAY",
+            Self::LedgerExhausted => "CAP_LEDGER_EXHAUSTED",
+            Self::CanonicalInvalid => "CAP_CANONICAL_INVALID",
+            Self::InternalInvariant => "CAP_INTERNAL_INVARIANT",
+        }
+    }
+
+    /// Returns the exact stable numeric code.
+    #[must_use]
+    pub const fn numeric(self) -> u32 {
+        self as u32
+    }
+}
+
+impl fmt::Display for CapabilityErrorCode {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(self.as_str())
+    }
+}
+
+/// Exact S20-380 failure preserving SCB1 canonical decoding failures.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum CapabilityError {
+    /// Capability-token, MAC, request, or ledger judgment failed.
+    Capability(CapabilityErrorCode),
+    /// Canonical byte decoding failed.
+    Scb(ScbError),
+}
+
+impl CapabilityError {
+    /// Returns the stable failure string without collapsing its source.
+    #[must_use]
+    pub fn code_str(&self) -> &'static str {
+        match self {
+            Self::Capability(code) => code.as_str(),
+            Self::Scb(error) => error.code().as_str(),
+        }
+    }
+}
+
+impl fmt::Display for CapabilityError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(self.code_str())
+    }
+}
+
+impl std::error::Error for CapabilityError {}
+
+impl From<ScbError> for CapabilityError {
+    fn from(value: ScbError) -> Self {
+        Self::Scb(value)
+    }
+}
+
+macro_rules! capability_fixed_type {
+    ($(#[$meta:meta])* $name:ident) => {
+        $(#[$meta])*
+        #[derive(Clone, Copy, Eq, Hash, Ord, PartialEq, PartialOrd)]
+        #[repr(transparent)]
+        pub struct $name([u8; ID_LEN]);
+
+        impl $name {
+            /// Constructs this value from exact raw bytes.
+            #[must_use]
+            pub const fn from_bytes(bytes: [u8; ID_LEN]) -> Self {
+                Self(bytes)
+            }
+
+            /// Returns the exact raw bytes.
+            #[must_use]
+            pub const fn as_bytes(&self) -> &[u8; ID_LEN] {
+                &self.0
+            }
+
+            /// Returns the exact raw bytes by value.
+            #[must_use]
+            pub const fn into_bytes(self) -> [u8; ID_LEN] {
+                self.0
+            }
+        }
+
+        impl From<[u8; ID_LEN]> for $name {
+            fn from(bytes: [u8; ID_LEN]) -> Self {
+                Self::from_bytes(bytes)
+            }
+        }
+
+        impl From<$name> for [u8; ID_LEN] {
+            fn from(value: $name) -> Self {
+                value.into_bytes()
+            }
+        }
+
+        impl fmt::Debug for $name {
+            fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+                write!(
+                    formatter,
+                    "{}({})",
+                    stringify!($name),
+                    capability_short_hex(&self.0)
+                )
+            }
+        }
+    };
+}
+
+capability_fixed_type!(
+    /// Opaque host-supplied 32-byte capability issuer identity.
+    CapabilityIssuerId
+);
+capability_fixed_type!(
+    /// Opaque host-supplied 32-byte capability MAC key identity.
+    CapabilityKeyId
+);
+capability_fixed_type!(
+    /// Opaque 32-byte nonce bound into one capability token body.
+    CapabilityTokenNonce
+);
+capability_fixed_type!(
+    /// Opaque 32-byte caller-owned nonce for one charged capability use.
+    CapabilityUseNonce
+);
+capability_fixed_type!(
+    /// Opaque 32-byte keyed BLAKE3 authenticator.
+    CapabilityAuthenticator
+);
+
+/// Host-supplied 32-byte keyed BLAKE3 secret. It is never serialized.
+#[derive(Clone, Copy, Eq, PartialEq)]
+pub struct CapabilitySecret([u8; ID_LEN]);
+
+impl CapabilitySecret {
+    /// Constructs a secret from exact host-owned bytes.
+    #[must_use]
+    pub const fn from_bytes(bytes: [u8; ID_LEN]) -> Self {
+        Self(bytes)
+    }
+
+    fn as_bytes(&self) -> &[u8; ID_LEN] {
+        &self.0
+    }
+}
+
+impl fmt::Debug for CapabilitySecret {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str("CapabilitySecret(..redacted..)")
+    }
+}
+
+/// One trusted issuer/key/secret tuple supplied explicitly by the host.
+#[derive(Clone, Eq, PartialEq)]
+pub struct CapabilityTrustedKey {
+    /// Trusted issuer identity.
+    pub issuer_id: CapabilityIssuerId,
+    /// Trusted key identity for the issuer.
+    pub key_id: CapabilityKeyId,
+    secret: CapabilitySecret,
+}
+
+impl CapabilityTrustedKey {
+    /// Constructs one trusted keyed-BLAKE3 verifier input.
+    #[must_use]
+    pub const fn new(
+        issuer_id: CapabilityIssuerId,
+        key_id: CapabilityKeyId,
+        secret: CapabilitySecret,
+    ) -> Self {
+        Self {
+            issuer_id,
+            key_id,
+            secret,
+        }
+    }
+
+    fn secret(&self) -> CapabilitySecret {
+        self.secret
+    }
+}
+
+impl fmt::Debug for CapabilityTrustedKey {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("CapabilityTrustedKey")
+            .field("issuer_id", &self.issuer_id)
+            .field("key_id", &self.key_id)
+            .field("secret", &self.secret)
+            .finish()
+    }
+}
+
+/// Frozen six-field runtime budget vector coherent with `PolicyResourceCeilings`.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct CapabilityResourceBudget {
+    /// Maximum execution fuel.
+    pub max_fuel: u64,
+    /// Maximum memory bytes.
+    pub max_memory_bytes: u64,
+    /// Maximum output bytes.
+    pub max_output_bytes: u64,
+    /// Maximum effect operations.
+    pub max_effect_count: u64,
+    /// Maximum mutation operations.
+    pub max_mutation_count: u64,
+    /// Maximum adapter calls.
+    pub max_adapter_calls: u64,
+}
+
+impl CapabilityResourceBudget {
+    /// Constructs exact literal budget values.
+    #[must_use]
+    pub const fn new(
+        max_fuel: u64,
+        max_memory_bytes: u64,
+        max_output_bytes: u64,
+        max_effect_count: u64,
+        max_mutation_count: u64,
+        max_adapter_calls: u64,
+    ) -> Self {
+        Self {
+            max_fuel,
+            max_memory_bytes,
+            max_output_bytes,
+            max_effect_count,
+            max_mutation_count,
+            max_adapter_calls,
+        }
+    }
+
+    /// Returns an all-zero budget.
+    #[must_use]
+    pub const fn zero() -> Self {
+        Self::new(0, 0, 0, 0, 0, 0)
+    }
+
+    /// Returns the frozen charge for one authorized reference-adapter dispatch.
+    #[must_use]
+    pub const fn adapter_invocation() -> Self {
+        Self::new(0, 0, 0, 1, 0, 1)
+    }
+
+    /// Returns whether all budget dimensions are zero.
+    #[must_use]
+    pub const fn is_zero(self) -> bool {
+        self.max_fuel == 0
+            && self.max_memory_bytes == 0
+            && self.max_output_bytes == 0
+            && self.max_effect_count == 0
+            && self.max_mutation_count == 0
+            && self.max_adapter_calls == 0
+    }
+
+    fn validate_nonzero(self) -> Result<(), CapabilityErrorCode> {
+        if self.is_zero() {
+            return Err(CapabilityErrorCode::BudgetZero);
+        }
+        if [
+            self.max_fuel,
+            self.max_memory_bytes,
+            self.max_output_bytes,
+            self.max_effect_count,
+            self.max_mutation_count,
+            self.max_adapter_calls,
+        ]
+        .into_iter()
+        .all(|value| value <= MAX_POLICY_RESOURCE_CEILING)
+        {
+            Ok(())
+        } else {
+            Err(CapabilityErrorCode::BudgetExceeded)
+        }
+    }
+
+    fn fits_within_ceilings(self, ceilings: PolicyResourceCeilings) -> bool {
+        self.max_fuel <= ceilings.max_fuel
+            && self.max_memory_bytes <= ceilings.max_memory_bytes
+            && self.max_output_bytes <= ceilings.max_output_bytes
+            && self.max_effect_count <= ceilings.max_effect_count
+            && self.max_mutation_count <= ceilings.max_mutation_count
+            && self.max_adapter_calls <= ceilings.max_adapter_calls
+    }
+
+    fn fits_within(self, limit: Self) -> bool {
+        self.max_fuel <= limit.max_fuel
+            && self.max_memory_bytes <= limit.max_memory_bytes
+            && self.max_output_bytes <= limit.max_output_bytes
+            && self.max_effect_count <= limit.max_effect_count
+            && self.max_mutation_count <= limit.max_mutation_count
+            && self.max_adapter_calls <= limit.max_adapter_calls
+    }
+
+    fn checked_add(self, amount: Self) -> Option<Self> {
+        Some(Self {
+            max_fuel: self.max_fuel.checked_add(amount.max_fuel)?,
+            max_memory_bytes: self.max_memory_bytes.checked_add(amount.max_memory_bytes)?,
+            max_output_bytes: self.max_output_bytes.checked_add(amount.max_output_bytes)?,
+            max_effect_count: self.max_effect_count.checked_add(amount.max_effect_count)?,
+            max_mutation_count: self
+                .max_mutation_count
+                .checked_add(amount.max_mutation_count)?,
+            max_adapter_calls: self
+                .max_adapter_calls
+                .checked_add(amount.max_adapter_calls)?,
+        })
+    }
+
+    fn checked_sub(self, amount: Self) -> Option<Self> {
+        Some(Self {
+            max_fuel: self.max_fuel.checked_sub(amount.max_fuel)?,
+            max_memory_bytes: self.max_memory_bytes.checked_sub(amount.max_memory_bytes)?,
+            max_output_bytes: self.max_output_bytes.checked_sub(amount.max_output_bytes)?,
+            max_effect_count: self.max_effect_count.checked_sub(amount.max_effect_count)?,
+            max_mutation_count: self
+                .max_mutation_count
+                .checked_sub(amount.max_mutation_count)?,
+            max_adapter_calls: self
+                .max_adapter_calls
+                .checked_sub(amount.max_adapter_calls)?,
+        })
+    }
+}
+
+/// Unauthenticated canonical S20-380 capability-token body.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CapabilityTokenBody {
+    /// Frozen token version. Epoch 1 accepts only `1`.
+    pub version: u32,
+    /// Opaque issuer identity.
+    pub issuer_id: CapabilityIssuerId,
+    /// Opaque issuer key identity.
+    pub key_id: CapabilityKeyId,
+    /// Exact principal identity.
+    pub principal_id: PrincipalId,
+    /// Exact workspace identity.
+    pub workspace_id: WorkspaceId,
+    /// Exact accepted semantic state root.
+    pub state_root: StateRoot,
+    /// Exact effect-definition entity.
+    pub effect_id: EntityId,
+    /// Frozen SSMC1 `EffectKind` tag.
+    pub effect_kind_tag: u32,
+    /// Canonical SSMC1 resource-scope `ValueHash`.
+    pub scope_hash: ValueHash,
+    /// Exact reference-adapter identity.
+    pub adapter_id: ReferenceAdapterId,
+    /// Bounded runtime resource budget.
+    pub budget: CapabilityResourceBudget,
+    /// Exact issuance time supplied by the host.
+    pub issued_unix_millis: u64,
+    /// Exact exclusive expiry time supplied by the host.
+    pub expiry_unix_millis: u64,
+    /// Opaque per-token nonce.
+    pub token_nonce: CapabilityTokenNonce,
+    /// Exact accepted protected policy root.
+    pub policy_root: PolicyRootId,
+}
+
+/// Authenticated S20-380 capability token and its exact canonical bytes.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CapabilityToken {
+    body: CapabilityTokenBody,
+    digest: CapabilityTokenDigest,
+    authenticator: CapabilityAuthenticator,
+    stored_bytes: Vec<u8>,
+}
+
+impl CapabilityToken {
+    /// Returns the unauthenticated canonical token body.
+    #[must_use]
+    pub const fn body(&self) -> &CapabilityTokenBody {
+        &self.body
+    }
+
+    /// Returns the digest of the unauthenticated canonical body.
+    #[must_use]
+    pub const fn digest(&self) -> CapabilityTokenDigest {
+        self.digest
+    }
+
+    /// Returns the keyed BLAKE3 authenticator bytes.
+    #[must_use]
+    pub const fn authenticator(&self) -> CapabilityAuthenticator {
+        self.authenticator
+    }
+
+    /// Returns the exact canonical SCB1 token bytes.
+    #[must_use]
+    pub fn stored_bytes(&self) -> &[u8] {
+        &self.stored_bytes
+    }
+}
+
+/// Host request to issue one local S20-380 token.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CapabilityTokenRequest {
+    /// Principal that receives the token.
+    pub principal_id: PrincipalId,
+    /// Workspace the token is bound to.
+    pub workspace_id: WorkspaceId,
+    /// Exact state root the token may authorize.
+    pub state_root: StateRoot,
+    /// Exact effect definition the token may authorize.
+    pub effect_id: EntityId,
+    /// Exact effect kind the token may authorize.
+    pub effect_kind: EffectKind,
+    /// Exact canonical resource-scope hash.
+    pub scope_hash: ValueHash,
+    /// Exact reference adapter identity.
+    pub adapter_id: ReferenceAdapterId,
+    /// Bounded resource budget.
+    pub budget: CapabilityResourceBudget,
+    /// Host-supplied issuance time.
+    pub now_unix_millis: u64,
+    /// Host-supplied exclusive expiry time.
+    pub expiry_unix_millis: u64,
+    /// Host-supplied opaque token nonce.
+    pub token_nonce: CapabilityTokenNonce,
+}
+
+/// Runtime request that a token must exactly authorize.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CapabilityVerificationRequest {
+    /// Principal attempting to use the token.
+    pub principal_id: PrincipalId,
+    /// Workspace of the attempted use.
+    pub workspace_id: WorkspaceId,
+    /// Exact state root of the attempted use.
+    pub state_root: StateRoot,
+    /// Exact effect definition of the attempted use.
+    pub effect_id: EntityId,
+    /// Exact effect kind of the attempted use.
+    pub effect_kind: EffectKind,
+    /// Exact resource scope of the attempted use.
+    pub scope_hash: ValueHash,
+    /// Exact adapter identity of the attempted use.
+    pub adapter_id: ReferenceAdapterId,
+    /// Explicit host-supplied verification time.
+    pub now_unix_millis: u64,
+    /// Resource amount that must remain available for this use.
+    pub required_budget: CapabilityResourceBudget,
+}
+
+/// Receipt for one atomic capability-ledger charge.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CapabilityChargeReceipt {
+    /// Token digest charged by this use.
+    pub token_digest: CapabilityTokenDigest,
+    /// Exact per-use nonce charged by this use.
+    pub use_nonce: CapabilityUseNonce,
+    /// Budget charged.
+    pub charged: CapabilityResourceBudget,
+    /// Cumulative budget spent after the charge.
+    pub spent_after: CapabilityResourceBudget,
+    /// Remaining token budget after the charge.
+    pub remaining_after: CapabilityResourceBudget,
+}
+
+/// Deterministic caller-owned replay and budget ledger.
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub struct CapabilityLedger {
+    spent: BTreeMap<CapabilityTokenDigest, CapabilityResourceBudget>,
+    use_nonces: BTreeSet<(CapabilityTokenDigest, CapabilityUseNonce)>,
+}
+
+impl CapabilityLedger {
+    /// Creates an empty caller-owned ledger.
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Returns cumulative spend for one token digest.
+    #[must_use]
+    pub fn spent(&self, token_digest: CapabilityTokenDigest) -> CapabilityResourceBudget {
+        self.spent
+            .get(&token_digest)
+            .copied()
+            .unwrap_or_else(CapabilityResourceBudget::zero)
+    }
+
+    /// Returns whether this exact token/use nonce has already been charged.
+    #[must_use]
+    pub fn has_use_nonce(
+        &self,
+        token_digest: CapabilityTokenDigest,
+        use_nonce: CapabilityUseNonce,
+    ) -> bool {
+        self.use_nonces.contains(&(token_digest, use_nonce))
+    }
+
+    /// Atomically charges one exact token/use nonce.
+    ///
+    /// # Errors
+    ///
+    /// Returns `CAP_REPLAY` for a reused use nonce and does not mutate the
+    /// ledger. Returns a budget error without mutation if the token budget
+    /// cannot cover the charge.
+    pub fn charge(
+        &mut self,
+        token: &CapabilityToken,
+        use_nonce: CapabilityUseNonce,
+        amount: CapabilityResourceBudget,
+    ) -> Result<CapabilityChargeReceipt, CapabilityError> {
+        amount
+            .validate_nonzero()
+            .map_err(CapabilityError::Capability)?;
+        let token_digest = token.digest();
+        if self.use_nonces.contains(&(token_digest, use_nonce)) {
+            return capability_fail(CapabilityErrorCode::Replay);
+        }
+        let spent_before = self.spent(token_digest);
+        let spent_after = spent_before
+            .checked_add(amount)
+            .ok_or(CapabilityErrorCode::LedgerExhausted)
+            .map_err(CapabilityError::Capability)?;
+        if !spent_after.fits_within(token.body.budget) {
+            return capability_fail(CapabilityErrorCode::LedgerExhausted);
+        }
+        let remaining_after = token
+            .body
+            .budget
+            .checked_sub(spent_after)
+            .ok_or(CapabilityErrorCode::InternalInvariant)
+            .map_err(CapabilityError::Capability)?;
+        self.use_nonces.insert((token_digest, use_nonce));
+        self.spent.insert(token_digest, spent_after);
+        Ok(CapabilityChargeReceipt {
+            token_digest,
+            use_nonce,
+            charged: amount,
+            spent_after,
+            remaining_after,
+        })
+    }
+}
+
+/// Issues one local-only authenticated capability token.
+///
+/// # Errors
+///
+/// Returns a stable S20-380 failure when the accepted policy root, principal
+/// grant, effect, adapter, time ordering, or budget does not authorize the
+/// request.
+pub fn issue_capability_token(
+    policy: &AcceptedPolicyRoot,
+    trusted_key: &CapabilityTrustedKey,
+    request: &CapabilityTokenRequest,
+) -> Result<CapabilityToken, CapabilityError> {
+    let body = CapabilityTokenBody {
+        version: CAPABILITY_TOKEN_VERSION,
+        issuer_id: trusted_key.issuer_id,
+        key_id: trusted_key.key_id,
+        principal_id: request.principal_id,
+        workspace_id: request.workspace_id,
+        state_root: request.state_root,
+        effect_id: request.effect_id,
+        effect_kind_tag: request.effect_kind.tag(),
+        scope_hash: request.scope_hash,
+        adapter_id: request.adapter_id,
+        budget: request.budget,
+        issued_unix_millis: request.now_unix_millis,
+        expiry_unix_millis: request.expiry_unix_millis,
+        token_nonce: request.token_nonce,
+        policy_root: policy.root(),
+    };
+    validate_capability_body_shape(&body)?;
+    validate_capability_policy_binding(policy, &body, body.issued_unix_millis)?;
+    finish_capability_token(body, trusted_key)
+}
+
+/// Imports exact canonical S20-380 token bytes without trusting the MAC.
+///
+/// # Errors
+///
+/// Returns SCB1 or capability canonical-shape failures. Call
+/// [`verify_capability_token`] before treating the token as authority.
+pub fn import_capability_token(input: &[u8]) -> Result<CapabilityToken, CapabilityError> {
+    let (body, authenticator) = decode_capability_token_record(input)?;
+    validate_capability_body_shape(&body)?;
+    let body_bytes = encode_capability_body_record(&body)?;
+    let digest = capability_token_digest(&body_bytes)?;
+    let canonical = encode_capability_token_record(&body, authenticator)?;
+    if canonical != input {
+        return capability_fail(CapabilityErrorCode::CanonicalInvalid);
+    }
+    Ok(CapabilityToken {
+        body,
+        digest,
+        authenticator,
+        stored_bytes: canonical,
+    })
+}
+
+/// Verifies MAC, trusted issuer/key, policy, exact request, time, and budget.
+///
+/// # Errors
+///
+/// Returns the first deterministic S20-380 failure. Verification never mutates
+/// a ledger.
+pub fn verify_capability_token(
+    policy: &AcceptedPolicyRoot,
+    token: &CapabilityToken,
+    trusted_key: &CapabilityTrustedKey,
+    request: &CapabilityVerificationRequest,
+) -> Result<CapabilityTokenDigest, CapabilityError> {
+    validate_capability_body_shape(&token.body)?;
+    if token.body.issuer_id != trusted_key.issuer_id {
+        return capability_fail(CapabilityErrorCode::IssuerUntrusted);
+    }
+    if token.body.key_id != trusted_key.key_id {
+        return capability_fail(CapabilityErrorCode::KeyUntrusted);
+    }
+    let body_bytes = encode_capability_body_record(&token.body)?;
+    let digest = capability_token_digest(&body_bytes)?;
+    if digest != token.digest {
+        return capability_fail(CapabilityErrorCode::CanonicalInvalid);
+    }
+    let expected =
+        capability_authenticator(trusted_key.secret(), &token.body, digest, &body_bytes)?;
+    if !constant_time_eq(expected.as_bytes(), token.authenticator.as_bytes()) {
+        return capability_fail(CapabilityErrorCode::AuthenticatorInvalid);
+    }
+    validate_capability_request_binding(policy, &token.body, request)?;
+    validate_capability_policy_binding(policy, &token.body, request.now_unix_millis)?;
+    request
+        .required_budget
+        .validate_nonzero()
+        .map_err(CapabilityError::Capability)?;
+    if !request.required_budget.fits_within(token.body.budget) {
+        return capability_fail(CapabilityErrorCode::BudgetExceeded);
+    }
+    Ok(token.digest)
+}
+
+/// Verifies and then atomically charges one token/use nonce.
+///
+/// # Errors
+///
+/// If verification fails, the ledger is unchanged. If replay or budget checks
+/// fail, the ledger is unchanged. On success the exact use nonce and budget are
+/// consumed before any caller performs the authorized effect.
+pub fn verify_and_charge_capability(
+    policy: &AcceptedPolicyRoot,
+    token: &CapabilityToken,
+    trusted_key: &CapabilityTrustedKey,
+    request: &CapabilityVerificationRequest,
+    ledger: &mut CapabilityLedger,
+    use_nonce: CapabilityUseNonce,
+) -> Result<CapabilityChargeReceipt, CapabilityError> {
+    verify_capability_token(policy, token, trusted_key, request)?;
+    ledger.charge(token, use_nonce, request.required_budget)
 }
 
 /// Immutable principal-specific grant record.
@@ -833,6 +1559,279 @@ pub fn finalize_mandatory_contract_tests(
         contract_test_work: report.work,
         finality: PolicyPlanFinality::PolicyFinal,
     })
+}
+
+fn finish_capability_token(
+    body: CapabilityTokenBody,
+    trusted_key: &CapabilityTrustedKey,
+) -> Result<CapabilityToken, CapabilityError> {
+    let body_bytes = encode_capability_body_record(&body)?;
+    let digest = capability_token_digest(&body_bytes)?;
+    let authenticator = capability_authenticator(trusted_key.secret(), &body, digest, &body_bytes)?;
+    let stored_bytes = encode_capability_token_record(&body, authenticator)?;
+    Ok(CapabilityToken {
+        body,
+        digest,
+        authenticator,
+        stored_bytes,
+    })
+}
+
+fn validate_capability_body_shape(body: &CapabilityTokenBody) -> Result<(), CapabilityError> {
+    if body.version != CAPABILITY_TOKEN_VERSION {
+        return capability_fail(CapabilityErrorCode::VersionUnsupported);
+    }
+    if !is_known_effect_tag(body.effect_kind_tag) {
+        return capability_fail(CapabilityErrorCode::EffectMismatch);
+    }
+    if body.issued_unix_millis >= body.expiry_unix_millis {
+        return capability_fail(CapabilityErrorCode::TimeInvalid);
+    }
+    body.budget
+        .validate_nonzero()
+        .map_err(CapabilityError::Capability)
+}
+
+fn validate_capability_policy_binding(
+    policy: &AcceptedPolicyRoot,
+    body: &CapabilityTokenBody,
+    now_unix_millis: u64,
+) -> Result<(), CapabilityError> {
+    if body.policy_root != policy.root() {
+        return capability_fail(CapabilityErrorCode::PolicyRootMismatch);
+    }
+    if body.workspace_id != policy.record.workspace_id {
+        return capability_fail(CapabilityErrorCode::WorkspaceMismatch);
+    }
+    validate_capability_time(policy, body, now_unix_millis)?;
+    let grant = policy
+        .principal_grant(body.principal_id)
+        .map_err(|_| CapabilityError::Capability(CapabilityErrorCode::GrantDenied))?;
+    if !grant
+        .allowed_effect_kind_tags()
+        .contains(&body.effect_kind_tag)
+    {
+        return capability_fail(CapabilityErrorCode::GrantDenied);
+    }
+    if !grant.allowed_adapter_ids().contains(&body.adapter_id) {
+        return capability_fail(CapabilityErrorCode::GrantDenied);
+    }
+    if !body.budget.fits_within_ceilings(grant.resource_ceilings()) {
+        return capability_fail(CapabilityErrorCode::BudgetExceeded);
+    }
+    Ok(())
+}
+
+fn validate_capability_request_binding(
+    policy: &AcceptedPolicyRoot,
+    body: &CapabilityTokenBody,
+    request: &CapabilityVerificationRequest,
+) -> Result<(), CapabilityError> {
+    if body.policy_root != policy.root() {
+        return capability_fail(CapabilityErrorCode::PolicyRootMismatch);
+    }
+    if request.workspace_id != policy.record.workspace_id
+        || body.workspace_id != request.workspace_id
+    {
+        return capability_fail(CapabilityErrorCode::WorkspaceMismatch);
+    }
+    if body.principal_id != request.principal_id {
+        return capability_fail(CapabilityErrorCode::PrincipalMismatch);
+    }
+    if body.state_root != request.state_root {
+        return capability_fail(CapabilityErrorCode::StateRootMismatch);
+    }
+    if body.effect_id != request.effect_id || body.effect_kind_tag != request.effect_kind.tag() {
+        return capability_fail(CapabilityErrorCode::EffectMismatch);
+    }
+    if body.scope_hash != request.scope_hash {
+        return capability_fail(CapabilityErrorCode::ScopeMismatch);
+    }
+    if body.adapter_id != request.adapter_id {
+        return capability_fail(CapabilityErrorCode::AdapterMismatch);
+    }
+    Ok(())
+}
+
+fn validate_capability_time(
+    policy: &AcceptedPolicyRoot,
+    body: &CapabilityTokenBody,
+    now_unix_millis: u64,
+) -> Result<(), CapabilityError> {
+    if now_unix_millis < body.issued_unix_millis {
+        return capability_fail(CapabilityErrorCode::TimeInvalid);
+    }
+    if now_unix_millis >= body.expiry_unix_millis {
+        return capability_fail(CapabilityErrorCode::Expired);
+    }
+    if let Some(policy_expiry) = policy.record.expiry_unix_millis {
+        if body.expiry_unix_millis > policy_expiry {
+            return capability_fail(CapabilityErrorCode::TimeInvalid);
+        }
+        if now_unix_millis >= policy_expiry {
+            return capability_fail(CapabilityErrorCode::Expired);
+        }
+    }
+    Ok(())
+}
+
+fn encode_capability_body_record(body: &CapabilityTokenBody) -> Result<Vec<u8>, ScbError> {
+    encode_record(&[
+        (1, encode_uvar(u64::from(body.version))),
+        (2, body.issuer_id.as_bytes().to_vec()),
+        (3, body.key_id.as_bytes().to_vec()),
+        (4, body.principal_id.as_bytes().to_vec()),
+        (5, body.workspace_id.as_bytes().to_vec()),
+        (6, body.state_root.as_bytes().to_vec()),
+        (7, body.effect_id.as_bytes().to_vec()),
+        (8, encode_uvar(u64::from(body.effect_kind_tag))),
+        (9, body.scope_hash.as_bytes().to_vec()),
+        (10, body.adapter_id.as_bytes().to_vec()),
+        (11, encode_capability_budget(body.budget)?),
+        (12, encode_uvar(body.issued_unix_millis)),
+        (13, encode_uvar(body.expiry_unix_millis)),
+        (14, body.token_nonce.as_bytes().to_vec()),
+        (15, body.policy_root.as_bytes().to_vec()),
+    ])
+}
+
+fn encode_capability_token_record(
+    body: &CapabilityTokenBody,
+    authenticator: CapabilityAuthenticator,
+) -> Result<Vec<u8>, ScbError> {
+    encode_record(&[
+        (1, encode_uvar(u64::from(body.version))),
+        (2, body.issuer_id.as_bytes().to_vec()),
+        (3, body.key_id.as_bytes().to_vec()),
+        (4, body.principal_id.as_bytes().to_vec()),
+        (5, body.workspace_id.as_bytes().to_vec()),
+        (6, body.state_root.as_bytes().to_vec()),
+        (7, body.effect_id.as_bytes().to_vec()),
+        (8, encode_uvar(u64::from(body.effect_kind_tag))),
+        (9, body.scope_hash.as_bytes().to_vec()),
+        (10, body.adapter_id.as_bytes().to_vec()),
+        (11, encode_capability_budget(body.budget)?),
+        (12, encode_uvar(body.issued_unix_millis)),
+        (13, encode_uvar(body.expiry_unix_millis)),
+        (14, body.token_nonce.as_bytes().to_vec()),
+        (15, body.policy_root.as_bytes().to_vec()),
+        (16, authenticator.as_bytes().to_vec()),
+    ])
+}
+
+fn encode_capability_budget(budget: CapabilityResourceBudget) -> Result<Vec<u8>, ScbError> {
+    encode_record(&[
+        (1, encode_uvar(budget.max_fuel)),
+        (2, encode_uvar(budget.max_memory_bytes)),
+        (3, encode_uvar(budget.max_output_bytes)),
+        (4, encode_uvar(budget.max_effect_count)),
+        (5, encode_uvar(budget.max_mutation_count)),
+        (6, encode_uvar(budget.max_adapter_calls)),
+    ])
+}
+
+fn decode_capability_token_record(
+    input: &[u8],
+) -> Result<(CapabilityTokenBody, CapabilityAuthenticator), CapabilityError> {
+    let mut record = RecordReader::new(input, CAPABILITY_TOKEN_FIELD_COUNT)?;
+    let body = CapabilityTokenBody {
+        version: read_complete_u32(record.required(1)?)?,
+        issuer_id: CapabilityIssuerId::from_bytes(record.required_array(2)?),
+        key_id: CapabilityKeyId::from_bytes(record.required_array(3)?),
+        principal_id: PrincipalId::from_bytes(record.required_array(4)?),
+        workspace_id: WorkspaceId::from_bytes(record.required_array(5)?),
+        state_root: StateRoot::from_bytes(record.required_array(6)?),
+        effect_id: EntityId::from_bytes(record.required_array(7)?),
+        effect_kind_tag: read_complete_u32(record.required(8)?)?,
+        scope_hash: ValueHash::from_bytes(record.required_array(9)?),
+        adapter_id: ReferenceAdapterId::from_bytes(record.required_array(10)?),
+        budget: decode_capability_budget(record.required(11)?)?,
+        issued_unix_millis: read_complete_u64(record.required(12)?)?,
+        expiry_unix_millis: read_complete_u64(record.required(13)?)?,
+        token_nonce: CapabilityTokenNonce::from_bytes(record.required_array(14)?),
+        policy_root: PolicyRootId::from_bytes(record.required_array(15)?),
+    };
+    let authenticator = CapabilityAuthenticator::from_bytes(record.required_array(16)?);
+    record.finish()?;
+    Ok((body, authenticator))
+}
+
+fn decode_capability_budget(input: &[u8]) -> Result<CapabilityResourceBudget, ScbError> {
+    let mut record = RecordReader::new(input, CAPABILITY_BUDGET_FIELD_COUNT)?;
+    let budget = CapabilityResourceBudget {
+        max_fuel: read_complete_u64(record.required(1)?)?,
+        max_memory_bytes: read_complete_u64(record.required(2)?)?,
+        max_output_bytes: read_complete_u64(record.required(3)?)?,
+        max_effect_count: read_complete_u64(record.required(4)?)?,
+        max_mutation_count: read_complete_u64(record.required(5)?)?,
+        max_adapter_calls: read_complete_u64(record.required(6)?)?,
+    };
+    record.finish()?;
+    Ok(budget)
+}
+
+fn capability_token_digest(body_bytes: &[u8]) -> Result<CapabilityTokenDigest, CapabilityError> {
+    let mut preimage = Vec::new();
+    preimage.extend_from_slice(CAPABILITY_DIGEST_MAGIC);
+    preimage.extend_from_slice(&CAPABILITY_TOKEN_VERSION.to_be_bytes());
+    preimage.extend_from_slice(
+        &u64::try_from(body_bytes.len())
+            .map_err(|_| ScbError::new(ScbErrorCode::ResourceLimit))?
+            .to_be_bytes(),
+    );
+    preimage.extend_from_slice(body_bytes);
+    Ok(CapabilityTokenDigest::derive(preimage))
+}
+
+fn capability_authenticator(
+    secret: CapabilitySecret,
+    body: &CapabilityTokenBody,
+    digest: CapabilityTokenDigest,
+    body_bytes: &[u8],
+) -> Result<CapabilityAuthenticator, CapabilityError> {
+    let mut preimage = Vec::new();
+    preimage.extend_from_slice(CAPABILITY_MAC_MAGIC);
+    preimage.extend_from_slice(&CAPABILITY_TOKEN_VERSION.to_be_bytes());
+    preimage.extend_from_slice(body.issuer_id.as_bytes());
+    preimage.extend_from_slice(body.key_id.as_bytes());
+    preimage.extend_from_slice(digest.as_bytes());
+    preimage.extend_from_slice(
+        &u64::try_from(body_bytes.len())
+            .map_err(|_| ScbError::new(ScbErrorCode::ResourceLimit))?
+            .to_be_bytes(),
+    );
+    preimage.extend_from_slice(body_bytes);
+    let mut hasher = blake3::Hasher::new_keyed(secret.as_bytes());
+    hasher.update(&preimage);
+    Ok(CapabilityAuthenticator::from_bytes(
+        *hasher.finalize().as_bytes(),
+    ))
+}
+
+fn constant_time_eq(left: &[u8; ID_LEN], right: &[u8; ID_LEN]) -> bool {
+    left.iter()
+        .zip(right.iter())
+        .fold(0_u8, |acc, (left, right)| acc | (left ^ right))
+        == 0
+}
+
+fn capability_fail<T>(code: CapabilityErrorCode) -> Result<T, CapabilityError> {
+    Err(CapabilityError::Capability(code))
+}
+
+fn capability_short_hex(bytes: &[u8; ID_LEN]) -> CapabilityShortHex<'_> {
+    CapabilityShortHex(bytes)
+}
+
+struct CapabilityShortHex<'a>(&'a [u8; ID_LEN]);
+
+impl fmt::Display for CapabilityShortHex<'_> {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for byte in &self.0[..4] {
+            write!(formatter, "{byte:02x}")?;
+        }
+        formatter.write_str("..")
+    }
 }
 
 fn expected_descriptor() -> ContractDescriptor {
@@ -1666,6 +2665,55 @@ mod tests {
         }
     }
 
+    fn cap_trusted_key() -> CapabilityTrustedKey {
+        CapabilityTrustedKey::new(
+            CapabilityIssuerId::from_bytes(id(10)),
+            CapabilityKeyId::from_bytes(id(11)),
+            CapabilitySecret::from_bytes(id(12)),
+        )
+    }
+
+    fn cap_budget() -> CapabilityResourceBudget {
+        CapabilityResourceBudget::new(1, 2, 3, 2, 0, 2)
+    }
+
+    fn cap_request() -> CapabilityTokenRequest {
+        CapabilityTokenRequest {
+            principal_id: principal(3),
+            workspace_id: workspace(1),
+            state_root: root(7),
+            effect_id: entity(80),
+            effect_kind: EffectKind::FileRead,
+            scope_hash: ValueHash::from_bytes(id(90)),
+            adapter_id: adapter(33),
+            budget: cap_budget(),
+            now_unix_millis: 100,
+            expiry_unix_millis: 200,
+            token_nonce: CapabilityTokenNonce::from_bytes(id(13)),
+        }
+    }
+
+    fn cap_verification_request() -> CapabilityVerificationRequest {
+        CapabilityVerificationRequest {
+            principal_id: principal(3),
+            workspace_id: workspace(1),
+            state_root: root(7),
+            effect_id: entity(80),
+            effect_kind: EffectKind::FileRead,
+            scope_hash: ValueHash::from_bytes(id(90)),
+            adapter_id: adapter(33),
+            now_unix_millis: 150,
+            required_budget: CapabilityResourceBudget::adapter_invocation(),
+        }
+    }
+
+    fn issued_token() -> (AcceptedPolicyRoot, CapabilityTrustedKey, CapabilityToken) {
+        let policy = accepted_policy();
+        let trusted_key = cap_trusted_key();
+        let token = issue_capability_token(&policy, &trusted_key, &cap_request()).unwrap();
+        (policy, trusted_key, token)
+    }
+
     fn hex(bytes: impl AsRef<[u8]>) -> String {
         let mut out = String::new();
         for byte in bytes.as_ref() {
@@ -2251,6 +3299,261 @@ mod tests {
                 .code_str(),
             "SCHEMA_CONTRACT_UNKNOWN"
         );
+    }
+
+    #[test]
+    fn capability_issue_import_verify_and_canonical_bytes() {
+        let (policy, trusted_key, token) = issued_token();
+        assert_eq!(
+            hex(token.digest().as_bytes()),
+            "fd9248cd3f1e46ed013e97c985c8e9e45eb58277b0d8dd126f5cbfeb1698d616"
+        );
+        assert_eq!(
+            hex(token.authenticator().as_bytes()),
+            "7c4c590e61b186cd399b7cfcb3abc6481c0dc77b542fd50f6f7f3c4aebcec7ac"
+        );
+        assert_eq!(
+            hex(blake3::hash(token.stored_bytes()).as_bytes()),
+            "f7a00e1e9eb35d6b66445c47c8426d5792078b9a9de9b165d7b7c697d3c92acb"
+        );
+        let imported = import_capability_token(token.stored_bytes()).unwrap();
+        assert_eq!(imported, token);
+        assert_eq!(
+            verify_capability_token(
+                &policy,
+                &imported,
+                &trusted_key,
+                &cap_verification_request()
+            )
+            .unwrap(),
+            token.digest()
+        );
+        assert_eq!(
+            imported.body(),
+            &CapabilityTokenBody {
+                version: 1,
+                issuer_id: CapabilityIssuerId::from_bytes(id(10)),
+                key_id: CapabilityKeyId::from_bytes(id(11)),
+                principal_id: principal(3),
+                workspace_id: workspace(1),
+                state_root: root(7),
+                effect_id: entity(80),
+                effect_kind_tag: EffectKind::FileRead.tag(),
+                scope_hash: ValueHash::from_bytes(id(90)),
+                adapter_id: adapter(33),
+                budget: cap_budget(),
+                issued_unix_millis: 100,
+                expiry_unix_millis: 200,
+                token_nonce: CapabilityTokenNonce::from_bytes(id(13)),
+                policy_root: policy.root(),
+            }
+        );
+
+        let mut trailing = token.stored_bytes().to_vec();
+        trailing.push(0);
+        assert_eq!(
+            import_capability_token(&trailing).unwrap_err().code_str(),
+            "SCB_TRAILING_BYTES"
+        );
+    }
+
+    #[test]
+    fn t22_capability_forgery_fails_closed() {
+        let (policy, trusted_key, token) = issued_token();
+        let mut forged = token.clone();
+        forged.authenticator = CapabilityAuthenticator::from_bytes(id(99));
+        assert_eq!(
+            verify_capability_token(&policy, &forged, &trusted_key, &cap_verification_request())
+                .unwrap_err()
+                .code_str(),
+            "CAP_AUTHENTICATOR_INVALID"
+        );
+
+        let wrong_issuer = CapabilityTrustedKey::new(
+            CapabilityIssuerId::from_bytes(id(20)),
+            CapabilityKeyId::from_bytes(id(11)),
+            CapabilitySecret::from_bytes(id(12)),
+        );
+        assert_eq!(
+            verify_capability_token(&policy, &token, &wrong_issuer, &cap_verification_request())
+                .unwrap_err()
+                .code_str(),
+            "CAP_ISSUER_UNTRUSTED"
+        );
+    }
+
+    #[test]
+    fn t23_capability_replay_expiry_and_budget_fail_closed() {
+        let (policy, trusted_key, token) = issued_token();
+        let mut ledger = CapabilityLedger::new();
+        let request = cap_verification_request();
+        let first = verify_and_charge_capability(
+            &policy,
+            &token,
+            &trusted_key,
+            &request,
+            &mut ledger,
+            CapabilityUseNonce::from_bytes(id(1)),
+        )
+        .unwrap();
+        assert_eq!(
+            first.spent_after,
+            CapabilityResourceBudget::adapter_invocation()
+        );
+        let snapshot = ledger.clone();
+        assert_eq!(
+            verify_and_charge_capability(
+                &policy,
+                &token,
+                &trusted_key,
+                &request,
+                &mut ledger,
+                CapabilityUseNonce::from_bytes(id(1)),
+            )
+            .unwrap_err()
+            .code_str(),
+            "CAP_REPLAY"
+        );
+        assert_eq!(ledger, snapshot);
+
+        verify_and_charge_capability(
+            &policy,
+            &token,
+            &trusted_key,
+            &request,
+            &mut ledger,
+            CapabilityUseNonce::from_bytes(id(2)),
+        )
+        .unwrap();
+        let exhausted = ledger.clone();
+        assert_eq!(
+            verify_and_charge_capability(
+                &policy,
+                &token,
+                &trusted_key,
+                &request,
+                &mut ledger,
+                CapabilityUseNonce::from_bytes(id(3)),
+            )
+            .unwrap_err()
+            .code_str(),
+            "CAP_LEDGER_EXHAUSTED"
+        );
+        assert_eq!(ledger, exhausted);
+
+        let mut expired = request.clone();
+        expired.now_unix_millis = 200;
+        assert_eq!(
+            verify_capability_token(&policy, &token, &trusted_key, &expired)
+                .unwrap_err()
+                .code_str(),
+            "CAP_EXPIRED"
+        );
+
+        let mut stale_root = request;
+        stale_root.state_root = root(8);
+        assert_eq!(
+            verify_capability_token(&policy, &token, &trusted_key, &stale_root)
+                .unwrap_err()
+                .code_str(),
+            "CAP_STATE_ROOT_MISMATCH"
+        );
+    }
+
+    #[test]
+    fn t24_capability_scope_workspace_effect_and_adapter_confusion_fail_closed() {
+        let (policy, trusted_key, token) = issued_token();
+        let mut request = cap_verification_request();
+        request.scope_hash = ValueHash::from_bytes(id(91));
+        assert_eq!(
+            verify_capability_token(&policy, &token, &trusted_key, &request)
+                .unwrap_err()
+                .code_str(),
+            "CAP_SCOPE_MISMATCH"
+        );
+
+        let mut request = cap_verification_request();
+        request.workspace_id = workspace(2);
+        assert_eq!(
+            verify_capability_token(&policy, &token, &trusted_key, &request)
+                .unwrap_err()
+                .code_str(),
+            "CAP_WORKSPACE_MISMATCH"
+        );
+
+        let mut request = cap_verification_request();
+        request.effect_id = entity(81);
+        assert_eq!(
+            verify_capability_token(&policy, &token, &trusted_key, &request)
+                .unwrap_err()
+                .code_str(),
+            "CAP_EFFECT_MISMATCH"
+        );
+
+        let mut request = cap_verification_request();
+        request.adapter_id = adapter(34);
+        assert_eq!(
+            verify_capability_token(&policy, &token, &trusted_key, &request)
+                .unwrap_err()
+                .code_str(),
+            "CAP_ADAPTER_MISMATCH"
+        );
+    }
+
+    #[test]
+    fn capability_issuance_requires_policy_grant_and_bounded_budget() {
+        let policy = accepted_policy();
+        let trusted_key = cap_trusted_key();
+        let mut no_principal = cap_request();
+        no_principal.principal_id = principal(4);
+        assert_eq!(
+            issue_capability_token(&policy, &trusted_key, &no_principal)
+                .unwrap_err()
+                .code_str(),
+            "CAP_GRANT_DENIED"
+        );
+
+        let mut zero_budget = cap_request();
+        zero_budget.budget = CapabilityResourceBudget::zero();
+        assert_eq!(
+            issue_capability_token(&policy, &trusted_key, &zero_budget)
+                .unwrap_err()
+                .code_str(),
+            "CAP_BUDGET_ZERO"
+        );
+
+        let mut excessive_budget = cap_request();
+        excessive_budget.budget = CapabilityResourceBudget::new(101, 2, 3, 1, 0, 1);
+        assert_eq!(
+            issue_capability_token(&policy, &trusted_key, &excessive_budget)
+                .unwrap_err()
+                .code_str(),
+            "CAP_BUDGET_EXCEEDED"
+        );
+    }
+
+    #[test]
+    fn stable_capability_error_codes_are_exact() {
+        assert_eq!(CapabilityErrorCode::VersionUnsupported.numeric(), 38_000);
+        assert_eq!(CapabilityErrorCode::IssuerUntrusted.numeric(), 38_001);
+        assert_eq!(CapabilityErrorCode::KeyUntrusted.numeric(), 38_002);
+        assert_eq!(CapabilityErrorCode::AuthenticatorInvalid.numeric(), 38_003);
+        assert_eq!(CapabilityErrorCode::PolicyRootMismatch.numeric(), 38_004);
+        assert_eq!(CapabilityErrorCode::WorkspaceMismatch.numeric(), 38_005);
+        assert_eq!(CapabilityErrorCode::PrincipalMismatch.numeric(), 38_006);
+        assert_eq!(CapabilityErrorCode::StateRootMismatch.numeric(), 38_007);
+        assert_eq!(CapabilityErrorCode::EffectMismatch.numeric(), 38_008);
+        assert_eq!(CapabilityErrorCode::ScopeMismatch.numeric(), 38_009);
+        assert_eq!(CapabilityErrorCode::AdapterMismatch.numeric(), 38_010);
+        assert_eq!(CapabilityErrorCode::Expired.numeric(), 38_011);
+        assert_eq!(CapabilityErrorCode::TimeInvalid.numeric(), 38_012);
+        assert_eq!(CapabilityErrorCode::BudgetZero.numeric(), 38_013);
+        assert_eq!(CapabilityErrorCode::BudgetExceeded.numeric(), 38_014);
+        assert_eq!(CapabilityErrorCode::GrantDenied.numeric(), 38_015);
+        assert_eq!(CapabilityErrorCode::Replay.numeric(), 38_016);
+        assert_eq!(CapabilityErrorCode::LedgerExhausted.numeric(), 38_017);
+        assert_eq!(CapabilityErrorCode::CanonicalInvalid.numeric(), 38_018);
+        assert_eq!(CapabilityErrorCode::InternalInvariant.numeric(), 38_019);
     }
 
     #[derive(Clone, Copy)]

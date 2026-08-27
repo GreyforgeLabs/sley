@@ -26,9 +26,9 @@ must not be read as passing evidence until the named work package records them.
 | T19 | candidate modifies own policy | P0 | sley-policy | `POLICY_SELF_MODIFICATION` | policy-isolation E2E | `evidence/security/T19/` |
 | T20 | candidate modifies validator epoch | P0 | sley-schema | `SCHEMA_SELF_MODIFICATION` | epoch-isolation E2E | `evidence/security/T20/` |
 | T21 | candidate weakens mandatory tests | P0 | sley-policy | `POLICY_ORACLE_SELF_MODIFICATION` | test-root isolation | `evidence/security/T21/` |
-| T22 | capability forgery | P0 | sley-policy | `CAP_AUTHENTICATOR_INVALID` | token bit-flip/issuer matrix | `evidence/security/T22/` |
-| T23 | capability replay | P0 | sley-policy | `CAP_REPLAY` | nonce/root/expiry replay | `evidence/security/T23/` |
-| T24 | capability scope confusion | P0 | sley-policy | `CAP_SCOPE_MISMATCH` | workspace/effect/resource matrix | `evidence/security/T24/` |
+| T22 | capability forgery | P0 | sley-policy | `CAP_AUTHENTICATOR_INVALID` | token bit-flip/issuer matrix; S20-380 unit coverage present | `evidence/security/T22/` |
+| T23 | capability replay | P0 | sley-policy | `CAP_REPLAY` | nonce/root/expiry replay; S20-380 unit coverage present | `evidence/security/T23/` |
+| T24 | capability scope confusion | P0 | sley-policy | `CAP_SCOPE_MISMATCH` | workspace/effect/resource matrix; S20-380 unit coverage present | `evidence/security/T24/` |
 | T25 | adapter impersonation | P0 | sley-adapter | `ADAPTER_IDENTITY_MISMATCH` | adapter ABI/identity swap | `evidence/security/T25/` |
 | T26 | adapter response injection | P0 | sley-adapter | `ADAPTER_TYPE_MISMATCH` | typed replay outcome injection | `evidence/security/T26/` |
 | T27 | path traversal | P0 | sley-adapter | `ADAPTER_PATH_INVALID` | traversal/separator/Unicode corpus | `evidence/security/T27/` |

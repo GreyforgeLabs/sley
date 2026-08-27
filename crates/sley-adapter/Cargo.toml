@@ -10,6 +10,7 @@ description = "Sley 2 restricted deterministic reference adapter fixtures."
 blake3 = "=1.8.2"
 sley-check = { path = "../sley-check" }
 sley-id = { path = "../sley-id" }
+sley-policy = { path = "../sley-policy" }
 sley-ssmc = { path = "../sley-ssmc" }
 
 [lints]

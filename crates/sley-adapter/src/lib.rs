@@ -5,8 +5,13 @@ use std::collections::BTreeMap;
 
 use sley_check::{TypeEnvironment, TypeError};
 use sley_id::{
-    AdapterStateId, AdapterTranscriptId, EntityId, ReferenceAdapterId, SchemaEpochId, StateRoot,
-    ValueHash,
+    AdapterStateId, AdapterTranscriptId, EntityId, PrincipalId, ReferenceAdapterId, SchemaEpochId,
+    StateRoot, ValueHash,
+};
+use sley_policy::{
+    AcceptedPolicyRoot, CapabilityChargeReceipt, CapabilityError, CapabilityErrorCode,
+    CapabilityLedger, CapabilityResourceBudget, CapabilityToken, CapabilityTrustedKey,
+    CapabilityUseNonce, CapabilityVerificationRequest, verify_and_charge_capability,
 };
 use sley_ssmc::fingerprint::{FingerprintError, hash_validated_value};
 use sley_ssmc::{
@@ -20,6 +25,10 @@ const MAX_REPLAY: u64 = 65_535;
 const MAX_TICKS: u64 = 1_000_000;
 const MAX_BLOB: u64 = 16_777_216;
 const MAX_PREIMAGE: u64 = 67_108_864;
+const MAX_PATH_COMPONENT_BYTES: usize = 255;
+const MAX_REQUEST_PATH_BYTES: usize = 4_096;
+const MAX_CANONICAL_PATH_BYTES: u64 = 4_352;
+const ENCODED_FILE_ENTRY_OVERHEAD: u64 = 16;
 
 /// Stable S20-280 reference adapter failure code.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -290,7 +299,200 @@ impl From<AdapterError> for AdapterInvocationError {
 /// Result preserving prior-phase failures at the adapter boundary.
 pub type Result<T> = std::result::Result<T, AdapterInvocationError>;
 
+/// Authorized S20-380 adapter invocation failure.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum AuthorizedAdapterInvocationError {
+    /// Local type/hash preauthorization failed before ledger charge.
+    PreAuthorization(AdapterInvocationError),
+    /// Capability verification or ledger charge failed before fixture execution.
+    Capability(CapabilityError),
+    /// The capability was verified and charged, then S20-280 fixture execution failed.
+    AdapterAfterAuthorization {
+        /// Receipt proving the charge was consumed before fixture execution.
+        charge_receipt: Box<CapabilityChargeReceipt>,
+        /// Exact S20-280 adapter failure.
+        error: AdapterInvocationError,
+    },
+}
+
+impl AuthorizedAdapterInvocationError {
+    /// Returns the S20-280 adapter code when this error carries one.
+    #[must_use]
+    pub const fn adapter_code(&self) -> Option<AdapterErrorCode> {
+        match self {
+            Self::PreAuthorization(error) | Self::AdapterAfterAuthorization { error, .. } => {
+                error.adapter_code()
+            }
+            Self::Capability(_) => None,
+        }
+    }
+
+    /// Returns the S20-380 capability error when this is a capability failure.
+    #[must_use]
+    pub const fn capability_error(&self) -> Option<&CapabilityError> {
+        match self {
+            Self::Capability(error) => Some(error),
+            Self::PreAuthorization(_) | Self::AdapterAfterAuthorization { .. } => None,
+        }
+    }
+}
+
+/// Successful authorized adapter invocation receipt.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AuthorizedAdapterReceipt {
+    /// Capability-ledger charge consumed before fixture execution.
+    pub capability_receipt: CapabilityChargeReceipt,
+    /// Deterministic S20-280 adapter receipt.
+    pub adapter_receipt: AdapterReceipt,
+}
+
+/// Explicit host-owned authorization inputs for one adapter invocation.
+pub struct AdapterAuthorization<'a> {
+    /// Accepted policy root used for runtime judgment.
+    pub policy: &'a AcceptedPolicyRoot,
+    /// Authenticated capability token.
+    pub token: &'a CapabilityToken,
+    /// Trusted issuer/key/secret tuple.
+    pub trusted_key: &'a CapabilityTrustedKey,
+    /// Caller-owned replay/budget ledger.
+    pub ledger: &'a mut CapabilityLedger,
+    /// Principal attempting the invocation.
+    pub principal_id: PrincipalId,
+    /// Explicit host-supplied verification time.
+    pub now_unix_millis: u64,
+    /// Exact per-use nonce to consume if authorization succeeds.
+    pub use_nonce: CapabilityUseNonce,
+}
+
+/// Result preserving authorization and adapter failures.
+pub type AuthorizedResult<T> = std::result::Result<T, AuthorizedAdapterInvocationError>;
+
+/// Derives the conservative capability charge for one adapter-limit envelope.
+///
+/// Fuel binds the requested action ceiling. Output binds the captured-output
+/// ceiling. Memory conservatively reserves two fixture-state preimages, one
+/// transcript preimage, the random-response ceiling, the captured-output
+/// ceiling, virtual-file contents, and worst-case encoded path/length overhead
+/// for every allowed virtual file. Effect and adapter-call counts are one;
+/// mutation count is zero because S20-280 fixture writes are effects, not
+/// S20-340 repository mutations.
+///
+/// # Errors
+///
+/// Returns `CAP_BUDGET_EXCEEDED` if the exact conservative memory sum cannot be
+/// represented as `u64`. Policy/token ceilings are checked by S20-380
+/// verification before the ledger or fixture can mutate.
+pub fn capability_budget_for_adapter_limits(
+    limits: AdapterLimits,
+) -> std::result::Result<CapabilityResourceBudget, CapabilityError> {
+    let per_file_overhead = MAX_CANONICAL_PATH_BYTES
+        .checked_add(ENCODED_FILE_ENTRY_OVERHEAD)
+        .ok_or(CapabilityError::Capability(
+            CapabilityErrorCode::BudgetExceeded,
+        ))?;
+    let file_overhead = limits
+        .max_virtual_files
+        .checked_mul(per_file_overhead)
+        .ok_or(CapabilityError::Capability(
+            CapabilityErrorCode::BudgetExceeded,
+        ))?;
+    let memory_bytes = limits
+        .max_state_preimage_bytes
+        .checked_mul(2)
+        .and_then(|value| value.checked_add(limits.max_transcript_preimage_bytes))
+        .and_then(|value| value.checked_add(limits.max_random_bytes))
+        .and_then(|value| value.checked_add(limits.max_output_bytes))
+        .and_then(|value| value.checked_add(limits.max_total_virtual_file_bytes))
+        .and_then(|value| value.checked_add(file_overhead))
+        .ok_or(CapabilityError::Capability(
+            CapabilityErrorCode::BudgetExceeded,
+        ))?;
+    Ok(CapabilityResourceBudget::new(
+        limits.max_actions,
+        memory_bytes,
+        limits.max_output_bytes,
+        1,
+        0,
+        1,
+    ))
+}
+
+/// Verifies and charges S20-380 capability before invoking a reference fixture.
+///
+/// The existing fixture call is still clone-before-commit and remains
+/// conformance-only. This wrapper is the authority boundary for S20-380's
+/// narrow local profile.
+///
+/// # Errors
+///
+/// Failures before successful authorization do not mutate the ledger or
+/// fixture. After successful authorization the ledger charge is consumed even
+/// when fixture execution fails; fixture state remains protected by the
+/// underlying S20-280 atomic clone-before-commit semantics.
+#[allow(clippy::too_many_arguments)]
+pub fn invoke_authorized_reference_adapter(
+    state: &mut AdapterFixtureState,
+    import: &AdapterImport,
+    effect: &EffectDefinition,
+    types: &TypeEnvironment,
+    schema_epoch: SchemaEpochId,
+    state_root: StateRoot,
+    invocation: &AdapterInvocation,
+    authorization: AdapterAuthorization<'_>,
+) -> AuthorizedResult<AuthorizedAdapterReceipt> {
+    let AdapterAuthorization {
+        policy,
+        token,
+        trusted_key,
+        ledger,
+        principal_id,
+        now_unix_millis,
+        use_nonce,
+    } = authorization;
+    let scope_hash = hash_const(types, schema_epoch, &invocation.scope)
+        .map_err(AuthorizedAdapterInvocationError::PreAuthorization)?;
+    let required_budget = capability_budget_for_adapter_limits(invocation.limits)
+        .map_err(AuthorizedAdapterInvocationError::Capability)?;
+    let request = CapabilityVerificationRequest {
+        principal_id,
+        workspace_id: policy.record().workspace_id,
+        state_root,
+        effect_id: effect.entity_id,
+        effect_kind: effect.effect_kind,
+        scope_hash,
+        adapter_id: ReferenceAdapterId::from_bytes(import.adapter_id),
+        now_unix_millis,
+        required_budget,
+    };
+    let capability_receipt =
+        verify_and_charge_capability(policy, token, trusted_key, &request, ledger, use_nonce)
+            .map_err(AuthorizedAdapterInvocationError::Capability)?;
+    match invoke_reference_adapter(
+        state,
+        import,
+        effect,
+        types,
+        schema_epoch,
+        state_root,
+        invocation,
+    ) {
+        Ok(adapter_receipt) => Ok(AuthorizedAdapterReceipt {
+            capability_receipt,
+            adapter_receipt,
+        }),
+        Err(error) => Err(
+            AuthorizedAdapterInvocationError::AdapterAfterAuthorization {
+                charge_receipt: Box::new(capability_receipt),
+                error,
+            },
+        ),
+    }
+}
+
 /// Invokes one restricted reference adapter against caller-owned fixture state.
+///
+/// This is a conformance-only fixture API. It performs no protected policy,
+/// capability, issuer, replay-ledger, or live-host authorization.
 ///
 /// # Errors
 ///
@@ -749,7 +951,7 @@ fn validate_full_path(path: &str) -> Result<()> {
 fn canonical_key(scope: &str, request: &str) -> Result<String> {
     validate_component(scope).map_err(|_| AdapterError::new(AdapterErrorCode::PathInvalid))?;
     if request.is_empty()
-        || request.len() > 4_096
+        || request.len() > MAX_REQUEST_PATH_BYTES
         || request.starts_with('/')
         || request.ends_with('/')
         || request.contains('\\')
@@ -773,7 +975,10 @@ fn canonical_key(scope: &str, request: &str) -> Result<String> {
 }
 
 fn validate_component(component: &str) -> Result<()> {
-    if component.is_empty() || component.len() > 255 || matches!(component, "." | "..") {
+    if component.is_empty()
+        || component.len() > MAX_PATH_COMPONENT_BYTES
+        || matches!(component, "." | "..")
+    {
         return fail(AdapterErrorCode::PathInvalid);
     }
     let mut bytes = component.bytes();
@@ -1106,10 +1311,24 @@ impl Encoder {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use sley_id::WorkspaceId;
+    use sley_policy::{
+        CapabilityIssuerId, CapabilityKeyId, CapabilitySecret, CapabilityTokenNonce,
+        CapabilityTokenRequest, PolicyResourceCeilings, PolicyRootBuilder, PrincipalGrantBuilder,
+        conformance_registry as policy_registry, issue_capability_token,
+    };
     use sley_ssmc::Visibility;
 
     fn eid(byte: u8) -> EntityId {
         EntityId::from_bytes([byte; 32])
+    }
+
+    fn workspace() -> WorkspaceId {
+        WorkspaceId::from_bytes([1; 32])
+    }
+
+    fn principal() -> PrincipalId {
+        PrincipalId::from_bytes([3; 32])
     }
 
     fn epoch() -> SchemaEpochId {
@@ -1177,6 +1396,102 @@ mod tests {
         }
     }
 
+    fn trusted_key() -> CapabilityTrustedKey {
+        CapabilityTrustedKey::new(
+            CapabilityIssuerId::from_bytes([10; 32]),
+            CapabilityKeyId::from_bytes([11; 32]),
+            CapabilitySecret::from_bytes([12; 32]),
+        )
+    }
+
+    fn authorized_limits() -> AdapterLimits {
+        AdapterLimits {
+            max_calls: 16,
+            max_actions: 10_000,
+            max_output_bytes: 1_048_576,
+            max_virtual_files: 100,
+            max_virtual_file_bytes: 1_048_576,
+            max_total_virtual_file_bytes: 4_194_304,
+            max_random_bytes: 1_048_576,
+            max_state_preimage_bytes: 8_388_608,
+            max_transcript_preimage_bytes: 8_388_608,
+        }
+    }
+
+    fn authorized_token_budget() -> CapabilityResourceBudget {
+        let one = capability_budget_for_adapter_limits(authorized_limits()).unwrap();
+        CapabilityResourceBudget::new(
+            one.max_fuel * 2,
+            one.max_memory_bytes * 2,
+            one.max_output_bytes * 2,
+            one.max_effect_count * 2,
+            0,
+            one.max_adapter_calls * 2,
+        )
+    }
+
+    fn policy_for(adapter_id: ReferenceAdapterId) -> AcceptedPolicyRoot {
+        let budget = authorized_token_budget();
+        let grant = PrincipalGrantBuilder::new(PolicyResourceCeilings::new(
+            budget.max_fuel,
+            budget.max_memory_bytes,
+            budget.max_output_bytes,
+            budget.max_effect_count,
+            budget.max_mutation_count,
+            budget.max_adapter_calls,
+        ))
+        .effect_kind(EffectKind::AdapterCall)
+        .adapter_id(adapter_id)
+        .build()
+        .unwrap();
+        PolicyRootBuilder::new(workspace())
+            .principal_grant(principal(), grant)
+            .build(&policy_registry().unwrap())
+            .unwrap()
+    }
+
+    fn token_for(
+        policy: &AcceptedPolicyRoot,
+        adapter_id: ReferenceAdapterId,
+        effect_id: EntityId,
+        scope_hash: ValueHash,
+    ) -> CapabilityToken {
+        token_for_budget(
+            policy,
+            adapter_id,
+            effect_id,
+            scope_hash,
+            authorized_token_budget(),
+        )
+    }
+
+    fn token_for_budget(
+        policy: &AcceptedPolicyRoot,
+        adapter_id: ReferenceAdapterId,
+        effect_id: EntityId,
+        scope_hash: ValueHash,
+        budget: CapabilityResourceBudget,
+    ) -> CapabilityToken {
+        issue_capability_token(
+            policy,
+            &trusted_key(),
+            &CapabilityTokenRequest {
+                principal_id: principal(),
+                workspace_id: workspace(),
+                state_root: root(),
+                effect_id,
+                effect_kind: EffectKind::AdapterCall,
+                scope_hash,
+                adapter_id,
+                budget,
+                now_unix_millis: 100,
+                expiry_unix_millis: 200,
+                token_nonce: CapabilityTokenNonce::from_bytes([13; 32]),
+            },
+        )
+        .unwrap()
+    }
+
     fn invocation(
         kind: ReferenceAdapterKind,
         scope: ConstValue,
@@ -1207,6 +1522,24 @@ mod tests {
             root(),
             &invocation,
         )
+    }
+
+    fn authorization<'a>(
+        policy: &'a AcceptedPolicyRoot,
+        token: &'a CapabilityToken,
+        trusted_key: &'a CapabilityTrustedKey,
+        ledger: &'a mut CapabilityLedger,
+        use_nonce: u8,
+    ) -> AdapterAuthorization<'a> {
+        AdapterAuthorization {
+            policy,
+            token,
+            trusted_key,
+            ledger,
+            principal_id: principal(),
+            now_unix_millis: 150,
+            use_nonce: CapabilityUseNonce::from_bytes([use_nonce; 32]),
+        }
     }
 
     fn unit_value() -> ConstValue {
@@ -1722,6 +2055,245 @@ mod tests {
             );
             assert_eq!(state, before);
         }
+    }
+
+    #[test]
+    fn capability_budget_reserves_the_maximum_canonical_path() {
+        let scope = "a".repeat(MAX_PATH_COMPONENT_BYTES);
+        let mut components = vec!["b".repeat(MAX_PATH_COMPONENT_BYTES); 15];
+        components.push("c".repeat(254));
+        components.push("d".to_owned());
+        let request = components.join("/");
+        assert_eq!(request.len(), MAX_REQUEST_PATH_BYTES);
+        assert_eq!(
+            canonical_key(&scope, &request).unwrap().len(),
+            usize::try_from(MAX_CANONICAL_PATH_BYTES).unwrap()
+        );
+
+        let limits = AdapterLimits {
+            max_calls: 1,
+            max_actions: 1,
+            max_output_bytes: 0,
+            max_virtual_files: 1,
+            max_virtual_file_bytes: 0,
+            max_total_virtual_file_bytes: 0,
+            max_random_bytes: 0,
+            max_state_preimage_bytes: 0,
+            max_transcript_preimage_bytes: 0,
+        };
+        let budget = capability_budget_for_adapter_limits(limits).unwrap();
+        assert_eq!(
+            budget.max_memory_bytes,
+            MAX_CANONICAL_PATH_BYTES + ENCODED_FILE_ENTRY_OVERHEAD
+        );
+    }
+
+    #[test]
+    fn authorized_adapter_success_charges_once_then_mutates_fixture() {
+        let kind = ReferenceAdapterKind::Stdout;
+        let effect = effect(kind);
+        let import = import(kind, &effect);
+        let mut invocation = invocation(kind, unit_value(), bytes_value(b"auth".to_vec()));
+        invocation.limits = authorized_limits();
+        let scope_hash = hash_const(&types(), epoch(), &invocation.scope).unwrap();
+        let policy = policy_for(kind.reference_id());
+        let trusted_key = trusted_key();
+        let token = token_for(&policy, kind.reference_id(), effect.entity_id, scope_hash);
+        let mut ledger = CapabilityLedger::new();
+        let mut state = AdapterFixtureState::default();
+
+        let receipt = invoke_authorized_reference_adapter(
+            &mut state,
+            &import,
+            &effect,
+            &types(),
+            epoch(),
+            root(),
+            &invocation,
+            authorization(&policy, &token, &trusted_key, &mut ledger, 1),
+        )
+        .unwrap();
+
+        assert_eq!(state.stdout, b"auth");
+        assert_eq!(
+            receipt.capability_receipt.charged,
+            capability_budget_for_adapter_limits(authorized_limits()).unwrap()
+        );
+        assert_eq!(
+            ledger.spent(token.digest()),
+            capability_budget_for_adapter_limits(authorized_limits()).unwrap()
+        );
+    }
+
+    #[test]
+    fn authorized_adapter_failure_before_charge_mutates_neither_ledger_nor_fixture() {
+        let kind = ReferenceAdapterKind::Stdout;
+        let effect = effect(kind);
+        let import = import(kind, &effect);
+        let mut invocation = invocation(kind, unit_value(), bytes_value(b"auth".to_vec()));
+        invocation.limits = authorized_limits();
+        let policy = policy_for(kind.reference_id());
+        let trusted_key = trusted_key();
+        let token = token_for(
+            &policy,
+            kind.reference_id(),
+            effect.entity_id,
+            ValueHash::from_bytes([99; 32]),
+        );
+        let mut ledger = CapabilityLedger::new();
+        let mut state = AdapterFixtureState::default();
+        let before = state.clone();
+
+        let error = invoke_authorized_reference_adapter(
+            &mut state,
+            &import,
+            &effect,
+            &types(),
+            epoch(),
+            root(),
+            &invocation,
+            authorization(&policy, &token, &trusted_key, &mut ledger, 1),
+        )
+        .unwrap_err();
+
+        assert_eq!(
+            error.capability_error().unwrap().code_str(),
+            "CAP_SCOPE_MISMATCH"
+        );
+        assert_eq!(ledger, CapabilityLedger::new());
+        assert_eq!(state, before);
+    }
+
+    #[test]
+    fn authorized_adapter_resource_dimensions_fail_closed_before_charge() {
+        let kind = ReferenceAdapterKind::Stdout;
+        let effect = effect(kind);
+        let import = import(kind, &effect);
+        let mut invocation = invocation(kind, unit_value(), bytes_value(b"auth".to_vec()));
+        invocation.limits = authorized_limits();
+        let required = capability_budget_for_adapter_limits(invocation.limits).unwrap();
+        let scope_hash = hash_const(&types(), epoch(), &invocation.scope).unwrap();
+        let policy = policy_for(kind.reference_id());
+        let trusted_key = trusted_key();
+
+        let mut cases = Vec::new();
+        let mut fuel = required;
+        fuel.max_fuel -= 1;
+        cases.push(fuel);
+        let mut memory = required;
+        memory.max_memory_bytes -= 1;
+        cases.push(memory);
+        let mut output = required;
+        output.max_output_bytes -= 1;
+        cases.push(output);
+        let mut effects = required;
+        effects.max_effect_count = 0;
+        cases.push(effects);
+        let mut calls = required;
+        calls.max_adapter_calls = 0;
+        cases.push(calls);
+
+        for budget in cases {
+            let token = token_for_budget(
+                &policy,
+                kind.reference_id(),
+                effect.entity_id,
+                scope_hash,
+                budget,
+            );
+            let mut ledger = CapabilityLedger::new();
+            let mut state = AdapterFixtureState::default();
+            let before = state.clone();
+            let error = invoke_authorized_reference_adapter(
+                &mut state,
+                &import,
+                &effect,
+                &types(),
+                epoch(),
+                root(),
+                &invocation,
+                authorization(&policy, &token, &trusted_key, &mut ledger, 1),
+            )
+            .unwrap_err();
+            assert_eq!(
+                error.capability_error().unwrap().code_str(),
+                "CAP_BUDGET_EXCEEDED"
+            );
+            assert_eq!(ledger, CapabilityLedger::new());
+            assert_eq!(state, before);
+        }
+    }
+
+    #[test]
+    fn authorized_adapter_failure_after_charge_consumes_ledger_without_fixture_mutation() {
+        let kind = ReferenceAdapterKind::Stdout;
+        let effect = effect(kind);
+        let mut import = import(kind, &effect);
+        import.adapter_id = ReferenceAdapterKind::Stderr.reference_id().into_bytes();
+        let mut invocation = invocation(kind, unit_value(), bytes_value(b"auth".to_vec()));
+        invocation.limits = authorized_limits();
+        let scope_hash = hash_const(&types(), epoch(), &invocation.scope).unwrap();
+        let policy = policy_for(ReferenceAdapterKind::Stderr.reference_id());
+        let trusted_key = trusted_key();
+        let token = token_for(
+            &policy,
+            ReferenceAdapterKind::Stderr.reference_id(),
+            effect.entity_id,
+            scope_hash,
+        );
+        let mut ledger = CapabilityLedger::new();
+        let mut state = AdapterFixtureState::default();
+        let before = state.clone();
+
+        let error = invoke_authorized_reference_adapter(
+            &mut state,
+            &import,
+            &effect,
+            &types(),
+            epoch(),
+            root(),
+            &invocation,
+            authorization(&policy, &token, &trusted_key, &mut ledger, 1),
+        )
+        .unwrap_err();
+
+        let AuthorizedAdapterInvocationError::AdapterAfterAuthorization {
+            charge_receipt,
+            error,
+        } = error
+        else {
+            panic!("fixture failure should occur after a successful charge");
+        };
+        assert_eq!(
+            error.adapter_code(),
+            Some(AdapterErrorCode::IdentityMismatch)
+        );
+        assert_eq!(
+            charge_receipt.charged,
+            capability_budget_for_adapter_limits(authorized_limits()).unwrap()
+        );
+        assert_eq!(
+            ledger.spent(token.digest()),
+            capability_budget_for_adapter_limits(authorized_limits()).unwrap()
+        );
+        assert_eq!(state, before);
+
+        let replay_error = invoke_authorized_reference_adapter(
+            &mut state,
+            &import,
+            &effect,
+            &types(),
+            epoch(),
+            root(),
+            &invocation,
+            authorization(&policy, &token, &trusted_key, &mut ledger, 1),
+        )
+        .unwrap_err();
+        assert_eq!(
+            replay_error.capability_error().unwrap().code_str(),
+            "CAP_REPLAY"
+        );
+        assert_eq!(state, before);
     }
 
     #[test]

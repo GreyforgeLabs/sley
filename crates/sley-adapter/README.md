@@ -11,5 +11,9 @@ secrets, deployment surface, or a provider. Its state and transcript IDs are
 derived evidence only; they grant no policy, capability, canonical-state, or
 live-resource authority.
 
-VM adapter opcodes, protected capabilities, live host confinement, and
-persistent execution/test reports remain fail closed in later work packages.
+S20-380 adds an authorized wrapper that derives a conservative charge from the
+complete adapter-limit envelope, verifies and charges a `sley-policy`
+capability, and only then delegates to the clone-before-commit fixture
+function. The original fixture API remains conformance-only and
+unauthoritative. VM adapter opcodes, live host confinement, and persistent
+execution/test reports remain fail closed in later work packages.

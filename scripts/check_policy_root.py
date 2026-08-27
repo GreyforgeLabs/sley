@@ -64,12 +64,10 @@ for token in [
 for forbidden in [
     "pub root:",
     "pub stored_bytes:",
-    "pub fn issue_capability",
     "pub fn authorize_transition",
     "pub fn apply",
     "pub fn commit",
     "CandidateId",
-    "CapabilityTokenDigest",
     "std::fs",
     "std::env",
     "std::net",
@@ -89,8 +87,8 @@ if "python3 scripts/check_policy_root.py" not in makefile:
     problems.append("routine quick gate omits policy-root checker")
 if "protected policy root" not in work_packages:
     problems.append("S20-370 work-package closeout is absent")
-if "does not issue capability tokens" not in readme:
-    problems.append("policy README omits the no-token boundary")
+if "Policy-root records do not embed capability tokens" not in readme:
+    problems.append("policy README omits the no-embedded-token boundary")
 
 result = {
     "contract": "s20-370-protected-policy-root-v1",
@@ -101,7 +99,7 @@ result = {
     "resource_ceiling_fields": 6,
     "stable_error_codes": 19,
     "policy_unit_tests": code.count("#[test]"),
-    "capability_tokens": False,
+    "capability_tokens_embedded_in_policy_root": False,
     "policy_transition_authority": False,
     "candidate_or_commit_authority": False,
     "nabu_review": "REVISE_TO_NARROW_PROTECTED_POLICY_ROOT",

@@ -147,6 +147,7 @@ dependencies = [
  "blake3",
  "sley-check",
  "sley-id",
+ "sley-policy",
  "sley-ssmc",
 ]
 

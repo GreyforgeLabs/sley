@@ -60,7 +60,12 @@ typed mutation values and the complete candidate record exist. S20-370 now
 adds a separately registry-authorized protected policy root with exact opaque
 principals, principal-specific grants, protected entity bindings, and mandatory
 test/contract finalization. It has no authenticated policy-transition,
-capability-token, candidate, commit, or live runtime authority.
+candidate, commit, or live runtime authority. S20-380 now adds a narrow
+local-only capability-token profile with exact root/effect/scope/adapter/budget
+binding, keyed BLAKE3 authentication, caller-owned replay/budget ledger
+judgment, and an authorized reference-adapter wrapper. VM adapter opcodes,
+candidate admission, commit, sessions, live host confinement, policy
+transitions, providers, deployment, and GA remain explicit gaps.
 
 ## Authority
 
@@ -84,7 +89,7 @@ work belongs to a separate session and repository worktree.
 `make quick` and `make check-changed` validate the implemented M0/M1 and
 current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering/
 execution/reference-adapter/report-envelope/index-snapshot/restricted-query/
-restricted-capsule/mutation-schema/protected-policy-root surface. Later
-profiles are present but intentionally fail closed until their corresponding
-work packages land.
+restricted-capsule/mutation-schema/protected-policy-root/capability-token
+surface. Later profiles are present but intentionally fail closed until their
+corresponding work packages land.
 `make v2` remains the eventual authoritative full gate.
