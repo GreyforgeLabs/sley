@@ -1,6 +1,7 @@
 # Mutation Value Codec v1
 
-Status: S20-345 normative contract freeze; generated implementation deferred.
+Status: S20-345 normative contract freeze; S20-350a closed host model
+implemented; binary codecs and descriptor bindings deferred.
 
 ## Exact schema source
 
@@ -27,6 +28,13 @@ Generated host types must be equivalent to a closed per-field sum such as
 `Workspace_packages(Set<EntityId>)`, not a generic `(type_name, bytes)` pair.
 Required/optional presence belongs to the owning entity record; an optional
 field replacement encodes the manifest `Option<T>` value, not field absence.
+
+The landed S20-350a slice generates the eighteen body structs,
+`EntityBodyValue`, and a seventy-five-variant `FieldValue` directly from the
+digest-pinned manifest. It includes a canonical unique raw-ID-ordered
+`EntityIdSet`; it deliberately exposes no encoder, decoder, runtime type-name
+selector, descriptor admission, precondition, or candidate builder. Those
+remain separate gates rather than implied behavior of the host representation.
 
 ## Canonical rules
 

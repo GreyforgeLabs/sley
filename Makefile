@@ -22,6 +22,7 @@ quick:
 	python3 scripts/check_restricted_query_profile.py
 	python3 scripts/check_restricted_query_capsule_profile.py
 	python3 scripts/check_mutation_schema.py
+	python3 scripts/check_mutation_value_codecs.py
 	python3 scripts/check_policy_root.py
 	python3 scripts/check_capability_token.py
 	python3 scripts/check_raw_baseline_runner.py

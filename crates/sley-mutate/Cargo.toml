@@ -7,7 +7,9 @@ license.workspace = true
 description = "Generated immutable Sley 2 mutation schema descriptors."
 
 [dependencies]
+sley-id = { path = "../sley-id" }
 sley-schema = { path = "../sley-schema" }
+sley-ssmc = { path = "../sley-ssmc" }
 
 [dev-dependencies]
 blake3 = "=1.8.2"

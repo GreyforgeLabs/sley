@@ -132,6 +132,8 @@ pub struct MutationOperationDescriptor {
 
 include!("generated.rs");
 
+pub mod value;
+
 /// Returns a frozen entity descriptor by its exact SSMC1 tag.
 #[must_use]
 pub fn entity_schema(kind_tag: u16) -> Option<&'static EntitySchemaDescriptor> {

@@ -55,8 +55,11 @@ until negotiated session and verified workspace/root authority exist. S20-340
 now generates immutable mutation descriptors for all eighteen SSMC1 entity
 kinds and all sixteen primitive classes from the exact frozen manifest. It
 provides no candidate construction, executable mutation, validation, policy,
-session, commit, or transaction authority. S20-350 is therefore deferred until
-typed mutation values and the complete candidate record exist. S20-370 now
+session, commit, or transaction authority. The first decomposed S20-350 slice
+now generates closed proposal-only host values for all eighteen entity bodies
+and all seventy-five body fields, with no runtime type-name dispatch. Binary
+codecs, the 179 descriptor bindings, preconditions, candidate records, and
+candidate construction remain deferred. S20-370 now
 adds a separately registry-authorized protected policy root with exact opaque
 principals, principal-specific grants, protected entity bindings, and mandatory
 test/contract finalization. It has no authenticated policy-transition,
@@ -70,7 +73,7 @@ S20-345 now freezes the missing candidate/value/precondition/capability-summary/
 validation-profile/expiry contracts as proposal-only specifications. It adds
 no builder, decoder, validation, authority, root construction, or commit path;
 its identifier domains/vectors and independent Nabu/Vulcan reviews now pass.
-S20-350 remains a separate unimplemented package.
+S20-350 remains incomplete and cannot yet construct a candidate.
 S20-710 now has a deterministic offline pre-release dependency inventory and a
 bounded high-confidence secret scan. Those local checks do not complete the
 package: operator-approved proprietary root license text, a standards SBOM,
@@ -107,7 +110,8 @@ work belongs to a separate session and repository worktree.
 current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering/
 execution/reference-adapter/report-envelope/index-snapshot/restricted-query/
 restricted-capsule/mutation-schema/protected-policy-root/capability-token
-surface plus the offline S20-610 raw-baseline evidence contract and bounded
+surface, the closed mutation proposal host model, plus the offline S20-610
+raw-baseline evidence contract and bounded
 S20-710 pre-release audit (`DEFERRED`, never release `PASS`). Later profiles
 are present but intentionally fail closed until their corresponding work
 packages land.
