@@ -61,12 +61,17 @@ and all seventy-five body fields, with no runtime type-name dispatch. A second
 slice binds all 179 immutable descriptors to exact closed body/field
 discriminants and performs type-selection-only admission. A strict low-level
 SCB value cursor now exposes the already-frozen primitive decoder behavior for
-later private codec work; it selects no schema or mutation type. A crate-private
-mutation layer now closes primitive values, IDs/roots, direct enums, ordered
-lists/options, canonical entity-ID sets, and the complete twenty-variant
-recursive `TypeExpr` family with depth and allocation budgets. `ConstValue`,
-CFG, contract/test, complete body/field codecs, preconditions, candidate
-records, and candidate construction remain deferred. S20-370 now
+later private codec work, including lossless strict 128-bit integer primitives;
+it selects no schema or mutation type. A crate-private mutation layer now closes
+primitive values, IDs/roots, direct enums, ordered lists/options, canonical
+entity-ID sets, and the complete twenty-variant recursive `TypeExpr` family
+with depth and allocation budgets. A further private slice closes `MemberId`,
+value/function references, immediates, CFG edges/cases, trap codes, and the four
+non-Option terminator records. `TrapTerminator` and the enclosing `Terminator`
+union remain unimplemented pending locked-canon resolution of the conflicting
+SCB1 and manifest `Option<T>` tags. `ConstValue`, complete CFG/body/field
+codecs, contract/test families, preconditions, candidate records, and candidate
+construction remain deferred. S20-370 now
 adds a separately registry-authorized protected policy root with exact opaque
 principals, principal-specific grants, protected entity bindings, and mandatory
 test/contract finalization. It has no authenticated policy-transition,

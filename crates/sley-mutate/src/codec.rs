@@ -12,8 +12,11 @@ use sley_scb1::{
     encode_record, encode_sint64, encode_text, encode_union, encode_uvar,
 };
 use sley_ssmc::{
-    BuiltinFailureKind, ContractKind, EffectKind, FunctionType, IntegerWidth, NamedType,
-    ParameterRole, Reachability, TypeExpr, Visibility,
+    BranchTerminator, BuiltinCase, BuiltinFailureKind, CaseKey, CondBranchTerminator, ContractKind,
+    EffectKind, FunctionRefValue, FunctionType, Immediate, IntegerWidth, MemberId, NamedType,
+    OperationResultRef, ParameterRole, Reachability, ReturnTerminator, SwitchArgument, SwitchCase,
+    SwitchEdge, TargetEdge, TrapCode, TypeExpr, ValueRef, VariantImmediate,
+    VariantSwitchTerminator, Visibility,
 };
 
 use crate::value::{EntityIdSet, EntryExposure};
@@ -297,6 +300,20 @@ impl MutationValueCodec for EntityId {
 }
 
 impl MutationValueCodec for StateRoot {
+    fn encode_value(&self, _depth: usize) -> Result<Vec<u8>> {
+        Ok(self.as_bytes().to_vec())
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        _depth: usize,
+        _budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        Ok(Self::from_bytes(cursor.read_fixed_bytes::<32>()?))
+    }
+}
+
+impl MutationValueCodec for MemberId {
     fn encode_value(&self, _depth: usize) -> Result<Vec<u8>> {
         Ok(self.as_bytes().to_vec())
     }
@@ -965,12 +982,519 @@ impl MutationValueCodec for TypeExpr {
     }
 }
 
+impl MutationValueCodec for OperationResultRef {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[
+            (1, encode_at_depth(&self.operation, depth + 1)?),
+            (2, encode_at_depth(&self.result_index, depth + 1)?),
+        ])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut operation = None;
+        let mut result_index = None;
+        decode_record_fields(cursor, &[1, 2], |tag, payload| {
+            match tag {
+                1 => operation = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                2 => result_index = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            operation: operation.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            result_index: result_index.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
+impl MutationValueCodec for ValueRef {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        match self {
+            Self::Parameter(value) => encode_union(self.tag(), &encode_at_depth(value, depth + 1)?),
+            Self::OperationResult(value) => {
+                encode_union(self.tag(), &encode_at_depth(value, depth + 1)?)
+            }
+        }
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let (tag, payload) = cursor.read_union()?;
+        match tag {
+            1 => Ok(Self::Parameter(decode_nested_exact(
+                payload,
+                depth + 1,
+                budget,
+            )?)),
+            2 => Ok(Self::OperationResult(decode_nested_exact(
+                payload,
+                depth + 1,
+                budget,
+            )?)),
+            _ => Err(ScbError::new(ScbErrorCode::UnionInvalid)),
+        }
+    }
+}
+
+impl MutationValueCodec for FunctionRefValue {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[
+            (1, encode_at_depth(&self.function, depth + 1)?),
+            (2, encode_at_depth(&self.type_arguments, depth + 1)?),
+        ])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut function = None;
+        let mut type_arguments = None;
+        decode_record_fields(cursor, &[1, 2], |tag, payload| {
+            match tag {
+                1 => function = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                2 => type_arguments = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            function: function.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            type_arguments: type_arguments
+                .ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
+impl MutationValueCodec for VariantImmediate {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[
+            (1, encode_at_depth(&self.definition, depth + 1)?),
+            (2, encode_at_depth(&self.member_id, depth + 1)?),
+        ])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut definition = None;
+        let mut member_id = None;
+        decode_record_fields(cursor, &[1, 2], |tag, payload| {
+            match tag {
+                1 => definition = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                2 => member_id = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            definition: definition.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            member_id: member_id.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
+impl MutationValueCodec for Immediate {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        match self {
+            Self::None => encode_union(self.tag(), &[]),
+            Self::Entity(value) => encode_union(self.tag(), &encode_at_depth(value, depth + 1)?),
+            Self::Index(value) => encode_union(self.tag(), &encode_at_depth(value, depth + 1)?),
+            Self::Field(value) => encode_union(self.tag(), &encode_at_depth(value, depth + 1)?),
+            Self::Variant(value) => encode_union(self.tag(), &encode_at_depth(value, depth + 1)?),
+            Self::Observation(value) => {
+                encode_union(self.tag(), &encode_at_depth(value, depth + 1)?)
+            }
+            Self::Function(value) => encode_union(self.tag(), &encode_at_depth(value, depth + 1)?),
+        }
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let (tag, payload) = cursor.read_union()?;
+        match tag {
+            1 if payload.is_empty() => Ok(Self::None),
+            2 => Ok(Self::Entity(decode_nested_exact(
+                payload,
+                depth + 1,
+                budget,
+            )?)),
+            3 => Ok(Self::Index(decode_nested_exact(
+                payload,
+                depth + 1,
+                budget,
+            )?)),
+            4 => Ok(Self::Field(decode_nested_exact(
+                payload,
+                depth + 1,
+                budget,
+            )?)),
+            5 => Ok(Self::Variant(decode_nested_exact(
+                payload,
+                depth + 1,
+                budget,
+            )?)),
+            6 => Ok(Self::Observation(decode_nested_exact(
+                payload,
+                depth + 1,
+                budget,
+            )?)),
+            7 => Ok(Self::Function(decode_nested_exact(
+                payload,
+                depth + 1,
+                budget,
+            )?)),
+            _ => Err(ScbError::new(ScbErrorCode::UnionInvalid)),
+        }
+    }
+}
+
+impl MutationValueCodec for TargetEdge {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[
+            (1, encode_at_depth(&self.target, depth + 1)?),
+            (2, encode_at_depth(&self.arguments, depth + 1)?),
+        ])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut target = None;
+        let mut arguments = None;
+        decode_record_fields(cursor, &[1, 2], |tag, payload| {
+            match tag {
+                1 => target = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                2 => arguments = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            target: target.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            arguments: arguments.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
+impl SimpleEnumCodec for BuiltinCase {
+    fn tag(self) -> u32 {
+        self.tag()
+    }
+
+    fn from_tag(tag: u32) -> Option<Self> {
+        match tag {
+            1 => Some(Self::None),
+            2 => Some(Self::Some),
+            3 => Some(Self::Ok),
+            4 => Some(Self::Err),
+            _ => None,
+        }
+    }
+}
+
+impl_simple_enum_codec!(BuiltinCase);
+
+impl MutationValueCodec for CaseKey {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        match self {
+            Self::Member(value) => encode_union(self.tag(), &encode_at_depth(value, depth + 1)?),
+            Self::Builtin(value) => encode_union(self.tag(), &encode_at_depth(value, depth + 1)?),
+        }
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let (tag, payload) = cursor.read_union()?;
+        match tag {
+            1 => Ok(Self::Member(decode_nested_exact(
+                payload,
+                depth + 1,
+                budget,
+            )?)),
+            2 => Ok(Self::Builtin(decode_nested_exact(
+                payload,
+                depth + 1,
+                budget,
+            )?)),
+            _ => Err(ScbError::new(ScbErrorCode::UnionInvalid)),
+        }
+    }
+}
+
+impl MutationValueCodec for SwitchArgument {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        match self {
+            Self::Value(value) => encode_union(self.tag(), &encode_at_depth(value, depth + 1)?),
+            Self::CasePayload => encode_union(self.tag(), &[]),
+        }
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let (tag, payload) = cursor.read_union()?;
+        match tag {
+            1 => Ok(Self::Value(decode_nested_exact(
+                payload,
+                depth + 1,
+                budget,
+            )?)),
+            2 if payload.is_empty() => Ok(Self::CasePayload),
+            _ => Err(ScbError::new(ScbErrorCode::UnionInvalid)),
+        }
+    }
+}
+
+impl MutationValueCodec for SwitchEdge {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[
+            (1, encode_at_depth(&self.target, depth + 1)?),
+            (2, encode_at_depth(&self.arguments, depth + 1)?),
+        ])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut target = None;
+        let mut arguments = None;
+        decode_record_fields(cursor, &[1, 2], |tag, payload| {
+            match tag {
+                1 => target = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                2 => arguments = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            target: target.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            arguments: arguments.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
+impl MutationValueCodec for SwitchCase {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[
+            (1, encode_at_depth(&self.case_key, depth + 1)?),
+            (2, encode_at_depth(&self.edge, depth + 1)?),
+        ])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut case_key = None;
+        let mut edge = None;
+        decode_record_fields(cursor, &[1, 2], |tag, payload| {
+            match tag {
+                1 => case_key = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                2 => edge = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            case_key: case_key.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            edge: edge.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
+impl SimpleEnumCodec for TrapCode {
+    fn tag(self) -> u32 {
+        self.tag()
+    }
+
+    fn from_tag(tag: u32) -> Option<Self> {
+        match tag {
+            1 => Some(Self::Unreachable),
+            2 => Some(Self::ResourceExhausted),
+            3 => Some(Self::AdapterContractViolation),
+            4 => Some(Self::InternalInvariant),
+            _ => None,
+        }
+    }
+}
+
+impl_simple_enum_codec!(TrapCode);
+
+impl MutationValueCodec for ReturnTerminator {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[(1, encode_at_depth(&self.value, depth + 1)?)])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut value = None;
+        decode_record_fields(cursor, &[1], |tag, payload| {
+            match tag {
+                1 => value = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            value: value.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
+impl MutationValueCodec for BranchTerminator {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[(1, encode_at_depth(&self.edge, depth + 1)?)])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut edge = None;
+        decode_record_fields(cursor, &[1], |tag, payload| {
+            match tag {
+                1 => edge = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            edge: edge.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
+impl MutationValueCodec for CondBranchTerminator {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[
+            (1, encode_at_depth(&self.condition, depth + 1)?),
+            (2, encode_at_depth(&self.if_true, depth + 1)?),
+            (3, encode_at_depth(&self.if_false, depth + 1)?),
+        ])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut condition = None;
+        let mut if_true = None;
+        let mut if_false = None;
+        decode_record_fields(cursor, &[1, 2, 3], |tag, payload| {
+            match tag {
+                1 => condition = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                2 => if_true = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                3 => if_false = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            condition: condition.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            if_true: if_true.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            if_false: if_false.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
+impl MutationValueCodec for VariantSwitchTerminator {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[
+            (1, encode_at_depth(&self.value, depth + 1)?),
+            (2, encode_at_depth(&self.cases, depth + 1)?),
+        ])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut value = None;
+        let mut cases = None;
+        decode_record_fields(cursor, &[1, 2], |tag, payload| {
+            match tag {
+                1 => value = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                2 => cases = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            value: value.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            cases: cases.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     fn id(byte: u8) -> EntityId {
         EntityId::from_bytes([byte; 32])
+    }
+
+    fn member(byte: u8) -> MemberId {
+        MemberId::from_bytes([byte; 32])
     }
 
     fn sized(payload: &[u8]) -> Vec<u8> {
@@ -1098,6 +1622,15 @@ mod tests {
     fn option_and_list_nesting_preserve_order_and_reject_inner_trailing_bytes() {
         let value = vec![Some(vec![id(1), id(2)]), None, Some(vec![id(3)])];
         assert_round_trip(&value);
+
+        assert_eq!(
+            encode_exact(&Option::<bool>::None).unwrap(),
+            encode_union(0, &[]).unwrap()
+        );
+        assert_eq!(
+            encode_exact(&Some(true)).unwrap(),
+            encode_union(1, &encode_bool(true)).unwrap()
+        );
 
         let malformed_some = encode_union(1, &[1, 2]).unwrap();
         assert_eq!(
@@ -1402,6 +1935,260 @@ mod tests {
         assert_eq!(
             budget.charge(1).unwrap_err().code(),
             ScbErrorCode::ResourceLimit
+        );
+    }
+
+    #[test]
+    fn cfg_member_id_and_reference_records_round_trip_exactly() {
+        assert_round_trip(&member(9));
+        assert_eq!(encode_exact(&member(9)).unwrap(), vec![9_u8; 32]);
+
+        assert_round_trip(&OperationResultRef {
+            operation: id(1),
+            result_index: 7,
+        });
+        assert_round_trip(&ValueRef::Parameter(id(2)));
+        assert_round_trip(&ValueRef::OperationResult(OperationResultRef {
+            operation: id(3),
+            result_index: u32::MAX,
+        }));
+        assert_round_trip(&FunctionRefValue {
+            function: id(4),
+            type_arguments: vec![TypeExpr::Option(Box::new(TypeExpr::FunctionRef(
+                FunctionType {
+                    parameters: vec![TypeExpr::Bool],
+                    result: Box::new(TypeExpr::Unit),
+                    effects: vec![],
+                },
+            )))],
+        });
+    }
+
+    #[test]
+    fn cfg_immediate_all_seven_tags_round_trip_exactly() {
+        let values = [
+            Immediate::None,
+            Immediate::Entity(id(1)),
+            Immediate::Index(2),
+            Immediate::Field(member(3)),
+            Immediate::Variant(VariantImmediate {
+                definition: id(4),
+                member_id: member(5),
+            }),
+            Immediate::Observation([6; 32]),
+            Immediate::Function(FunctionRefValue {
+                function: id(7),
+                type_arguments: vec![TypeExpr::Text],
+            }),
+        ];
+        for (index, value) in values.iter().enumerate() {
+            assert_eq!(value.tag(), u32::try_from(index + 1).unwrap());
+            assert_round_trip(value);
+        }
+    }
+
+    #[test]
+    fn cfg_cases_edges_traps_and_non_option_terminators_round_trip() {
+        for value in [
+            BuiltinCase::None,
+            BuiltinCase::Some,
+            BuiltinCase::Ok,
+            BuiltinCase::Err,
+        ] {
+            assert_round_trip(&value);
+        }
+        for value in [
+            TrapCode::Unreachable,
+            TrapCode::ResourceExhausted,
+            TrapCode::AdapterContractViolation,
+            TrapCode::InternalInvariant,
+        ] {
+            assert_round_trip(&value);
+        }
+
+        let result_ref = ValueRef::OperationResult(OperationResultRef {
+            operation: id(9),
+            result_index: 1,
+        });
+        let target_edge = TargetEdge {
+            target: id(10),
+            arguments: vec![ValueRef::Parameter(id(11)), result_ref],
+        };
+        let switch_edge = SwitchEdge {
+            target: id(12),
+            arguments: vec![
+                SwitchArgument::CasePayload,
+                SwitchArgument::Value(result_ref),
+            ],
+        };
+        let switch_case = SwitchCase {
+            case_key: CaseKey::Builtin(BuiltinCase::Some),
+            edge: switch_edge.clone(),
+        };
+
+        assert_round_trip(&target_edge);
+        assert_round_trip(&CaseKey::Member(member(13)));
+        assert_round_trip(&CaseKey::Builtin(BuiltinCase::Ok));
+        assert_round_trip(&SwitchArgument::Value(ValueRef::Parameter(id(14))));
+        assert_round_trip(&SwitchArgument::CasePayload);
+        assert_round_trip(&switch_edge);
+        assert_round_trip(&switch_case);
+
+        assert_round_trip(&ReturnTerminator {
+            value: ValueRef::Parameter(id(15)),
+        });
+        assert_round_trip(&BranchTerminator {
+            edge: target_edge.clone(),
+        });
+        assert_round_trip(&CondBranchTerminator {
+            condition: ValueRef::Parameter(id(16)),
+            if_true: target_edge,
+            if_false: TargetEdge {
+                target: id(17),
+                arguments: vec![],
+            },
+        });
+        assert_round_trip(&VariantSwitchTerminator {
+            value: result_ref,
+            cases: vec![switch_case],
+        });
+    }
+
+    #[test]
+    fn cfg_unions_reject_unknown_nonempty_payload_free_and_inner_trailing() {
+        assert_eq!(
+            decode_exact::<Immediate>(&encode_union(99, &[]).unwrap())
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::UnionInvalid
+        );
+        assert_eq!(
+            decode_exact::<Immediate>(&encode_union(1, &[0]).unwrap())
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::UnionInvalid
+        );
+        assert_eq!(
+            decode_exact::<SwitchArgument>(&encode_union(2, &[0]).unwrap())
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::UnionInvalid
+        );
+        assert_eq!(
+            decode_exact::<BuiltinCase>(&encode_u32(5))
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::UnionInvalid
+        );
+        assert_eq!(
+            decode_exact::<TrapCode>(&encode_u32(5)).unwrap_err().code(),
+            ScbErrorCode::UnionInvalid
+        );
+
+        let mut trailing_target = encode_exact(&id(1)).unwrap();
+        trailing_target.push(0);
+        let malformed_edge = encode_record(&[
+            (1, trailing_target),
+            (2, encode_exact(&Vec::<ValueRef>::new()).unwrap()),
+        ])
+        .unwrap();
+        assert_eq!(
+            decode_exact::<TargetEdge>(&malformed_edge)
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::TrailingBytes
+        );
+
+        let malformed_value_ref = encode_union(1, &[1; 31]).unwrap();
+        assert_eq!(
+            decode_exact::<ValueRef>(&malformed_value_ref)
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::LengthOverflow
+        );
+    }
+
+    #[test]
+    fn cfg_records_fail_closed_for_missing_unknown_duplicate_order_and_inner_trailing() {
+        assert_eq!(
+            decode_exact::<OperationResultRef>(
+                &encode_record(&[(1, encode_exact(&id(1)).unwrap())]).unwrap()
+            )
+            .unwrap_err()
+            .code(),
+            ScbErrorCode::FieldMissing
+        );
+
+        assert_eq!(
+            decode_exact::<OperationResultRef>(
+                &encode_record(&[
+                    (1, encode_exact(&id(1)).unwrap()),
+                    (2, encode_exact(&0_u32).unwrap()),
+                    (3, encode_exact(&1_u32).unwrap()),
+                ])
+                .unwrap()
+            )
+            .unwrap_err()
+            .code(),
+            ScbErrorCode::FieldUnknown
+        );
+
+        assert_eq!(
+            decode_exact::<OperationResultRef>(&raw_record(&[
+                (1, encode_exact(&id(1)).unwrap()),
+                (1, encode_exact(&id(2)).unwrap()),
+            ]))
+            .unwrap_err()
+            .code(),
+            ScbErrorCode::FieldDuplicate
+        );
+
+        assert_eq!(
+            decode_exact::<OperationResultRef>(&raw_record(&[
+                (2, encode_exact(&0_u32).unwrap()),
+                (1, encode_exact(&id(1)).unwrap()),
+            ]))
+            .unwrap_err()
+            .code(),
+            ScbErrorCode::FieldOrder
+        );
+
+        let mut trailing_index = encode_exact(&0_u32).unwrap();
+        trailing_index.push(0);
+        assert_eq!(
+            decode_exact::<OperationResultRef>(
+                &encode_record(&[(1, encode_exact(&id(1)).unwrap()), (2, trailing_index)]).unwrap()
+            )
+            .unwrap_err()
+            .code(),
+            ScbErrorCode::TrailingBytes
+        );
+    }
+
+    #[test]
+    fn cfg_variant_switch_preserves_noncanonical_duplicate_case_list_order() {
+        let case_a = SwitchCase {
+            case_key: CaseKey::Builtin(BuiltinCase::Err),
+            edge: SwitchEdge {
+                target: id(21),
+                arguments: vec![SwitchArgument::CasePayload],
+            },
+        };
+        let case_b = SwitchCase {
+            case_key: CaseKey::Builtin(BuiltinCase::Ok),
+            edge: SwitchEdge {
+                target: id(22),
+                arguments: vec![SwitchArgument::Value(ValueRef::Parameter(id(23)))],
+            },
+        };
+        let value = VariantSwitchTerminator {
+            value: ValueRef::Parameter(id(24)),
+            cases: vec![case_a.clone(), case_b, case_a],
+        };
+        let encoded = encode_exact(&value).unwrap();
+        assert_eq!(
+            decode_exact::<VariantSwitchTerminator>(&encoded).unwrap(),
+            value
         );
     }
 }
