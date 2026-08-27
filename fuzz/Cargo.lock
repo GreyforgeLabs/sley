@@ -75,6 +75,7 @@ version = "0.0.0"
 dependencies = [
  "sley-check",
  "sley-id",
+ "sley-query",
  "sley-repo",
  "sley-scb1",
  "sley-schema",
@@ -87,6 +88,15 @@ name = "sley-id"
 version = "2.0.0-alpha.0"
 dependencies = [
  "blake3",
+]
+
+[[package]]
+name = "sley-query"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "sley-check",
+ "sley-id",
+ "sley-ssmc",
 ]
 
 [[package]]

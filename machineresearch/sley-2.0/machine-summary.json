@@ -714,7 +714,6 @@
     "runtime_evidence": "evidence/runtime/s20-700-scb1-libfuzzer/evidence.json",
     "manual_command": "python3 scripts/run_scb1_persistent_fuzz.py --manual",
     "deferred_surfaces": [
-      "query requests",
       "mutation candidates",
       "merge engine",
       "VM canonical inputs",
@@ -737,7 +736,6 @@
     "registry_dispatch_covered": false,
     "vulcan_review": "DEFERRED_FORGE_OAUTH_401",
     "deferred_surfaces": [
-      "query requests",
       "mutation candidates",
       "merge engine",
       "VM canonical inputs",
@@ -763,7 +761,6 @@
     "full_s20_540_profile_covered": false,
     "vulcan_review": "DEFERRED_FORGE_OAUTH_401",
     "deferred_surfaces": [
-      "query requests",
       "mutation candidates",
       "merge engine",
       "VM canonical inputs",
@@ -798,7 +795,33 @@
     ],
     "vulcan_review": "DEFERRED_FORGE_OAUTH_401",
     "deferred_surfaces": [
-      "query requests",
+      "mutation candidates",
+      "merge engine",
+      "VM canonical inputs",
+      "adapter responses"
+    ]
+  },
+  "s20_700_query_persistent_fuzz_slice": {
+    "status": "IMPLEMENTED_SCOPED_RESTRICTED_TYPED_S20_310_ONLY",
+    "target": "fuzz/targets/restricted_query_request.rs",
+    "runner": "scripts/run_query_persistent_fuzz.py",
+    "checker": "scripts/check_query_persistent_fuzz_slice.py",
+    "persistent_fuzz_harness": true,
+    "full_s20_700_complete": false,
+    "full_s20_310_complete": false,
+    "canonical_query_decoder_claimed": false,
+    "query_kind_count": 4,
+    "max_input_bytes": 4096,
+    "max_generated_kinds": 16,
+    "max_generated_seeds": 16,
+    "generated_seed_count": 525,
+    "synthetic_seed_grammar": "bounded fuzz-only restricted-query constructors v1",
+    "runtime_evidence": "evidence/runtime/s20-700-query-request-libfuzzer/evidence.json",
+    "manual_command": "python3 scripts/run_query_persistent_fuzz.py --manual",
+    "alternate_snapshot_binding_asserted": true,
+    "full_root_backed_query_classes_covered": false,
+    "vulcan_review": "DEFERRED_FORGE_OAUTH_401",
+    "deferred_surfaces": [
       "mutation candidates",
       "merge engine",
       "VM canonical inputs",

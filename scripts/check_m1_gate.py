@@ -53,7 +53,7 @@ SCOPES = {
         ],
         "deferred_unimplemented": [
             "persistent libFuzzer targets remain separate from this bounded make fuzz-smoke profile",
-            "future query, blocked mutation families, merge, protocol, VM, and adapter targets",
+            "future targets for blocked mutation families, merge, protocol, VM, and adapters",
         ],
     },
 }
