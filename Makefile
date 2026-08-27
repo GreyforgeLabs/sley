@@ -1,4 +1,4 @@
-.PHONY: quick core conformance adversarial fuzz-smoke v2 release-check check-changed
+.PHONY: quick core conformance adversarial fuzz-smoke scb1-persistent-fuzz-smoke v2 release-check check-changed
 
 quick:
 	python3 scripts/check_m0.py
@@ -66,6 +66,10 @@ fuzz-smoke:
 	cargo test -p sley-store randomized_invalid_records_never_promote --locked
 	cargo test -p sley-repo bounded_pack_import_fuzz_smoke --locked
 	python3 scripts/check_m1_gate.py fuzz-smoke
+
+scb1-persistent-fuzz-smoke:
+	python3 scripts/check_scb1_persistent_fuzz_slice.py
+	python3 scripts/run_scb1_persistent_fuzz.py
 
 check-changed: quick core conformance adversarial fuzz-smoke
 	@python3 scripts/check_changed.py

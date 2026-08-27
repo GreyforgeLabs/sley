@@ -698,6 +698,34 @@
     "vulcan_mutation_value_review": "PASS_NO_REPORT_GRADE_FINDINGS",
     "merlin_mutation_value_review": "PASS_NO_REPORT_GRADE_FINDINGS"
   },
+  "s20_700_scb1_persistent_fuzz_slice": {
+    "status": "IMPLEMENTED_SCOPED_SCB1_DECODER_ONLY",
+    "target": "fuzz/targets/scb1_decoder.rs",
+    "runner": "scripts/run_scb1_persistent_fuzz.py",
+    "checker": "scripts/check_scb1_persistent_fuzz_slice.py",
+    "persistent_fuzz_harness": true,
+    "full_s20_700_complete": false,
+    "selector_count": 18,
+    "seed_source": [
+      "conformance/scb1/v1/accepted.json",
+      "conformance/scb1/v1/rejected.json"
+    ],
+    "seed_corpus": "deterministically generated under evidence/runtime/s20-700-scb1-libfuzzer/corpus",
+    "runtime_evidence": "evidence/runtime/s20-700-scb1-libfuzzer/evidence.json",
+    "manual_command": "python3 scripts/run_scb1_persistent_fuzz.py --manual",
+    "deferred_surfaces": [
+      "schema decoder",
+      "SSMC graph validator",
+      "type checker",
+      "CFG checker",
+      "query requests",
+      "mutation candidates",
+      "pack importer",
+      "merge engine",
+      "VM canonical inputs",
+      "adapter responses"
+    ]
+  },
   "candidate_contract_freeze": {
     "status": "S20_345_CONTRACT_AND_IDENTITY_FREEZE_COMPLETE",
     "candidate_fields": 13,

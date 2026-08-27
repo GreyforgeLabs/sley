@@ -1,0 +1,15 @@
+[package]
+name = "sley-fuzz"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[[bin]]
+name = "scb1_decoder"
+path = "targets/scb1_decoder.rs"
+
+[dependencies]
+sley-scb1 = { path = "../crates/sley-scb1" }
+
