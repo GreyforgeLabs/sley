@@ -1,0 +1,17 @@
+[workspace]
+resolver = "3"
+members = []
+
+[workspace.package]
+version = "2.0.0-alpha.0"
+edition = "2024"
+rust-version = "1.93"
+license = "LicenseRef-Proprietary"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+all = "warn"
+pedantic = "warn"

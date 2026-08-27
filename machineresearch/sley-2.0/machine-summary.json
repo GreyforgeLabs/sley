@@ -1,0 +1,53 @@
+{
+  "project": "Sley",
+  "target_version": "2.0.0",
+  "lineage": "machine-native",
+  "phase": "M0",
+  "legacy_freeze": {
+    "version": "1.2.0",
+    "commit": "397fa28ded15ddbeca5404ee00a3f5bd5546b296",
+    "artifact_sha256": "b24f19c6a348751c93c9cf63f6f4154f6132796112c26f9d8c0e71324080dbc7",
+    "artifact_size_bytes": 4611024,
+    "source_snapshot_sha256": "1c866d360305d0b511dc2c33c4907b33544fc73bc6cb6fa4c0e1687df48eb90e"
+  },
+  "final_commit": null,
+  "status": "M0_IN_PROGRESS",
+  "publication_authorized": false,
+  "schema_epoch": null,
+  "scb1": {"status": "DRAFT"},
+  "ssmc1": {"status": "DRAFT"},
+  "protocol": {"status": "DRAFT"},
+  "conformance": {"status": "NOT_IMPLEMENTED"},
+  "adversarial": {"status": "NOT_IMPLEMENTED"},
+  "succession": {
+    "tasks": null,
+    "strict_correctness_raw": null,
+    "strict_correctness_legacy": null,
+    "strict_correctness_sley2": null,
+    "act_legacy": null,
+    "act_sley2": null,
+    "context_bytes_legacy": null,
+    "context_bytes_sley2": null,
+    "repair_loops_legacy": null,
+    "repair_loops_sley2": null,
+    "invalid_committed_states": null,
+    "stale_candidates_accepted": null
+  },
+  "artifact": {
+    "path": null,
+    "sha256": null,
+    "size_bytes": null,
+    "reproducibility": null
+  },
+  "open_findings": {"p0": 0, "p1": 0, "p2": 0, "p3": 0, "p4": 0},
+  "evidence_gaps": [
+    "M0 integrated confirmation review",
+    "S20-040 frozen benchmark design",
+    "M1 through M6 implementation and release evidence"
+  ],
+  "open_risks": [
+    "SCB1 tags and exact schemas are not frozen",
+    "No semantic implementation exists",
+    "No succession benchmark exists"
+  ]
+}
