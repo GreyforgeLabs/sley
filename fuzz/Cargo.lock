@@ -62,6 +62,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
 
 [[package]]
+name = "sley-adapter"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "blake3",
+ "sley-check",
+ "sley-id",
+ "sley-policy",
+ "sley-ssmc",
+]
+
+[[package]]
 name = "sley-check"
 version = "2.0.0-alpha.0"
 dependencies = [
@@ -73,6 +84,7 @@ dependencies = [
 name = "sley-fuzz"
 version = "0.0.0"
 dependencies = [
+ "sley-adapter",
  "sley-check",
  "sley-id",
  "sley-query",
@@ -89,6 +101,30 @@ name = "sley-id"
 version = "2.0.0-alpha.0"
 dependencies = [
  "blake3",
+]
+
+[[package]]
+name = "sley-mutate"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "sley-id",
+ "sley-scb1",
+ "sley-schema",
+ "sley-ssmc",
+]
+
+[[package]]
+name = "sley-policy"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "blake3",
+ "sley-check",
+ "sley-id",
+ "sley-mutate",
+ "sley-scb1",
+ "sley-schema",
+ "sley-ssmc",
+ "sley-state-root",
 ]
 
 [[package]]

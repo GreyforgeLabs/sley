@@ -9,9 +9,11 @@
   the current S20-220 boundary. A restricted typed S20-310 target now exercises
   all four implemented modeled-snapshot query kinds. A restricted typed S20-270
   target now exercises six identity fixtures and all three supported Boolean
-  opcodes under bounded canonical and mismatched inputs.
+  opcodes under bounded canonical and mismatched inputs. A restricted typed
+  S20-280 target now exercises all eight in-memory reference kinds and six
+  GenericReplay response schemas.
   The persistent targets are still absent across blocked mutation-family,
-  merge, protocol, and adapter-response surfaces.
+  merge, and protocol surfaces.
 - The typed graph/CFG persistent target is deliberately a fuzz-only structure
   generator. SSMC still has no public canonical graph decoder, and the target
   neither exposes the crate-private partial mutation codec nor claims a
@@ -24,6 +26,10 @@
   point, and the target does not cover the other 52 opcode signatures,
   generics, adapters, live cancellation, execution flags, decoding, or
   persistent reports.
+- The adapter-response target is a fuzz-only typed fixture constructor over
+  request-owned memory. It does not cover the authorized S20-380 wrapper, VM
+  adapter opcodes, live host confinement, handle cleanup, or persistent
+  execution and replay reports.
 - S20-350 candidate construction remains blocked by locked generic `Option<T>`
   and `ConstValue` canon decisions; the current crate-private codec and fixture
   foundation does not provide aggregate, precondition, candidate, or runtime

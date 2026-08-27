@@ -33,8 +33,8 @@ root-backed master-goal query classes, truncation, continuation, master context
 capsules, useful cache authority, or proven root provenance.
 
 Independent Vulcan review remains deferred because the local Forge OAuth
-session returns 401. Mutation candidates, merge, adapter responses, and the
-full S20-700 finding register remain required.
+session returns 401. Mutation candidates, merge, and the full S20-700 finding
+register remain required.
 
 Focused validation:
 

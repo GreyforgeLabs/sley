@@ -35,8 +35,8 @@ This was not a production checker defect. The generator now enforces the global
 fixture, and the repeated smoke run passes.
 
 Independent Vulcan review remains deferred because the local Forge OAuth
-session returns 401. Mutation candidates, merge, adapter responses, and the
-full finding register remain required.
+session returns 401. Mutation candidates, merge, and the full finding register
+remain required.
 
 Focused validation:
 

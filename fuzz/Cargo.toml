@@ -34,7 +34,12 @@ path = "targets/restricted_query_request.rs"
 name = "vm_canonical_inputs"
 path = "targets/vm_canonical_inputs.rs"
 
+[[bin]]
+name = "adapter_responses"
+path = "targets/adapter_responses.rs"
+
 [dependencies]
+sley-adapter = { path = "../crates/sley-adapter" }
 sley-check = { path = "../crates/sley-check" }
 sley-id = { path = "../crates/sley-id" }
 sley-query = { path = "../crates/sley-query" }
