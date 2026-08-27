@@ -1,6 +1,10 @@
 #![forbid(unsafe_code)]
 #![doc = include_str!("../README.md")]
 
+mod snapshot;
+
+pub use snapshot::*;
+
 use core::fmt;
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 

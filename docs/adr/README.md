@@ -16,3 +16,4 @@ Current records:
 - ADR-0008: dedicated derived VM bytecode cache-key domain
 - ADR-0009: reference adapter identity/state/transcript domains
 - ADR-0010: restricted derived execution/test report envelopes
+- ADR-0011: restricted derived index snapshot domain and admission

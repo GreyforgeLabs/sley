@@ -288,6 +288,32 @@
     "vulcan_review": "PASS_NO_OPEN_P0_P1_P2",
     "implementation_complete": true
   },
+  "index_snapshot_profile": {
+    "status": "S20_300_RESTRICTED_EPOCH1_COMPLETE",
+    "full_s20_300_complete": false,
+    "s20_310_unblocked": false,
+    "contract": "docs/spec/INDEX_SNAPSHOT_PROFILE_V1.md",
+    "implementation": "crates/sley-query/src/snapshot.rs",
+    "modeled_entity_kinds": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    "stable_error_codes": 8,
+    "snapshot_unit_tests": 9,
+    "sley_query_total_unit_tests": 13,
+    "workspace_total_unit_tests": 242,
+    "deterministic_rebuild_iterations": 128,
+    "snapshot_magic": "SLEYIDX1",
+    "snapshot_domain": "sley2.index-snapshot.v1",
+    "fixed_empty_snapshot_id": "a6800e0f84dc7f49adb911dce6e480a104c66fe5c141ab0862c5476c50626c13",
+    "fixed_nonempty_snapshot_id": "3d9cfe439ef184947d9f0b3a98ced9d397796a7d11987ab700cd3998399b9461",
+    "fresh_rebuild_required_for_hit": true,
+    "public_candidate_hydration": false,
+    "root_provenance_proven": false,
+    "useful_cache": false,
+    "full_ga_gap": "SIX_ENTITY_BODIES_STRICT_ROOT_OBJECT_EXTRACTION_COMPLETE_ROOT_INDEXES_AND_USEFUL_SAFE_CACHE_REUSE_REQUIRED",
+    "nabu_architecture_review": "PASS_RESTRICTED_CONFORMANCE_CACHE_ONLY",
+    "ariadne_review": "PASS_NO_OPEN_P0_P1_P2",
+    "vulcan_review": "PASS_NO_OPEN_P0_P1_P2",
+    "implementation_complete": true
+  },
   "schema_epoch": {
     "status": "S20_140_COMPLETE",
     "bootstrap_magic": "SLEYEP01",
@@ -425,8 +451,8 @@
     "crate": "sley-id",
     "hash": "BLAKE3-256",
     "blake3_version": "1.8.2",
-    "domains": 24,
-    "typed_values": 26,
+    "domains": 25,
+    "typed_values": 27,
     "unit_tests": 7,
     "ariadne_spec_review": "PASS",
     "vulcan_implementation_review": "PASS"
@@ -494,6 +520,7 @@
     "S20-260/S20-270 are restricted lowering/execution profiles; the other 52 opcode signatures, generics, floating/call/constant/global/cell semantics, adapter ABIs, effects/capabilities, replay, live cancellation, root/module loading, decoding, and persistent reports remain required before full S20-260/S20-270 or GA",
     "S20-280 is a request-owned fixture profile with no VM integration, protected capability authority, or live host confinement",
     "S20-290 emits derived in-memory envelopes only; canonical report bodies, persistence, policy/resource finality, TestCase pass, and the M2 exit remain blocked",
+    "S20-300 is a restricted modeled-request conformance cache only; six entity bodies, strict root/object extraction, complete-root indexes, useful safe reuse, and root-backed S20-310 remain blocked",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]
 }

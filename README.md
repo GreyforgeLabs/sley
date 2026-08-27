@@ -38,7 +38,11 @@ protected capabilities, live cancellation, and persistent report semantics
 remain explicit gaps. S20-290 now provides restricted derived execution/test
 report envelopes that verify VM observations and compare selected expectations
 without claiming canonical persistence, policy/resource finality, test pass,
-or the M2 exit. Every next package must follow `docs/WORK_PACKAGES.md`.
+or the M2 exit. S20-300 now adds a restricted `SLEYIDX1` index-snapshot
+conformance profile whose candidate records can match only an already-fresh
+explicit modeled-request rebuild. It provides no trusted cache hydration,
+root-provenance proof, query authority, or full S20-300/M3 completion. Every
+next package must follow `docs/WORK_PACKAGES.md`.
 
 ## Authority
 
@@ -61,6 +65,7 @@ work belongs to a separate session and repository worktree.
 
 `make quick` and `make check-changed` validate the implemented M0/M1 and
 current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering/
-execution/reference-adapter/report-envelope surface. Later profiles are present but intentionally fail closed
-until their corresponding work packages land.
+execution/reference-adapter/report-envelope/index-snapshot surface. Later
+profiles are present but intentionally fail closed until their corresponding
+work packages land.
 `make v2` remains the eventual authoritative full gate.

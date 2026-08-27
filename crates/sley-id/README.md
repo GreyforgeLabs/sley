@@ -12,6 +12,8 @@ canonical-state authority.
 ADR-0009 adds separate `ReferenceAdapterId`, `AdapterStateId`, and
 `AdapterTranscriptId` domains for restricted adapter selection and derived
 fixture/transcript evidence; none grants policy or capability authority.
+ADR-0011 adds `IndexSnapshotId` for restricted derived cache-record integrity;
+it does not authenticate root provenance or grant query authority.
 
 This crate has no filesystem, network, environment, SCB1 encoding, repository,
 policy, or VM authority.

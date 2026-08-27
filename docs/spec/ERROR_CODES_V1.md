@@ -30,6 +30,8 @@ and ambiguity are failures, never success.
 - `QUERY_*`, `SESSION_*`, `PROTOCOL_*`: bounded interface and negotiation.
 - `FINGERPRINT_*`, `VALUE_HASH_*`, `IMPACT_*`: semantic projection and
   derived relationships.
+- `INDEX_SNAPSHOT_*`: restricted derived-index record construction and
+  bounded candidate inspection.
 - `VM_LOWER_*`: validated deterministic derived-bytecode lowering.
 - `TEST_PLAN_*`: canonical test-entity validation and provisional selection.
 - `VM_*`, `TEST_*`: execution, cancellation, determinism, and oracle.
@@ -146,6 +148,16 @@ execution/resource consistency. Exact earlier `TYPE_*`, `FINGERPRINT_*`, and
 `VM_LOWER_*` failures are preserved. These codes do not claim canonical report
 entity validity, persistence, protected-policy finality, complete resource
 evidence, a passed TestCase, or the M2 exit.
+
+S20-300 restricted freezes numeric codes 30000 through 30007 for the exact
+`INDEX_SNAPSHOT_*` failures listed in `INDEX_SNAPSHOT_PROFILE_V1.md`. They
+cover bounded construction and private inspection of disposable `SLEYIDX1`
+records for explicit modeled SSMC1 kinds 4 through 15. Candidate admission
+always performs a fresh S20-250 rebuild before candidate inspection and
+requires exact byte comparison before a hit; these codes do not establish root
+provenance, authorize decoded cache edges, model
+the six missing entity bodies, provide a useful performance cache, complete
+full S20-300, or unblock root-backed S20-310.
 
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum
