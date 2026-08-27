@@ -28,6 +28,7 @@ SOURCE_MARKERS = (
     "reserve_stage_file",
     "sync_dir(parent)",
     "fs::symlink_metadata",
+    "store_root_and_fanout_symlinks_fail_closed",
     'code: "RECOVERY_STAGED_OBJECT"',
     "StoreObjectSubstitution",
 )
@@ -42,6 +43,9 @@ def main() -> int:
     spec = SPEC.read_text() if SPEC.is_file() else ""
     errors = ERRORS.read_text() if ERRORS.is_file() else ""
     source = SOURCE.read_text() if SOURCE.is_file() else ""
+    summary = json.loads(
+        (ROOT / "machineresearch/sley-2.0/machine-summary.json").read_text()
+    )
 
     for marker in SPEC_MARKERS:
         if marker not in spec:
@@ -51,10 +55,15 @@ def main() -> int:
     for marker in SOURCE_MARKERS:
         if marker not in source:
             problems.append(f"source-marker:{marker}")
+    if (
+        summary.get("adversarial", {}).get("vulcan_object_store_symlink_review")
+        != "PASS_NO_OPEN_P0_P1_P2"
+    ):
+        problems.append("S20-700 object-store symlink review disposition is absent")
 
     unit_tests = source.count("#[test]")
-    if unit_tests < 21:
-        problems.append(f"unit-tests:{unit_tests}<21")
+    if unit_tests < 22:
+        problems.append(f"unit-tests:{unit_tests}<22")
 
     result = {
         "contract": "s20-150-object-store-v1",
@@ -62,6 +71,7 @@ def main() -> int:
         "problems": problems,
         "result": "PASS" if not problems else "FAIL",
         "rust_unit_tests": unit_tests,
+        "s20_700_symlink_review": "PASS_NO_OPEN_P0_P1_P2",
         "threats": ["T03", "T04", "T37"],
     }
     print(json.dumps(result, indent=2, sort_keys=True))

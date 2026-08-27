@@ -75,8 +75,9 @@ S20-700 has one bounded incremental schema-import slice: 512 deterministic
 inputs and an exact registry no-fallback test. It is not a persistent fuzz
 harness. A second bounded regression proves authorized adapter state-root,
 effect, and adapter binding confusion fails before ledger charge or fixture
-mutation. These slices do not complete the required cross-surface adversarial
-suite.
+mutation. A third Unix-only regression rejects symlinked object-store roots and
+fan-out directories across put, read, and recovery without writing outside the
+store. These slices do not complete the required cross-surface adversarial suite.
 
 ## Authority
 

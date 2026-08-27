@@ -639,16 +639,20 @@
     "status": "S20_700_BOUNDED_SLICES",
     "surfaces": [
       "SLEYEP01 bootstrap import and exact registry decoder selection",
-      "authorized adapter request binding before ledger charge"
+      "authorized adapter request binding before ledger charge",
+      "object-store root and fan-out symlink confinement"
     ],
     "bounded_inputs": 512,
     "max_input_bytes": 2048,
     "persistent_fuzz_harness": false,
     "adapter_binding_cases": 3,
     "adapter_binding_ledger_or_fixture_mutations": 0,
+    "object_store_symlink_cases": 3,
+    "object_store_symlink_outside_writes": 0,
     "full_s20_700_complete": false,
     "vulcan_schema_review": "PASS_NO_OPEN_P0_P1_P2",
-    "vulcan_adapter_binding_review": "PASS_NO_OPEN_P0_P1_P2"
+    "vulcan_adapter_binding_review": "PASS_NO_OPEN_P0_P1_P2",
+    "vulcan_object_store_symlink_review": "PASS_NO_OPEN_P0_P1_P2"
   },
   "succession": {
     "corpus_version": 1,

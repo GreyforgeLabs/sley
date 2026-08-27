@@ -927,6 +927,50 @@ mod tests {
         );
     }
 
+    #[cfg(unix)]
+    #[test]
+    fn store_root_and_fanout_symlinks_fail_closed() {
+        use std::os::unix::fs::symlink;
+
+        fn assert_no_escape(store: &ObjectStore, outside: &Path) {
+            let (record, object_id) = bool_record(true);
+            assert_eq!(
+                store.put(object_id, &record, &verifier).unwrap_err().code(),
+                StoreErrorCode::StoreIo
+            );
+            assert_eq!(
+                store.read(object_id, &verifier).unwrap_err().code(),
+                StoreErrorCode::StoreIo
+            );
+            assert_eq!(
+                store.recover_staged().unwrap_err().code(),
+                StoreErrorCode::StoreIo
+            );
+            assert!(!store.object_path(object_id).exists());
+            assert!(fs::read_dir(outside).unwrap().next().is_none());
+        }
+
+        let root_case = TempDir::new("symlink-root");
+        let root_target = root_case.path().join("outside-root");
+        let linked_root = root_case.path().join("store-root");
+        fs::create_dir(&root_target).unwrap();
+        symlink(&root_target, &linked_root).unwrap();
+        assert_no_escape(&ObjectStore::new(&linked_root), &root_target);
+
+        let objects_case = TempDir::new("symlink-objects");
+        let objects_target = objects_case.path().join("outside-objects");
+        fs::create_dir(&objects_target).unwrap();
+        symlink(&objects_target, objects_case.path().join("objects")).unwrap();
+        assert_no_escape(&ObjectStore::new(objects_case.path()), &objects_target);
+
+        let scb1_case = TempDir::new("symlink-scb1");
+        let scb1_target = scb1_case.path().join("outside-scb1");
+        fs::create_dir(&scb1_target).unwrap();
+        fs::create_dir(scb1_case.path().join("objects")).unwrap();
+        symlink(&scb1_target, scb1_case.path().join("objects/scb1")).unwrap();
+        assert_no_escape(&ObjectStore::new(scb1_case.path()), &scb1_target);
+    }
+
     #[test]
     fn bounded_read_rejects_over_limit_by_metadata() {
         let temp = TempDir::new("limit");
