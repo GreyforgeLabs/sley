@@ -35,9 +35,10 @@ SCOPES = {
             "T42 unsupported compression fail-closed",
             "T50 host/Git identity exclusion",
             "T51 transport tamper detection at the pack boundary",
+            "S20-380 state-root/effect/adapter request-binding confusion before charge",
         ],
         "deferred_unimplemented": [
-            "candidate, policy, capability, query, merge, protocol, and VM attacks",
+            "candidate, query, merge, protocol, VM, and live-adapter attacks",
         ],
     },
     "fuzz-smoke": {
@@ -81,7 +82,11 @@ def main() -> int:
                 "phase": "M1",
                 "problems": problems,
                 "result": "PASS" if not problems else "FAIL",
-                "scope": "IMPLEMENTED_M1_SURFACES_ONLY",
+                "scope": (
+                    "IMPLEMENTED_LANDED_SURFACES_ONLY"
+                    if GATE == "adversarial"
+                    else "IMPLEMENTED_M1_SURFACES_ONLY"
+                ),
             },
             indent=2,
             sort_keys=True,

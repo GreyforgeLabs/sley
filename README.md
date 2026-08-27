@@ -73,7 +73,10 @@ release provenance, a release-candidate history re-anchor, and final Argus and
 Vulcan dispositions remain mandatory.
 S20-700 has one bounded incremental schema-import slice: 512 deterministic
 inputs and an exact registry no-fallback test. It is not a persistent fuzz
-harness and does not complete the required cross-surface adversarial suite.
+harness. A second bounded regression proves authorized adapter state-root,
+effect, and adapter binding confusion fails before ledger charge or fixture
+mutation. These slices do not complete the required cross-surface adversarial
+suite.
 
 ## Authority
 

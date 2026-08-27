@@ -2165,6 +2165,67 @@ mod tests {
     }
 
     #[test]
+    fn authorized_adapter_request_binding_confusion_fails_before_charge() {
+        #[derive(Clone, Copy)]
+        enum BindingCase {
+            StateRoot,
+            Effect,
+            Adapter,
+        }
+
+        for (case, expected_code) in [
+            (BindingCase::StateRoot, "CAP_STATE_ROOT_MISMATCH"),
+            (BindingCase::Effect, "CAP_EFFECT_MISMATCH"),
+            (BindingCase::Adapter, "CAP_ADAPTER_MISMATCH"),
+        ] {
+            let kind = ReferenceAdapterKind::Stdout;
+            let effect = effect(kind);
+            let mut import = import(kind, &effect);
+            let mut invocation = invocation(kind, unit_value(), bytes_value(b"auth".to_vec()));
+            invocation.limits = authorized_limits();
+            let scope_hash = hash_const(&types(), epoch(), &invocation.scope).unwrap();
+            let policy = policy_for(kind.reference_id());
+            let trusted_key = trusted_key();
+            let token_effect_id = if matches!(case, BindingCase::Effect) {
+                eid(200)
+            } else {
+                effect.entity_id
+            };
+            let token = token_for(&policy, kind.reference_id(), token_effect_id, scope_hash);
+            let invocation_root = if matches!(case, BindingCase::StateRoot) {
+                StateRoot::from_bytes([8; 32])
+            } else {
+                root()
+            };
+            if matches!(case, BindingCase::Adapter) {
+                import.adapter_id = ReferenceAdapterKind::Stderr.reference_id().into_bytes();
+            }
+            let mut ledger = CapabilityLedger::new();
+            let mut state = AdapterFixtureState::default();
+            let before = state.clone();
+
+            let error = invoke_authorized_reference_adapter(
+                &mut state,
+                &import,
+                &effect,
+                &types(),
+                epoch(),
+                invocation_root,
+                &invocation,
+                authorization(&policy, &token, &trusted_key, &mut ledger, 1),
+            )
+            .unwrap_err();
+
+            let AuthorizedAdapterInvocationError::Capability(error) = error else {
+                panic!("binding confusion must fail before adapter execution");
+            };
+            assert_eq!(error.code_str(), expected_code);
+            assert_eq!(ledger, CapabilityLedger::new());
+            assert_eq!(state, before);
+        }
+    }
+
+    #[test]
     fn authorized_adapter_resource_dimensions_fail_closed_before_charge() {
         let kind = ReferenceAdapterKind::Stdout;
         let effect = effect(kind);

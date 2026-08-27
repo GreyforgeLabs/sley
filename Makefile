@@ -52,6 +52,7 @@ conformance:
 adversarial:
 	cargo test -p sley-store --locked
 	cargo test -p sley-repo --locked
+	cargo test -p sley-adapter authorized_adapter_request_binding_confusion_fails_before_charge --locked
 	python3 scripts/check_m1_gate.py adversarial
 
 fuzz-smoke:

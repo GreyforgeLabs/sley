@@ -22,6 +22,7 @@ adr = read("docs/adr/ADR-0016-capability-tokens.md")
 threats = read("docs/THREAT_REGISTER.md")
 work_packages = read("docs/WORK_PACKAGES.md")
 makefile = read("Makefile")
+summary = json.loads(read("machineresearch/sley-2.0/machine-summary.json"))
 problems: list[str] = []
 
 for token in [
@@ -67,6 +68,7 @@ for token in [
     "pub fn invoke_authorized_reference_adapter",
     "verify_and_charge_capability",
     "authorized_adapter_resource_dimensions_fail_closed_before_charge",
+    "authorized_adapter_request_binding_confusion_fails_before_charge",
     "capability_budget_reserves_the_maximum_canonical_path",
     "conformance-only fixture API",
 ]:
@@ -100,10 +102,15 @@ if "python3 scripts/check_capability_token.py" not in makefile:
     problems.append("routine quick gate omits capability-token checker")
 if "There is no reverse dependency." not in adr:
     problems.append("capability ADR omits the one-way dependency decision")
+if (
+    summary.get("adversarial", {}).get("vulcan_adapter_binding_review")
+    != "PASS_NO_OPEN_P0_P1_P2"
+):
+    problems.append("S20-700 adapter-binding review disposition is absent")
 if policy.count("38_0") < 20:
     problems.append("fewer than twenty frozen capability numeric codes")
-if adapter.count("#[test]") < 19:
-    problems.append("fewer than nineteen reference-adapter tests after S20-380")
+if adapter.count("#[test]") < 20:
+    problems.append("fewer than twenty reference-adapter tests after binding hardening")
 
 result = {
     "contract": "s20-380-capability-token-v1",
@@ -118,6 +125,7 @@ result = {
     "vm_integration": False,
     "candidate_or_commit_authority": False,
     "vulcan_review": "PASS_NO_OPEN_P0_P1_P2",
+    "s20_700_binding_review": "PASS_NO_OPEN_P0_P1_P2",
     "problems": problems,
     "result": "PASS" if not problems else "FAIL",
 }

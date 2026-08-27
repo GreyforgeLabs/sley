@@ -28,13 +28,13 @@ if "512 bounded deterministic schema bootstrap decoder/import inputs" not in M1_
     problems.append("fuzz-smoke-scope-not-recorded")
 
 status = SUMMARY.get("adversarial", {})
-if status.get("status") != "S20_700_BOUNDED_SCHEMA_SLICE":
+if status.get("status") != "S20_700_BOUNDED_SLICES":
     problems.append("machine-summary-status")
 if status.get("full_s20_700_complete") is not False:
     problems.append("machine-summary-overstates-completion")
 if status.get("persistent_fuzz_harness") is not False:
     problems.append("machine-summary-overstates-persistence")
-if status.get("vulcan_review") != "PASS_NO_OPEN_P0_P1_P2":
+if status.get("vulcan_schema_review") != "PASS_NO_OPEN_P0_P1_P2":
     problems.append("machine-summary-vulcan-review")
 
 print(
