@@ -16,6 +16,13 @@ retry policy apply to raw files, frozen Sley 1.2.0, and Sley 2.0. Arm-specific
 representations may differ only where the arm intrinsically requires them.
 Every attempted trial remains in the denominator.
 
+S20-600 adds a scoped frozen-artifact adapter under `bench/legacy`. It verifies
+the exact Sley 1.2.0 archive, embedded release authority, and complete payload;
+stages only a private write-bit-stripped copy; and retains one bounded `bin/sley
+--version` smoke including failures and exact environment. It does not yet map
+or execute benchmark tasks, enforce trial network containment, invoke a model
+or oracle, or establish any succession metric. Full S20-600 remains open.
+
 S20-610 adds an offline-only raw-file runner contract under `bench/raw`. It
 validates the complete run-freeze controls and stores a create-once manifest plus
 append-only digest-chained, explicitly unverified trial claims using injected interfaces. It ships

@@ -1,4 +1,4 @@
-.PHONY: quick core conformance adversarial fuzz-smoke scb1-persistent-fuzz-smoke schema-persistent-fuzz-smoke pack-persistent-fuzz-smoke semantic-checkers-persistent-fuzz-smoke query-persistent-fuzz-smoke vm-persistent-fuzz-smoke adapter-responses-persistent-fuzz-smoke v2 release-check check-changed
+.PHONY: quick core conformance adversarial fuzz-smoke legacy-runner-smoke scb1-persistent-fuzz-smoke schema-persistent-fuzz-smoke pack-persistent-fuzz-smoke semantic-checkers-persistent-fuzz-smoke query-persistent-fuzz-smoke vm-persistent-fuzz-smoke adapter-responses-persistent-fuzz-smoke v2 release-check check-changed
 
 quick:
 	python3 scripts/check_m0.py
@@ -25,6 +25,7 @@ quick:
 	python3 scripts/check_mutation_value_codecs.py
 	python3 scripts/check_policy_root.py
 	python3 scripts/check_capability_token.py
+	python3 scripts/check_legacy_runner.py
 	python3 scripts/check_raw_baseline_runner.py
 	python3 scripts/check_supply_chain_audit.py
 	python3 scripts/check_schema_fuzz_slice.py
@@ -67,6 +68,9 @@ fuzz-smoke:
 	cargo test -p sley-store randomized_invalid_records_never_promote --locked
 	cargo test -p sley-repo bounded_pack_import_fuzz_smoke --locked
 	python3 scripts/check_m1_gate.py fuzz-smoke
+
+legacy-runner-smoke:
+	python3 -m bench.legacy.runner smoke --timeout-seconds 90 --output-limit-bytes 65536 --evidence-dir evidence/runtime/s20-600-legacy-smoke
 
 scb1-persistent-fuzz-smoke:
 	python3 scripts/check_scb1_persistent_fuzz_slice.py

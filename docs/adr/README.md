@@ -21,3 +21,7 @@ Current records:
 - ADR-0013: restricted complete-query capsule identity and non-authority
 - ADR-0014: full epoch-1 mutation descriptor code generation
 - ADR-0015: protected policy roots as separate canonical authority data
+- ADR-0016: protected capability-token admission and accounting
+- ADR-0017: candidate contract and identity freeze
+- ADR-0017: offline raw baseline evidence runner
+- ADR-0018: frozen legacy artifact adapter and retained version smoke
