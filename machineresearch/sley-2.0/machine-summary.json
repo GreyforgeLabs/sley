@@ -883,6 +883,27 @@
       "merge engine"
     ]
   },
+  "s20_700_remaining_surface_audit": {
+    "status": "BLOCKED_MISSING_PRODUCTION_BOUNDARIES",
+    "master_required_surface_count": 11,
+    "scoped_target_count": 8,
+    "scoped_landed_surface_count": 9,
+    "remaining_required_surface_count": 2,
+    "remaining_required_surfaces": [
+      "mutation candidates",
+      "merge engine"
+    ],
+    "mutation_candidate_production_boundary": false,
+    "mutation_candidate_blocker": "S20-350 aggregate candidate construction and complete value canon are absent",
+    "merge_engine_production_boundary": false,
+    "merge_engine_blocker": "S20-390, S20-500, and S20-510 production prerequisites are absent",
+    "protocol_persistent_target_required_by_section_18_5": false,
+    "protocol_production_boundary": false,
+    "no_parallel_harness_created": true,
+    "full_s20_700_complete": false,
+    "vulcan_review": "DEFERRED_FORGE_OAUTH_401",
+    "next_dependency_complete_package": "S20-600"
+  },
   "candidate_contract_freeze": {
     "status": "S20_345_CONTRACT_AND_IDENTITY_FREEZE_COMPLETE",
     "candidate_fields": 13,
