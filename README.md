@@ -16,8 +16,9 @@ Phase M0 is complete. M1 packages S20-100 through S20-170 now provide SCB1,
 typed identifiers, an independent oracle, schema epochs, the immutable object
 store, deterministic state roots, and uncompressed root/object repository
 packs. S20-180 and the scoped M1 core/adversarial/fuzz-smoke profiles now pass.
-M2 is next; no SSMC execution kernel or runtime exists yet. Every next package
-must follow `docs/WORK_PACKAGES.md`.
+M2 is in progress: S20-200 freezes the SSMC1 entity/opcode schema and S20-210
+is next. No SSMC checker or runtime exists yet. Every next package must follow
+`docs/WORK_PACKAGES.md`.
 
 ## Authority
 

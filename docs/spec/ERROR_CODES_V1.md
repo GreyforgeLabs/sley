@@ -1,6 +1,7 @@
 # Error Codes v1
 
-Status: M0 normative draft; numeric assignments are not frozen.
+Status: M0 namespace draft with package-frozen sections. Numeric assignments
+are not globally frozen except where an owning work package says so.
 
 Every failure response binds protocol/schema version, phase, stable symbolic
 and numeric code, typed details, safe causal IDs, retryability, mechanically
@@ -22,6 +23,7 @@ and ambiguity are failures, never success.
 - `ID_*`: identity derivation, collision, reuse, and workspace mismatch.
 - `STORE_*`: immutable-object lookup, substitution, persistence, and local I/O.
 - `STATE_ROOT_*`: root construction, duplicate input, and excluded-fact checks.
+- `SSMC_*`: semantic-entity structure, closed tags, signatures, and limits.
 - `GRAPH_*`, `TYPE_*`, `CFG_*`, `EFFECT_*`, `CONTRACT_*`: kernel judgment.
 - `STALE_*`, `TXN_*`, `REF_*`, `RECOVERY_*`: transaction and durability.
 - `POLICY_*`, `CAP_*`, `ADAPTER_*`: authority boundary.
@@ -66,6 +68,11 @@ S20-180 freezes these garbage-collection codes:
 Numeric ranges and exact detail schemas are frozen with their owning contract,
 generated into all transports, and checked for drift. Bridges may not invent or
 collapse codes.
+
+S20-200 freezes numeric codes 20000 through 20015 for the exact `SSMC_*`
+failures listed in `SSMC1.md`. Those codes cover structural schema judgment
+only and never substitute for later `TYPE_*`, `CFG_*`, `EFFECT_*`,
+`CONTRACT_*`, or `VM_*` results.
 
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum

@@ -1840,4 +1840,19 @@ mod tests {
             }
         );
     }
+
+    #[test]
+    fn ssmc1_descriptor_inputs_do_not_drift() {
+        const MANIFEST: &[u8] = include_bytes!("../../../docs/spec/SSMC1_EPOCH1_SCHEMA.txt");
+        const LIMITS: &[u8] = b"sley2.ssmc1.v1.decoder-limits:scb1-epoch1;label_bytes=1024;type_depth=64;type_args=1024;tuple_items=65535;fields_or_cases=65535;function_params=65535;block_params=65535;blocks_per_function=1000000;operations_per_block=1000000;operands_per_operation=65535;results_per_operation=65535;switch_cases=65535;constant_depth=64;constant_elements=1000000;constant_payload_bytes=16777216";
+
+        assert_eq!(
+            hex(blake3::hash(MANIFEST).as_bytes()),
+            "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73"
+        );
+        assert_eq!(
+            hex(blake3::hash(LIMITS).as_bytes()),
+            "389791b170bc9d8575f7e6f338e4f9e9f2b75f35d7a2e52c7cb106cb2cd6136a"
+        );
+    }
 }

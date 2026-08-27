@@ -1,0 +1,179 @@
+schema sley2.ssmc1.v1
+scb_format 1
+contract 200
+digest_domain 3 sley2.object.v1
+kind 200 SemanticEntity
+outer record EntityObject(1:entity_id:EntityId!,2:body:EntityBody!,3:label:NormalizedLabel?,4:semantic_fingerprint:FixedBytes32?)
+entity 1 Workspace WorkspaceBody
+entity 2 Package PackageBody
+entity 3 Namespace NamespaceBody
+entity 4 TypeDef TypeDefBody
+entity 5 Function FunctionBody
+entity 6 Parameter ParameterBody
+entity 7 Block BlockBody
+entity 8 Operation OperationBody
+entity 9 Constant ConstantBody
+entity 10 GlobalValue GlobalValueBody
+entity 11 EffectDef EffectDefBody
+entity 12 CapabilityRequirement CapabilityRequirementBody
+entity 13 Contract ContractBody
+entity 14 TestCase TestCaseBody
+entity 15 AdapterImport AdapterImportBody
+entity 16 EntryPoint EntryPointBody
+entity 17 PolicyBinding PolicyBindingBody
+entity 18 DependencyBinding DependencyBindingBody
+union EntityBody(1:WorkspaceBody,2:PackageBody,3:NamespaceBody,4:TypeDefBody,5:FunctionBody,6:ParameterBody,7:BlockBody,8:OperationBody,9:ConstantBody,10:GlobalValueBody,11:EffectDefBody,12:CapabilityRequirementBody,13:ContractBody,14:TestCaseBody,15:AdapterImportBody,16:EntryPointBody,17:PolicyBindingBody,18:DependencyBindingBody)
+record WorkspaceBody(1:packages:Set<EntityId>!,2:root_namespace:EntityId!,3:capability_requirements:Set<EntityId>!,4:contracts:Set<EntityId>!,5:tests:Set<EntityId>!)
+record PackageBody(1:workspace:EntityId!,2:root_namespace:EntityId!,3:dependencies:Set<EntityId>!,4:exports:Set<EntityId>!)
+record NamespaceBody(1:parent:Option<EntityId>!,2:members:Set<EntityId>!)
+record TypeDefBody(1:type_parameters:List<TypeParameterDef>!,2:form:TypeDefForm!,3:invariants:Set<EntityId>!,4:visibility:Visibility!)
+record FunctionBody(1:type_parameters:List<TypeParameterDef>!,2:parameters:List<EntityId>!,3:result_type:TypeExpr!,4:effects:Set<EntityId>!,5:entry_block:EntityId!,6:blocks:List<EntityId>!,7:contracts:Set<EntityId>!,8:visibility:Visibility!)
+record ParameterBody(1:owner:EntityId!,2:role:ParameterRole!,3:ordinal:UInt32!,4:value_type:TypeExpr!)
+record BlockBody(1:function:EntityId!,2:parameters:List<EntityId>!,3:operations:List<EntityId>!,4:terminator:Terminator!,5:reachability:Reachability!)
+record OperationBody(1:block:EntityId!,2:ordinal:UInt32!,3:opcode:UInt32!,4:operands:List<ValueRef>!,5:result_types:List<TypeExpr>!,6:immediate:Immediate!)
+record ConstantBody(1:value:ConstValue!)
+record GlobalValueBody(1:value_type:TypeExpr!,2:initializer:EntityId!,3:visibility:Visibility!)
+record EffectDefBody(1:effect_kind:EffectKind!,2:scope_type:TypeExpr!,3:request_type:TypeExpr!,4:response_type:TypeExpr!,5:failure_type:TypeExpr!,6:visibility:Visibility!)
+record CapabilityRequirementBody(1:effect:EntityId!,2:allowed_scopes:List<ConstValue>!,3:constraint_contracts:Set<EntityId>!)
+record ContractBody(1:target:EntityId!,2:contract_kind:ContractKind!,3:predicate:EntityId!,4:bindings:List<ContractBinding>!,5:resource_limits:ResourceLimits?)
+record TestCaseBody(1:target:EntityId!,2:inputs:List<ConstValue>!,3:effect_environment:EffectEnvironment!,4:expected:ExpectedOutcome!,5:observations:List<ExpectedObservation>!,6:resource_limits:ResourceLimits!)
+record AdapterImportBody(1:adapter_id:FixedBytes32!,2:abi_version:UInt32!,3:request_type:TypeExpr!,4:response_type:TypeExpr!,5:failure_type:TypeExpr!,6:effects:Set<EntityId>!)
+record EntryPointBody(1:function:EntityId!,2:exposure:EntryExposure!)
+record PolicyBindingBody(1:subject:EntityId!,2:requirements:Set<EntityId>!)
+record DependencyBindingBody(1:dependency_root:StateRoot!,2:external_package:EntityId!,3:local_namespace:EntityId!)
+record TypeParameterDef(1:ordinal:UInt32!)
+record RecordField(1:member_id:FixedBytes32!,2:value_type:TypeExpr!,3:visibility:Visibility!)
+record VariantCase(1:member_id:FixedBytes32!,2:payload_type:Option<TypeExpr>!)
+union TypeDefForm(1:Record<List<RecordField>>,2:Variant<List<VariantCase>>)
+enum Visibility(1:Private,2:Package,3:Workspace,4:Exported)
+enum ParameterRole(1:Function,2:Block)
+enum Reachability(1:Required,2:ExplicitlyUnreachable)
+type 1 Unit Unit
+type 2 Bool Unit
+type 3 SInt UInt16
+type 4 UInt UInt16
+type 5 F32 Unit
+type 6 F64 Unit
+type 7 Bytes Unit
+type 8 Text Unit
+type 9 Tuple List<TypeExpr>
+type 10 Named NamedType
+type 11 Vector TypeExpr
+type 12 OrderedMap MapType
+type 13 Option TypeExpr
+type 14 Result ResultType
+type 15 FunctionRef FunctionType
+type 16 AdapterHandle EntityId
+type 17 CapabilityToken EntityId
+type 18 LocalCell TypeExpr
+type 19 TypeParameter UInt32
+type 20 BuiltinFailure UInt16
+union TypeExpr(1:Unit,2:Bool,3:SInt<UInt16>,4:UInt<UInt16>,5:F32,6:F64,7:Bytes,8:Text,9:Tuple<List<TypeExpr>>,10:Named<NamedType>,11:Vector<TypeExpr>,12:OrderedMap<MapType>,13:Option<TypeExpr>,14:Result<ResultType>,15:FunctionRef<FunctionType>,16:AdapterHandle<EntityId>,17:CapabilityToken<EntityId>,18:LocalCell<TypeExpr>,19:TypeParameter<UInt32>,20:BuiltinFailure<UInt16>)
+record NamedType(1:definition:EntityId!,2:arguments:List<TypeExpr>!)
+record MapType(1:key:TypeExpr!,2:value:TypeExpr!)
+record ResultType(1:ok:TypeExpr!,2:error:TypeExpr!)
+record FunctionType(1:parameters:List<TypeExpr>!,2:result:TypeExpr!,3:effects:Set<EntityId>!)
+union ValueRef(1:Parameter<EntityId>,2:OperationResult<OperationResultRef>)
+record OperationResultRef(1:operation:EntityId!,2:result_index:UInt32!)
+record FunctionRefValue(1:function:EntityId!,2:type_arguments:List<TypeExpr>!)
+record ConstValue(1:value_type:TypeExpr!,2:data:ConstData!)
+generic union Option<T>(1:None,2:Some<T>)
+union ConstData(1:Unit,2:Bool,3:SInt,4:UInt,5:F32Bits,6:F64Bits,7:Bytes,8:Text,9:List<ConstValue>,10:RecordConst,11:VariantConst,12:List<MapEntryConst>,13:Option<ConstValue>,14:ResultConst,15:FunctionRefValue,16:BuiltinFailureValue)
+record RecordConst(1:definition:EntityId!,2:fields:List<FieldConst>!)
+record FieldConst(1:member_id:FixedBytes32!,2:value:ConstValue!)
+record VariantConst(1:definition:EntityId!,2:member_id:FixedBytes32!,3:payload:Option<ConstValue>!)
+record MapEntryConst(1:key:ConstValue!,2:value:ConstValue!)
+union ResultConst(1:Ok<ConstValue>,2:Err<ConstValue>)
+record TargetEdge(1:target:EntityId!,2:arguments:List<ValueRef>!)
+union CaseKey(1:Member<FixedBytes32>,2:Builtin<BuiltinCase>)
+enum BuiltinCase(1:None,2:Some,3:Ok,4:Err)
+union SwitchArgument(1:Value<ValueRef>,2:CasePayload)
+record SwitchEdge(1:target:EntityId!,2:arguments:List<SwitchArgument>!)
+record SwitchCase(1:case_key:CaseKey!,2:edge:SwitchEdge!)
+term 1 return ReturnTerminator
+term 2 branch BranchTerminator
+term 3 cond_branch CondBranchTerminator
+term 4 variant_switch VariantSwitchTerminator
+term 5 trap TrapTerminator
+union Terminator(1:Return<ReturnTerminator>,2:Branch<BranchTerminator>,3:CondBranch<CondBranchTerminator>,4:VariantSwitch<VariantSwitchTerminator>,5:Trap<TrapTerminator>)
+record ReturnTerminator(1:value:ValueRef!)
+record BranchTerminator(1:edge:TargetEdge!)
+record CondBranchTerminator(1:condition:ValueRef!,2:if_true:TargetEdge!,3:if_false:TargetEdge!)
+record VariantSwitchTerminator(1:value:ValueRef!,2:cases:List<SwitchCase>!)
+record TrapTerminator(1:code:TrapCode!,2:payload:Option<ValueRef>!)
+enum TrapCode(1:Unreachable,2:ResourceExhausted,3:AdapterContractViolation,4:InternalInvariant)
+union Immediate(1:None,2:Entity<EntityId>,3:Index<UInt32>,4:Field<FixedBytes32>,5:Variant<VariantImmediate>,6:Observation<FixedBytes32>,7:Function<FunctionRefValue>)
+record VariantImmediate(1:definition:EntityId!,2:member_id:FixedBytes32!)
+op 1 constant_ref operands=0 results=1 immediate=Entity failures=none
+op 16 tuple_new operands=N results=1 immediate=None failures=none
+op 17 tuple_get operands=1 results=1 immediate=Index failures=none
+op 18 record_new operands=N results=1 immediate=Entity failures=none
+op 19 record_get operands=1 results=1 immediate=Field failures=none
+op 20 variant_new operands=0..1 results=1 immediate=Variant failures=none
+op 21 variant_get operands=1 results=1:Option<T> immediate=Variant failures=value:none
+op 32 vector_new operands=N results=1 immediate=None failures=none
+op 33 vector_len operands=1 results=1:UInt64 immediate=None failures=none
+op 34 vector_get operands=2 results=1:Option<T> immediate=None failures=value:none
+op 35 vector_set operands=3 results=1:Result<Vector<T>,IndexError> immediate=None failures=value:IndexError
+op 36 map_new operands=2N results=1:Result<OrderedMap<K,V>,DuplicateKeyError> immediate=None failures=value:DuplicateKeyError
+op 37 map_get operands=2 results=1:Option<V> immediate=None failures=value:none
+op 38 map_contains operands=2 results=1:Bool immediate=None failures=none
+op 39 map_insert operands=3 results=1:OrderedMap<K,V> immediate=None failures=none
+op 40 map_remove operands=2 results=1:OrderedMap<K,V> immediate=None failures=none
+op 64 int_add_checked operands=2:T results=1:Result<T,ArithmeticError> immediate=None failures=value:Overflow
+op 65 int_sub_checked operands=2:T results=1:Result<T,ArithmeticError> immediate=None failures=value:Overflow
+op 66 int_mul_checked operands=2:T results=1:Result<T,ArithmeticError> immediate=None failures=value:Overflow
+op 67 int_div_checked operands=2:T results=1:Result<T,ArithmeticError> immediate=None failures=value:Overflow|DivideByZero
+op 68 int_rem_checked operands=2:T results=1:Result<T,ArithmeticError> immediate=None failures=value:Overflow|DivideByZero
+op 69 int_neg_checked operands=1:SInt results=1:Result<SInt,ArithmeticError> immediate=None failures=value:Overflow
+op 70 int_shl_checked operands=T,UInt32 results=1:Result<T,ArithmeticError> immediate=None failures=value:InvalidShift|Overflow
+op 71 int_shr_checked operands=T,UInt32 results=1:Result<T,ArithmeticError> immediate=None failures=value:InvalidShift
+op 80 float_add operands=2:T results=1:T immediate=None failures=none
+op 81 float_sub operands=2:T results=1:T immediate=None failures=none
+op 82 float_mul operands=2:T results=1:T immediate=None failures=none
+op 83 float_div operands=2:T results=1:T immediate=None failures=none
+op 84 float_neg operands=1:T results=1:T immediate=None failures=none
+op 85 float_fma operands=3:T results=1:T immediate=None failures=none
+op 96 equal operands=2:T results=1:Bool immediate=None failures=none
+op 97 not_equal operands=2:T results=1:Bool immediate=None failures=none
+op 98 less_than operands=2:T results=1:Bool immediate=None failures=none
+op 99 less_equal operands=2:T results=1:Bool immediate=None failures=none
+op 100 greater_than operands=2:T results=1:Bool immediate=None failures=none
+op 101 greater_equal operands=2:T results=1:Bool immediate=None failures=none
+op 102 bool_not operands=1:Bool results=1:Bool immediate=None failures=none
+op 103 bool_and operands=2:Bool results=1:Bool immediate=None failures=none
+op 104 bool_or operands=2:Bool results=1:Bool immediate=None failures=none
+op 112 call_direct operands=N results=1 immediate=Function failures=value:explicit_function_result
+op 128 option_some operands=1:T results=1:Option<T> immediate=None failures=none
+op 129 option_none operands=0 results=1:Option<T> immediate=None failures=none
+op 130 result_ok operands=1:T results=1:Result<T,E> immediate=None failures=none
+op 131 result_err operands=1:E results=1:Result<T,E> immediate=None failures=none
+op 144 contract_assert operands=N results=1:Result<Unit,ContractViolation> immediate=Entity failures=value:ContractViolation
+op 145 test_observe operands=1:T results=1:Unit immediate=Observation failures=none
+op 160 effect_request operands=2 results=1:Result<T,E> immediate=Entity failures=value:declared_effect_failure
+op 161 adapter_invoke operands=2 results=1:Result<T,E> immediate=Entity failures=value:declared_adapter_failure
+op 162 capability_narrow operands=2 results=1:Result<CapabilityToken,CapabilityFailure> immediate=Entity failures=value:CapabilityFailure
+op 176 cell_new operands=1:T results=1:LocalCell<T> immediate=None failures=none
+op 177 cell_get operands=1:LocalCell<T> results=1:T immediate=None failures=none
+op 178 cell_set operands=2:LocalCell<T>,T results=1:Unit immediate=None failures=none
+op 192 value_hash operands=1:T results=1:Bytes immediate=None failures=none result_constraint=bytes_length_32
+op 193 global_get operands=0 results=1:T immediate=Entity failures=none
+op 194 function_ref operands=0 results=1:FunctionRef immediate=Function failures=none
+enum EffectKind(1:StdoutWrite,2:StderrWrite,3:FileRead,4:FileWrite,5:ClockRead,6:RandomRead,7:EnvironmentRead,8:AdapterCall)
+enum ContractKind(1:Precondition,2:Postcondition,3:Invariant,4:EffectBound,5:CapabilityBound,6:ResultPredicate,7:ResourceCeiling)
+enum EntryExposure(1:Local,2:Protocol)
+record ContractBinding(1:predicate_parameter:UInt32!,2:source:ContractSource!)
+union ContractSource(1:Parameter<EntityId>,2:Result,3:Error,4:Global<EntityId>)
+record ReplayBinding(1:adapter_import:EntityId!,2:request:List<ConstValue>!,3:response:ResultConst!)
+record AdapterConfig(1:adapter_import:EntityId!,2:configuration:ConstValue!)
+union EffectEnvironment(1:Replay<List<ReplayBinding>>,2:DeterministicAdapters<List<AdapterConfig>>)
+union ExpectedOutcome(1:Value<ConstValue>,2:FailureCode<UInt32>)
+record ExpectedObservation(1:observation_id:FixedBytes32!,2:value:ConstValue!)
+record ResourceLimits(1:fuel:UInt64!,2:memory_bytes:UInt64!,3:output_bytes:UInt64!,4:effect_count:UInt64!,5:call_depth:UInt64!,6:wall_timeout_millis:UInt64!)
+enum BuiltinFailureKind(1:ArithmeticError,2:IndexError,3:DuplicateKeyError,4:ContractViolation,5:CapabilityFailure)
+record BuiltinFailureValue(1:kind:BuiltinFailureKind!,2:code:UInt16!)
+enum ArithmeticError(1:Overflow,2:DivideByZero,3:InvalidShift)
+enum IndexError(1:OutOfBounds)
+enum DuplicateKeyError(1:DuplicateKey)
+enum ContractViolation(1:PredicateFalse)
+enum CapabilityFailure(1:Denied,2:ScopeMismatch,3:Expired,4:RootMismatch)
