@@ -1,10 +1,10 @@
 # Object Store and State Roots
 
-Status: S20-160 deterministic state roots complete.
+Status: S20-170 repository packs and clean reconstruction complete.
 
 StateRoot inputs are explicitly bounded in `REPOSITORY_MODEL_V1.md` and exclude
-refs, ancestry, timestamps, paths, locks, caches, and Git. S20-170 and S20-180
-will provide pack and GC evidence.
+refs, ancestry, timestamps, paths, locks, caches, and Git. S20-170 now provides
+root/object pack reconstruction; S20-180 still owns reachability and GC.
 
 S20-110 evidence:
 
@@ -71,5 +71,37 @@ S20-160 evidence:
 - Vulcan review: PASS with no P0/P1 report-grade finding.
 
 The conformance epoch is not the complete production schema epoch. S20-200
-must add the full SSMC contract set, and S20-170/S20-390 still own pack and
-transaction/ancestry evidence.
+must add the full SSMC contract set, and S20-390 still owns transaction and
+ancestry evidence.
+
+S20-170 evidence:
+
+- `REPOSITORY_PACK_V1.md` freezes tag 170, domain tag 18, exact descriptor
+  preimages/digests, typed epoch/root/object inventories, closed 64 MiB limits,
+  and the five-leaf conformance Merkle algorithm;
+- the only implemented profile is uncompressed and root/object-only; refs,
+  transactions, signatures, and other compression profiles fail closed rather
+  than claiming S20-540 clone equivalence;
+- export canonicalizes epochs, roots, and objects, requires dependency closure,
+  and reads every object through the canonical verifier;
+- import verifies the outer pack ID, exact pack/root epochs, complete digest
+  tree, root dependency closure, exact object closure, every object ID, and the
+  canonical object verifier before the first immutable-store write;
+- clean import reconstructs exact standalone roots and referenced objects;
+  re-import reports verified objects as present and is idempotent;
+- 16 Rust unit/adversarial tests cover malformed outer IDs, valid-outer-ID tree
+  tampering, missing/surplus/reordered/substituted objects, unsupported future
+  profiles, dependency closure, verifier rejection, and zero-write preflight
+  failures;
+- an independent Python decoder reproduces the 1,421-byte fixture, five leaves,
+  tree root `1c0ee93f9eaf275808b7f50086ccb2f7aebd8eb61bcf2ad3896f642c34fa13d9`,
+  and `RepositoryPackId`
+  `7a1e139c74191a46cbf03275dcb4ae4e4625765d6d6ee412076628d49d867df8`;
+- Nabu's design review passed after the pack-wide limits and leaf schema were
+  frozen; Vulcan's independent implementation review passed with no
+  report-grade findings.
+
+The conformance pack reconstructs the exact S20-160 root/object surface. It is
+not a pack manifest retention implementation, compressed transport, repository
+head, transaction DAG, ref importer, or clone-equivalent profile. S20-180 owns
+GC roots/pins/leases, and S20-540 owns later exchange equivalence.

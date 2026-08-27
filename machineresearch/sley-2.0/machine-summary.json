@@ -90,6 +90,32 @@
     "vulcan_review": "PASS",
     "implementation_complete": true
   },
+  "repository_pack": {
+    "status": "S20_170_COMPLETE",
+    "contract": "docs/spec/REPOSITORY_PACK_V1.md",
+    "implementation": "crates/sley-repo",
+    "profile": "UNCOMPRESSED_ROOT_OBJECT_ONLY",
+    "contract_tag": 170,
+    "digest_domain_tag": 18,
+    "kind_tag": 170,
+    "field_schema_hash": "7231a31c5d9cc159ce9d161ecc434c4b98613f97a00e07fd0728c45128f94e21",
+    "decoder_limits_hash": "38a807922870bae9aca1bbd0afb8d87f2511c876bc087ce1616cbb7c7cc95e00",
+    "pack_schema_epoch_id": "61297b93def337ddeb06f7055533371ae870ca926ec2a8a7fff4bde00a025625",
+    "accepted_fixture_sha256": "35685f782e160e64d2fe10cda38010f3451ae809fa2a573bb9e8f8a6e60b6963",
+    "stored_bytes": 1421,
+    "digest_leaves": 5,
+    "digest_tree_root": "1c0ee93f9eaf275808b7f50086ccb2f7aebd8eb61bcf2ad3896f642c34fa13d9",
+    "accepted_repository_pack_id": "7a1e139c74191a46cbf03275dcb4ae4e4625765d6d6ee412076628d49d867df8",
+    "rust_unit_tests": 16,
+    "independent_python_vector": "PASS",
+    "full_preflight_before_object_promotion": true,
+    "clean_store_exact_root_reconstruction": true,
+    "refs_transactions_signatures_compression": "REJECTED_UNTIL_LATER_PROFILE",
+    "nabu_design_review": "PASS_AFTER_LIMITS_AND_TREE_FREEZE",
+    "merlin_handoff": "TIMEOUT_NO_FILES",
+    "vulcan_review": "PASS",
+    "implementation_complete": true
+  },
   "protocol": {"status": "DRAFT"},
   "identifiers": {
     "status": "S20_110_COMPLETE",
@@ -153,12 +179,13 @@
   },
   "open_findings": {"p0": 0, "p1": 0, "p2": 0, "p3": 0, "p4": 0},
   "evidence_gaps": [
-    "S20-170 repository packs and S20-180 reachability/GC",
+    "S20-180 reachability, pin, lease, and garbage collection",
     "M2 through M6 implementation and release evidence"
   ],
   "open_risks": [
     "The schema registry is executable, but production SSMC descriptor rows await S20-200",
     "The StateRoot row is a conformance epoch; the complete production epoch awaits S20-200",
+    "The S20-170 pack profile is root/object-only; refs, transactions, compression, signatures, and clone equivalence await S20-540 or a new profile",
     "No VM exists",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]

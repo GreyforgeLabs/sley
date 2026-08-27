@@ -148,6 +148,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "sley-repo"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "blake3",
+ "sley-id",
+ "sley-scb1",
+ "sley-schema",
+ "sley-state-root",
+ "sley-store",
+]
+
+[[package]]
 name = "sley-scb1"
 version = "2.0.0-alpha.0"
 dependencies = [

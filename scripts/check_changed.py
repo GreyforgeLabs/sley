@@ -21,6 +21,7 @@ print(
                 "sley-schema",
                 "sley-state-root",
                 "sley-store",
+                "sley-repo",
                 "oracle/scb1",
             ],
             "affected_contracts": [
@@ -33,6 +34,7 @@ print(
                 "S20-140 schema epoch registry and migration skeleton",
                 "S20-150 immutable object store and corruption recovery",
                 "S20-160 deterministic state roots",
+                "S20-170 repository packs and clean reconstruction",
             ],
             "selected_checks": [
                 "scripts/check_m0.py",
@@ -41,6 +43,7 @@ print(
                 "scripts/check_schema_epoch_spec.py",
                 "scripts/check_object_store_spec.py",
                 "scripts/check_state_root_spec.py",
+                "scripts/check_repository_pack_spec.py",
                 "cargo fmt --check",
                 "cargo check --workspace --locked",
                 "cargo test --workspace --locked",
@@ -53,7 +56,7 @@ print(
                 "v2",
                 "release-check",
             ],
-            "skip_rationale": "S20-120 through S20-160 establish SCB1, schema-epoch, immutable-store, and deterministic-root conformance; packs, GC, semantic kernel, and later product gates remain unavailable.",
+            "skip_rationale": "S20-120 through S20-170 establish SCB1, schema-epoch, immutable-store, deterministic-root, and root/object pack conformance; GC, semantic kernel, clone-equivalent profiles, and later product gates remain unavailable.",
             "v2_required": False,
             "cache_use": "none",
             "result": "PASS",

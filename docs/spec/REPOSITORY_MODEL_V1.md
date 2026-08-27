@@ -26,10 +26,13 @@ disjointness or deterministic composition is proven. Ambiguity yields a
 canonical conflict object; text conflict markers do not exist.
 
 Packs bind format, epochs, roots, objects, optional transactions/refs,
-compression profile, and digest tree, with no host paths. Import verifies every
-bound digest before any ref move. GC traverses every retained ref, tag, lease,
-transaction, pack manifest, and protected root and fails closed on malformed
-references. Timestamps never imply reachability.
+compression profile, and digest tree, with no host paths. The S20-170 profile
+in `REPOSITORY_PACK_V1.md` is uncompressed and root/object-only; it rejects
+transactions, refs, and signatures until S20-540 defines clone-equivalent
+exchange. Import verifies every bound digest before object promotion and every
+ref move. GC traverses every retained ref, tag, lease, transaction, pack
+manifest, and protected root and fails closed on malformed references.
+Timestamps never imply reachability.
 
 Recovery accepts exactly the old complete state or the new complete state with
 a valid receipt. Unreachable staged objects are permitted and later collectible.

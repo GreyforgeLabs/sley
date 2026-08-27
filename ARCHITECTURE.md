@@ -1,6 +1,6 @@
 # Sley 2 Architecture
 
-Status: M0 normative baseline
+Status: M1 normative baseline
 
 ## Target state
 

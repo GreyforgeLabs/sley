@@ -29,6 +29,23 @@ and ambiguity are failures, never success.
 - `VM_*`, `TEST_*`: execution, cancellation, determinism, and oracle.
 - `PACK_*`, `GC_*`, `MERGE_*`: repository operations.
 
+S20-170 freezes these repository-pack codes:
+
+- `PACK_VERSION_UNSUPPORTED`
+- `PACK_DIGEST_MISMATCH`
+- `PACK_DIGEST_TREE_MISMATCH`
+- `PACK_CANONICAL_ORDER`
+- `PACK_DUPLICATE_ENTRY`
+- `PACK_SCHEMA_UNSUPPORTED`
+- `PACK_ROOT_INVALID`
+- `PACK_OBJECT_MISSING`
+- `PACK_OBJECT_UNEXPECTED`
+- `PACK_OBJECT_CORRUPT`
+- `PACK_RESOURCE_LIMIT`
+- `PACK_COMPRESSION_UNSUPPORTED`
+- `PACK_DECOMPRESSION_LIMIT` (reserved until a compressed profile exists)
+- `PACK_PROFILE_UNSUPPORTED`
+
 Numeric ranges and exact detail schemas are frozen with their owning contract,
 generated into all transports, and checked for drift. Bridges may not invent or
 collapse codes.

@@ -5,6 +5,16 @@ experiments. New Sley 2 failures, timeouts, rejected designs, fuzz findings,
 and benchmark losses must be appended with inputs and evidence; they may not be
 deleted from denominators.
 
+## 2026-08-27 — Merlin S20-170 handoff timeout
+
+The bounded Merlin implementation handoff encountered an OpenClaw gateway
+timeout, fell back to an embedded session, and expired without a final answer
+or any file changes. Codex retained exclusive ownership, implemented the frozen
+Nabu-reviewed contract locally, ran the focused tests and independent vector,
+and submitted the completed diff to Vulcan. Vulcan returned PASS. The failed
+handoff is recorded as negative orchestration evidence and is not counted as
+specialist implementation approval.
+
 ## 2026-08-27 — Merlin S20-110 handoff timeout
 
 The bounded Merlin gateway timed out, recovery fell back to an embedded agent,

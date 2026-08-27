@@ -12,10 +12,11 @@ for Sley 1.x.
 
 ## Current phase
 
-Phase M0 is complete. The S20-040 neutral succession-benchmark design and
-corpus v1 and the S20-100 SCB1 specification are frozen. M1 has begun with the
-S20-110 `sley-id` crate; no canonical object codec, store, or runtime exists
-yet. Every next package must follow `docs/WORK_PACKAGES.md`.
+Phase M0 is complete. M1 packages S20-100 through S20-170 now provide SCB1,
+typed identifiers, an independent oracle, schema epochs, the immutable object
+store, deterministic state roots, and uncompressed root/object repository
+packs. S20-180 garbage collection remains before M1 exit; no SSMC kernel or
+runtime exists yet. Every next package must follow `docs/WORK_PACKAGES.md`.
 
 ## Authority
 
@@ -36,6 +37,7 @@ work belongs to a separate session and repository worktree.
 
 ## Validation
 
-`make quick` and `make check-changed` validate the M0 baseline. Later profiles
-are present but intentionally fail closed until their corresponding work
-packages land. `make v2` remains the eventual authoritative full gate.
+`make quick` and `make check-changed` validate the implemented M0/M1 surface.
+Later profiles are present but intentionally fail closed until their
+corresponding work packages land. `make v2` remains the eventual authoritative
+full gate.
