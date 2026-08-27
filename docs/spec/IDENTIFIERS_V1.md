@@ -48,6 +48,12 @@ part of the `sley-id` kernel API.
 A domain cannot be renamed, aliased, or reused for another preimage. Adding a
 domain requires an ADR, fixtures, and registry drift validation.
 
+`PrincipalId` is a distinct opaque 32-byte host-supplied identity value, not a
+content-addressed identifier and not a new hash domain. It never derives from a
+username, path, label, prompt, model output, repository metadata, or session
+text. Possessing or naming it grants no authority; S20-370 policy data and
+later authenticated S20-380 capability evidence perform exact matching.
+
 ## Workspace identity
 
 Workspace creation receives a 32-byte `GenesisNonce` from the creating host.

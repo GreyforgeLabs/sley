@@ -184,6 +184,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "sley-policy"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "blake3",
+ "sley-check",
+ "sley-id",
+ "sley-mutate",
+ "sley-scb1",
+ "sley-schema",
+ "sley-ssmc",
+ "sley-state-root",
+]
+
+[[package]]
 name = "sley-query"
 version = "2.0.0-alpha.0"
 dependencies = [

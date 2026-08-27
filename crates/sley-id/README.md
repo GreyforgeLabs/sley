@@ -16,6 +16,9 @@ ADR-0011 adds `IndexSnapshotId` for restricted derived cache-record integrity;
 it does not authenticate root provenance or grant query authority.
 ADR-0013 adds `RestrictedQueryCapsuleId` for complete restricted-query evidence;
 it is deliberately distinct from the reserved master `ContextCapsuleId`.
+S20-370 adds `PrincipalId` as opaque host-supplied 32-byte identity data. It has
+no derivation domain and grants no authority by itself; only an accepted policy
+record may associate it with policy data.
 
 This crate has no filesystem, network, environment, SCB1 encoding, repository,
 policy, or VM authority.

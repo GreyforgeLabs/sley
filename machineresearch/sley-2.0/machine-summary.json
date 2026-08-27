@@ -441,6 +441,36 @@
     "unblocked_by_s20_340_descriptors": false,
     "independent_s20_370_can_continue": true
   },
+  "protected_policy_root": {
+    "status": "S20_370_COMPLETE_PROTECTED_ROOT_AND_PURE_JUDGMENT",
+    "contract": "docs/spec/POLICY_ROOT_V1.md",
+    "implementation": "crates/sley-policy",
+    "contract_tag": 370,
+    "digest_domain_tag": 8,
+    "record_fields": 11,
+    "principal_grant_fields": 4,
+    "resource_ceiling_fields": 6,
+    "stable_error_codes": 19,
+    "policy_unit_tests": 19,
+    "workspace_total_unit_tests": 290,
+    "deterministic_rebuild_iterations": 128,
+    "fixed_policy_root": "7a933b888107588fd4cb942581e531f632a52dd15bb342145337b5ceac2907bf",
+    "principal_identity": "OPAQUE_HOST_SUPPLIED_FIXED32_NO_AUTHORITY",
+    "principal_specific_grants": true,
+    "protected_entity_isolation": true,
+    "mandatory_test_contract_finalization": true,
+    "transition_mode": "EXTERNAL_HIGHER_AUTHORITY_ONLY",
+    "policy_transition_authority": false,
+    "capability_token_issuance": false,
+    "live_scope_expiry_replay_budget_enforcement": false,
+    "candidate_or_commit_authority": false,
+    "production_epoch_assembled": false,
+    "nabu_architecture_review": "REVISE_TO_NARROW_PROTECTED_POLICY_ROOT",
+    "merlin_implementation_handoff": "TIMED_OUT_PARTIAL_FILES_RECOVERED_AND_INTEGRATED_BY_CODEX",
+    "vulcan_initial_review": "FAIL_P2_TRANSITION_MODE_ERROR_UNREACHABLE",
+    "vulcan_final_review": "PASS_NO_OPEN_P0_P1_P2_P3_P4",
+    "implementation_complete": true
+  },
   "schema_epoch": {
     "status": "S20_140_COMPLETE",
     "bootstrap_magic": "SLEYEP01",
@@ -653,6 +683,7 @@
     "S20-330 is deliberately unimplemented until negotiated session, verified workspace/root, and epoch authority exist; claimed roots and capsule IDs are forbidden substitutes",
     "S20-340 is immutable descriptor codegen only; executable operations, fully bound candidate/preimage construction, validation, policy/capability authority, commit, receipts, M3/M4, and GA remain blocked",
     "S20-350 is deliberately unimplemented until all-18-kind typed mutation values/codecs and the principal, capability-summary, validation-profile, expiry, precondition, and canonical candidate-record contracts are frozen; opaque bytes and caller claims are forbidden substitutes",
+    "S20-370 protects policy, oracle roots, and named entity bindings with principal-specific immutable grant data, but policy transition authentication, capability tokens, live scope/expiry/replay/budget enforcement, candidate integration, commit, and production-epoch assembly remain blocked",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]
 }

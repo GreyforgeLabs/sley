@@ -193,6 +193,10 @@ fixed_bytes_type!(
     PolicyRootId
 );
 fixed_bytes_type!(
+    /// Host-supplied opaque 32-byte principal identity.
+    PrincipalId
+);
+fixed_bytes_type!(
     /// Capability-token digest.
     CapabilityTokenDigest
 );
@@ -635,6 +639,7 @@ mod tests {
         assert_eq!(core::mem::size_of::<ReceiptId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<SchemaEpochId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<PolicyRootId>(), ID_LEN);
+        assert_eq!(core::mem::size_of::<PrincipalId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<CapabilityTokenDigest>(), ID_LEN);
         assert_eq!(core::mem::size_of::<CandidateId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<CandidateResultId>(), ID_LEN);

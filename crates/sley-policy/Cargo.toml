@@ -1,0 +1,22 @@
+[package]
+name = "sley-policy"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Sley 2 protected policy-root contract."
+
+[dependencies]
+sley-check = { path = "../sley-check" }
+sley-id = { path = "../sley-id" }
+sley-mutate = { path = "../sley-mutate" }
+sley-scb1 = { path = "../sley-scb1" }
+sley-schema = { path = "../sley-schema" }
+sley-ssmc = { path = "../sley-ssmc" }
+sley-state-root = { path = "../sley-state-root" }
+
+[dev-dependencies]
+blake3 = "=1.8.2"
+
+[lints]
+workspace = true

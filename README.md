@@ -55,7 +55,12 @@ until negotiated session and verified workspace/root authority exist. S20-340
 now generates immutable mutation descriptors for all eighteen SSMC1 entity
 kinds and all sixteen primitive classes from the exact frozen manifest. It
 provides no candidate construction, executable mutation, validation, policy,
-session, commit, or transaction authority.
+session, commit, or transaction authority. S20-350 is therefore deferred until
+typed mutation values and the complete candidate record exist. S20-370 now
+adds a separately registry-authorized protected policy root with exact opaque
+principals, principal-specific grants, protected entity bindings, and mandatory
+test/contract finalization. It has no authenticated policy-transition,
+capability-token, candidate, commit, or live runtime authority.
 
 ## Authority
 
@@ -79,7 +84,7 @@ work belongs to a separate session and repository worktree.
 `make quick` and `make check-changed` validate the implemented M0/M1 and
 current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering/
 execution/reference-adapter/report-envelope/index-snapshot/restricted-query/
-restricted-capsule/mutation-schema surface. Later
+restricted-capsule/mutation-schema/protected-policy-root surface. Later
 profiles are present but intentionally fail closed until their corresponding
 work packages land.
 `make v2` remains the eventual authoritative full gate.

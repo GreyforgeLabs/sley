@@ -180,6 +180,14 @@ implement the master context capsule, use `ContextCapsuleId`, establish
 workspace/root/session provenance, authorize continuation/import, or unblock
 S20-330, S20-400, S20-620, M3, M5, or GA.
 
+S20-370 freezes numeric codes 37000 through 37018 for the exact `POLICY_*`
+failures listed in `POLICY_ROOT_V1.md`. They cover protected policy-record
+construction/import, closed principal grant data, ordinary-program isolation,
+and policy-required test/contract finalization. Exact `SCB_*` and `SCHEMA_*`
+failures are preserved. These codes do not authenticate policy transitions,
+issue capability tokens, establish live scope/expiry/replay/budget authority,
+construct candidates, commit state, or complete M3/M4/GA.
+
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum
 (`NEVER`, `AFTER_REQUERY`, `AFTER_CAPABILITY`, `AFTER_LIMIT_CHANGE`,
