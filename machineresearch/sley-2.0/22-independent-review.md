@@ -1,6 +1,6 @@
 # Independent Review
 
-Status: M0 findings integrated; confirmation review pending
+Status: M0 architecture PASS
 
 ## Ariadne review
 
@@ -18,5 +18,20 @@ contradiction, M0/S20-400 SMP1 sequencing, missing policy dependency for the
 complete validator, and missing one-to-one threat evidence mapping. The refined
 DAG and threat register address those items.
 
-Neither review granted release or publication authority. A final read-only
-confirmation against the integrated baseline is required before M0 exit.
+## Confirmation
+
+After the baseline was committed as
+`3a0fd1b46858e31a1e040dda9d4fafe65e83ed38`, Nabu returned PASS with no
+blocking M0 architecture findings. Nabu verified the precise package DAG,
+SMP1 sequencing, validation-policy dependencies, all 55 threat mappings,
+independent-repository boundary, clean tree, and `make quick` PASS.
+
+Ariadne returned semantic architecture PASS and then post-commit PASS with no
+new blocker. Ariadne verified the exact commit, clean tree, SCB1 digest
+preimage, StateRoot boundary, type and failure semantics, transaction/policy
+isolation, execution digest treatment, refined DAG, zero semantic crates, zero
+`.sley` files, and `make quick` PASS.
+
+Neither review grants implementation correctness, GA, release, or publication
+authority. M1 and later packages still require their named conformance and
+independent review evidence.

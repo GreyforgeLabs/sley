@@ -2,7 +2,7 @@
   "project": "Sley",
   "target_version": "2.0.0",
   "lineage": "machine-native",
-  "phase": "M0",
+  "phase": "M0_COMPLETE",
   "legacy_freeze": {
     "version": "1.2.0",
     "commit": "397fa28ded15ddbeca5404ee00a3f5bd5546b296",
@@ -10,8 +10,9 @@
     "artifact_size_bytes": 4611024,
     "source_snapshot_sha256": "1c866d360305d0b511dc2c33c4907b33544fc73bc6cb6fa4c0e1687df48eb90e"
   },
+  "m0_commit": "3a0fd1b46858e31a1e040dda9d4fafe65e83ed38",
   "final_commit": null,
-  "status": "M0_IN_PROGRESS",
+  "status": "IN_PROGRESS",
   "publication_authorized": false,
   "schema_epoch": null,
   "scb1": {"status": "DRAFT"},
@@ -41,7 +42,6 @@
   },
   "open_findings": {"p0": 0, "p1": 0, "p2": 0, "p3": 0, "p4": 0},
   "evidence_gaps": [
-    "M0 integrated confirmation review",
     "S20-040 frozen benchmark design",
     "M1 through M6 implementation and release evidence"
   ],
