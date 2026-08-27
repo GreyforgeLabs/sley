@@ -1463,6 +1463,76 @@ mod tests {
     }
 
     #[test]
+    fn bounded_schema_bootstrap_import_fuzz_smoke() {
+        const CASES: usize = 512;
+        const MAX_INPUT_BYTES: usize = 2_048;
+
+        fn next(state: &mut u64) -> u64 {
+            *state ^= *state << 13;
+            *state ^= *state >> 7;
+            *state ^= *state << 17;
+            *state
+        }
+
+        fn bounded_index(state: &mut u64, upper: usize) -> usize {
+            let upper = u64::try_from(upper).unwrap();
+            usize::try_from(next(state) % upper).unwrap()
+        }
+
+        let canonical = bootstrap_preimage(
+            &epoch(1, None, vec![descriptor(1)], Vec::new())
+                .canonical_bytes()
+                .unwrap(),
+        )
+        .unwrap();
+        let mut state = 0x5c20_7001_40d3_c0de_u64;
+
+        for case in 0..CASES {
+            let mut input = match case % 5 {
+                0 => canonical[..case % canonical.len()].to_vec(),
+                1 => {
+                    let mut value = canonical.clone();
+                    value.push(u8::try_from(next(&mut state) & 0xff).unwrap());
+                    value
+                }
+                2 => {
+                    let mut value = canonical.clone();
+                    let index = bounded_index(&mut state, value.len());
+                    value[index] ^= 1_u8 << (next(&mut state) & 7);
+                    value
+                }
+                3 => {
+                    let mut value = canonical.clone();
+                    let mutations = 1 + usize::try_from(next(&mut state) % 16).unwrap();
+                    for _ in 0..mutations {
+                        let index = bounded_index(&mut state, value.len());
+                        value[index] = u8::try_from(next(&mut state) & 0xff).unwrap();
+                    }
+                    value
+                }
+                _ => {
+                    let len = bounded_index(&mut state, MAX_INPUT_BYTES);
+                    (0..len)
+                        .map(|_| u8::try_from(next(&mut state) & 0xff).unwrap())
+                        .collect()
+                }
+            };
+            input.truncate(MAX_INPUT_BYTES);
+
+            match import_bootstrap_preimage(&input) {
+                Ok((epoch_id, record)) => {
+                    assert_eq!(epoch_id, SchemaEpochId::derive(&input));
+                    assert_eq!(
+                        bootstrap_preimage(&record.canonical_bytes().unwrap()).unwrap(),
+                        input
+                    );
+                }
+                Err(error) => assert_eq!(error.code(), SchemaErrorCode::RecordInvalid),
+            }
+        }
+    }
+
+    #[test]
     fn registry_rejects_unsorted_duplicate_mismatched_and_decoder_mismatch() {
         let first = epoch(1, None, Vec::new(), Vec::new());
         let second = epoch(1, None, vec![descriptor(1)], Vec::new());
@@ -1538,6 +1608,88 @@ mod tests {
             registry.decode_contract(new_id, 99, &[1]).unwrap_err(),
             EpochDecodeError::Schema(SchemaError::new(SchemaErrorCode::ContractUnknown))
         );
+    }
+
+    #[test]
+    fn registry_decode_never_falls_back_across_epoch_or_contract() {
+        use std::cell::Cell;
+
+        #[derive(Clone, Debug)]
+        struct ProbeDecoder {
+            calls: Cell<u32>,
+            epoch_id: SchemaEpochId,
+            schema: Schema,
+        }
+
+        impl EpochDecoder for ProbeDecoder {
+            fn epoch_id(&self) -> SchemaEpochId {
+                self.epoch_id
+            }
+
+            fn decode_contract(
+                &self,
+                contract_tag: u32,
+                input: &[u8],
+            ) -> core::result::Result<(), ScbError> {
+                self.calls.set(self.calls.get() + 1);
+                if contract_tag != 1 {
+                    return Err(ScbError::new(ScbErrorCode::ContractUnknown));
+                }
+                decode_payload_exact(&self.schema, input)
+            }
+        }
+
+        let old = epoch(1, None, vec![descriptor(1)], Vec::new());
+        let old_id = old.schema_epoch_id().unwrap();
+        let new = epoch(2, Some(old_id), vec![descriptor(1)], Vec::new());
+        let new_id = new.schema_epoch_id().unwrap();
+        let old_entry = RegistryEntry::new(
+            old_id,
+            old,
+            ProbeDecoder {
+                calls: Cell::new(0),
+                epoch_id: old_id,
+                schema: Schema::Bool,
+            },
+        )
+        .unwrap();
+        let new_entry = RegistryEntry::new(
+            new_id,
+            new,
+            ProbeDecoder {
+                calls: Cell::new(0),
+                epoch_id: new_id,
+                schema: Schema::UInt(8),
+            },
+        )
+        .unwrap();
+        let mut entries = vec![old_entry, new_entry];
+        entries.sort_by_key(RegistryEntry::epoch_id);
+        let registry = SchemaEpochRegistry::new(entries).unwrap();
+
+        assert_eq!(
+            registry
+                .decode_contract(SchemaEpochId::from_bytes([0xa5; ID_LEN]), 1, &[1])
+                .unwrap_err(),
+            EpochDecodeError::Schema(SchemaError::new(SchemaErrorCode::EpochMismatch))
+        );
+        assert_eq!(
+            registry.decode_contract(old_id, 99, &[1]).unwrap_err(),
+            EpochDecodeError::Schema(SchemaError::new(SchemaErrorCode::ContractUnknown))
+        );
+        assert_eq!(registry.lookup(old_id).unwrap().decoder().calls.get(), 0);
+        assert_eq!(registry.lookup(new_id).unwrap().decoder().calls.get(), 0);
+
+        assert_eq!(
+            registry.decode_contract(old_id, 1, &[2]).unwrap_err(),
+            EpochDecodeError::Scb(ScbError::new(ScbErrorCode::BoolInvalid))
+        );
+        assert_eq!(registry.lookup(old_id).unwrap().decoder().calls.get(), 1);
+        assert_eq!(registry.lookup(new_id).unwrap().decoder().calls.get(), 0);
+
+        registry.decode_contract(new_id, 1, &[2]).unwrap();
+        assert_eq!(registry.lookup(old_id).unwrap().decoder().calls.get(), 1);
+        assert_eq!(registry.lookup(new_id).unwrap().decoder().calls.get(), 1);
     }
 
     #[test]

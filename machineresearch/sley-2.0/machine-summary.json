@@ -484,7 +484,7 @@
     "bootstrap_record_bytes": 74,
     "bootstrap_preimage_bytes": 84,
     "bootstrap_schema_epoch_id": "ae5b235713b46c04f73c1decd0fb0bb57c5557d0fe89dae7ddac4a7dba25564e",
-    "rust_unit_tests": 16,
+    "rust_unit_tests": 18,
     "independent_python_vector": "PASS",
     "preserved_scb_errors": true,
     "approved_equivalence_verifier_required": true,
@@ -597,7 +597,7 @@
     "adversarial": "PASS_IMPLEMENTED_M1_SCOPE",
     "fuzz_smoke": "PASS_IMPLEMENTED_M1_SCOPE",
     "rust_unit_and_integration_tests": 95,
-    "deterministic_fuzz_smoke_inputs": 512,
+    "deterministic_fuzz_smoke_inputs": 1024,
     "persistent_fuzzing": "DEFERRED_TO_S20_700",
     "future_surface_targets": "DEFERRED_UNTIL_IMPLEMENTED",
     "v2_required": false
@@ -635,7 +635,15 @@
     "resolved_review_findings": 3,
     "cross_implementation_agreement": "PASS"
   },
-  "adversarial": {"status": "NOT_IMPLEMENTED"},
+  "adversarial": {
+    "status": "S20_700_BOUNDED_SCHEMA_SLICE",
+    "surface": "SLEYEP01 bootstrap import and exact registry decoder selection",
+    "bounded_inputs": 512,
+    "max_input_bytes": 2048,
+    "persistent_fuzz_harness": false,
+    "full_s20_700_complete": false,
+    "vulcan_review": "PASS_NO_OPEN_P0_P1_P2"
+  },
   "succession": {
     "corpus_version": 1,
     "corpus_sha256": "7370b6ccb8ccd3f58fa2a90e316edf4bc5a1319b41a55253a2ee14bb5d73988d",

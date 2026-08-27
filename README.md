@@ -71,6 +71,9 @@ bounded high-confidence secret scan. Those local checks do not complete the
 package: operator-approved proprietary root license text, a standards SBOM,
 release provenance, a release-candidate history re-anchor, and final Argus and
 Vulcan dispositions remain mandatory.
+S20-700 has one bounded incremental schema-import slice: 512 deterministic
+inputs and an exact registry no-fallback test. It is not a persistent fuzz
+harness and does not complete the required cross-surface adversarial suite.
 
 ## Authority
 

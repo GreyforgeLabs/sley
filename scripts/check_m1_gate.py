@@ -43,13 +43,14 @@ SCOPES = {
     "fuzz-smoke": {
         "executed_scope": [
             "256 deterministic SCB1 decoder noise inputs",
+            "512 bounded deterministic schema bootstrap decoder/import inputs",
             "128 deterministic invalid object-store inputs",
             "128 rehashed repository-pack byte mutations",
             "GC malformed graph/inventory/reference regression matrix",
         ],
         "deferred_unimplemented": [
-            "persistent fuzzing owned by S20-700",
-            "future graph, mutation, merge, protocol, and VM targets",
+            "persistent harnesses beyond the bounded S20-700 schema smoke slice",
+            "future graph, type, CFG, query, mutation, merge, protocol, VM, and adapter targets",
         ],
     },
 }

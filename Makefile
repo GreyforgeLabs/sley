@@ -26,6 +26,7 @@ quick:
 	python3 scripts/check_capability_token.py
 	python3 scripts/check_raw_baseline_runner.py
 	python3 scripts/check_supply_chain_audit.py
+	python3 scripts/check_schema_fuzz_slice.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked
@@ -55,6 +56,7 @@ adversarial:
 
 fuzz-smoke:
 	cargo test -p sley-scb1 bounded_scb1_decoder_fuzz_smoke --locked
+	cargo test -p sley-schema bounded_schema_bootstrap_import_fuzz_smoke --locked
 	cargo test -p sley-store randomized_invalid_records_never_promote --locked
 	cargo test -p sley-repo bounded_pack_import_fuzz_smoke --locked
 	python3 scripts/check_m1_gate.py fuzz-smoke
