@@ -124,6 +124,13 @@ Boolean opcodes, exact cache-profile binding, local rewrite invariants, and
 resource ceilings. They do not claim semantic judgment for the other 52
 opcodes, generic specialization, adapters, bytecode decoding, or execution.
 
+S20-270 freezes numeric codes 27000 through 27005 for the exact `VM_EXEC_*`
+failures listed in `VM_EXECUTION_PROFILE_V1.md`. They cover only integrated
+restricted execution of S20-260 Boolean bytecode, all five terminators,
+deterministic input/fuel/value/output/cancellation limits, traps, invariant
+failures, and the observation digest. They do not claim the other 52 opcodes,
+adapters/effects, live cancellation, or persistent S20-290 reports.
+
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum
 (`NEVER`, `AFTER_REQUERY`, `AFTER_CAPABILITY`, `AFTER_LIMIT_CHANGE`,

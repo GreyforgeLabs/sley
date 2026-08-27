@@ -5,12 +5,18 @@ use core::fmt;
 
 use sley_id::{BytecodeCacheKey, EntityId, SchemaEpochId, StateRoot};
 
+mod execute;
 mod lower;
 
+pub use execute::{
+    ExecutionError, ExecutionErrorCode, ExecutionLimits, ExecutionOutcome, ExecutionRequest,
+    ExecutionStatusCode, ExecutionTermination, MAX_EXECUTION_INPUT_VALUE_UNITS,
+    MAX_EXECUTION_INPUTS, MAX_OBSERVATION_PREIMAGE_BYTES, ResourceKind, execute_function,
+};
 pub use lower::{
     BlockSlot, BytecodeBlock, BytecodeFunction, BytecodeSwitchArgument, BytecodeSwitchCase,
-    BytecodeTargetEdge, BytecodeTerminator, Instruction, LoweredFunction, LoweringError,
-    LoweringInput, Register, lower_function,
+    BytecodeSwitchEdge, BytecodeTargetEdge, BytecodeTerminator, Instruction, LoweredFunction,
+    LoweringError, LoweringInput, Register, lower_function,
 };
 
 /// Frozen S20-260 SSMC1 field-schema hash.

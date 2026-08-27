@@ -28,8 +28,12 @@ kinds. Its six unmodeled entity bodies remain an explicit full-GA blocker.
 S20-260 now provides a restricted deterministic O0 lowering profile for all
 five terminators and the three validated Boolean opcodes, with exact derived
 bytes and a root/profile-bound cache key. The other 52 opcode signatures,
-generics, adapters, and execution remain fail-closed gaps. S20-270 deterministic
-VM execution is next. Every next package must follow `docs/WORK_PACKAGES.md`.
+generics, and adapters remain fail-closed gaps. S20-270 now executes that
+restricted bytecode deterministically with exact Boolean semantics, all five
+terminators, bounded fuel/value/output/cancellation behavior, and a canonical
+observation digest. Full opcode, adapter, live-cancellation, and persistent
+report semantics remain explicit gaps. S20-280 minimal reference adapters are
+next. Every next package must follow `docs/WORK_PACKAGES.md`.
 
 ## Authority
 
@@ -51,7 +55,7 @@ work belongs to a separate session and repository worktree.
 ## Validation
 
 `make quick` and `make check-changed` validate the implemented M0/M1 and
-current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering
-surface. Later profiles are present but intentionally fail closed until their
-corresponding work packages land.
+current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering/
+execution surface. Later profiles are present but intentionally fail closed
+until their corresponding work packages land.
 `make v2` remains the eventual authoritative full gate.

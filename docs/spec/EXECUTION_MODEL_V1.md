@@ -1,6 +1,9 @@
 # Execution Model v1
 
-Status: M0 normative draft.
+Status: M0 broad normative draft; restricted S20-270 profile frozen separately.
+
+`VM_EXECUTION_PROFILE_V1.md` is the implemented restricted epoch-1 contract.
+It does not satisfy every requirement below and records each deferred GA gap.
 
 The reference VM is the SSMC1 execution oracle. It is register-based and may
 execute derived bytecode whose cache key binds root, entry point, epoch, VM

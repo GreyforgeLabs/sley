@@ -5,6 +5,20 @@ experiments. New Sley 2 failures, timeouts, rejected designs, fuzz findings,
 and benchmark losses must be appended with inputs and evidence; they may not be
 deleted from denominators.
 
+## 2026-08-27 — S20-270 handoff permission mismatch and rejected green candidate
+
+The first bounded Merlin implementation handoff inherited a read-only Atlas
+packet despite explicit write ownership and stopped without changes. The
+documented no-Atlas recovery then produced a focused-test-green execution
+module, but Codex rejected that candidate before integration: impossible
+runtime faults escaped as input-type errors, ordinary edge arguments were
+undercharged, selected payloads were deep-cloned instead of reference views,
+and the observation preimage contained an extra profile word. The corrected
+module represents runtime faults as observed internal terminations, charges
+every frozen action, shares payload roots, freezes a literal preimage vector,
+and adds aggregate input/hash-work caps. The failed handoff and rejected green
+candidate are not counted as acceptance evidence.
+
 ## 2026-08-27 — stale M0 gate placeholders at the M1 boundary
 
 The first S20-180 exit audit found that `make core`, `make adversarial`, and
