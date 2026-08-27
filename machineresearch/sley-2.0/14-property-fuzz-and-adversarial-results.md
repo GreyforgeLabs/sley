@@ -1,6 +1,6 @@
 # Property, Fuzz, and Adversarial Results
 
-Status: bounded partial S20-700 evidence with two scoped persistent libFuzzer
+Status: bounded partial S20-700 evidence with three scoped persistent libFuzzer
 harnesses. This is not the complete cross-surface suite or a final finding
 register. The 55-threat map remains `docs/THREAT_REGISTER.md`.
 
@@ -27,6 +27,10 @@ Current landed slices:
   that successful imports re-encode byte-identically with a preserved
   `SchemaEpochId`. Its corpus is derived deterministically from the committed
   schema-epoch bootstrap fixture.
+- Repository-pack importer persistent libFuzzer slice: a clean temporary store
+  receives bounded direct or outer-trailer-rehashed inputs derived from the
+  committed S20-170 pack fixture. Failed preflight must promote no object;
+  successful import must preserve the exact pack ID and repeat idempotently.
 
 The mutation-value slice is selected by:
 
@@ -39,10 +43,10 @@ Vulcan's bounded implementation review and Merlin's independent read-only code
 review found no report-grade issue in the earlier landed slices. Generic
 `Option<T>`, `ConstValue`, aggregate, candidate, runtime, merge, protocol,
 VM-input, and adapter-response fuzz targets remain outside these slices. The
-SCB1 and schema bootstrap persistent libFuzzer slices do not complete S20-700;
-persistent harnesses for the remaining required surfaces remain absent.
-Persistent fuzzing and minimized finding retention remain mandatory before
-S20-700 completion.
+SCB1, schema bootstrap, and repository-pack importer persistent libFuzzer slices
+do not complete S20-700; persistent harnesses for the remaining required
+surfaces remain absent. Persistent fuzzing and minimized finding retention
+remain mandatory before S20-700 completion.
 
 The SCB1 decoder persistent smoke is selected by:
 
@@ -56,6 +60,13 @@ The schema bootstrap persistent smoke is selected by:
 ```bash
 make schema-persistent-fuzz-smoke
 python3 scripts/run_schema_persistent_fuzz.py --manual
+```
+
+The repository-pack importer persistent smoke is selected by:
+
+```bash
+make pack-persistent-fuzz-smoke
+python3 scripts/run_pack_persistent_fuzz.py --manual
 ```
 
 The bounded mutation-value post-commit environment, command durations, results,

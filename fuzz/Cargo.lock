@@ -65,8 +65,11 @@ checksum = "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
 name = "sley-fuzz"
 version = "0.0.0"
 dependencies = [
+ "sley-id",
+ "sley-repo",
  "sley-scb1",
  "sley-schema",
+ "sley-store",
 ]
 
 [[package]]
@@ -74,6 +77,18 @@ name = "sley-id"
 version = "2.0.0-alpha.0"
 dependencies = [
  "blake3",
+]
+
+[[package]]
+name = "sley-repo"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "blake3",
+ "sley-id",
+ "sley-scb1",
+ "sley-schema",
+ "sley-state-root",
+ "sley-store",
 ]
 
 [[package]]
@@ -87,6 +102,23 @@ dependencies = [
 
 [[package]]
 name = "sley-schema"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "sley-id",
+ "sley-scb1",
+]
+
+[[package]]
+name = "sley-state-root"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "sley-id",
+ "sley-scb1",
+ "sley-schema",
+]
+
+[[package]]
+name = "sley-store"
 version = "2.0.0-alpha.0"
 dependencies = [
  "sley-id",
