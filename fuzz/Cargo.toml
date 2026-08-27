@@ -30,6 +30,10 @@ path = "targets/ssmc_graph_cfg_checker.rs"
 name = "restricted_query_request"
 path = "targets/restricted_query_request.rs"
 
+[[bin]]
+name = "vm_canonical_inputs"
+path = "targets/vm_canonical_inputs.rs"
+
 [dependencies]
 sley-check = { path = "../crates/sley-check" }
 sley-id = { path = "../crates/sley-id" }
@@ -39,3 +43,4 @@ sley-scb1 = { path = "../crates/sley-scb1" }
 sley-schema = { path = "../crates/sley-schema" }
 sley-ssmc = { path = "../crates/sley-ssmc" }
 sley-store = { path = "../crates/sley-store" }
+sley-vm = { path = "../crates/sley-vm" }

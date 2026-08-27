@@ -81,6 +81,7 @@ dependencies = [
  "sley-schema",
  "sley-ssmc",
  "sley-store",
+ "sley-vm",
 ]
 
 [[package]]
@@ -150,6 +151,15 @@ version = "2.0.0-alpha.0"
 dependencies = [
  "sley-id",
  "sley-scb1",
+]
+
+[[package]]
+name = "sley-vm"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "sley-check",
+ "sley-id",
+ "sley-ssmc",
 ]
 
 [[package]]

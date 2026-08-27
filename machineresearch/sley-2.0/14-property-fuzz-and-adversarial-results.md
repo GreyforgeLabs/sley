@@ -1,6 +1,6 @@
 # Property, Fuzz, and Adversarial Results
 
-Status: bounded partial S20-700 evidence with six scoped persistent libFuzzer
+Status: bounded partial S20-700 evidence with seven scoped persistent libFuzzer
 harnesses. This is not the complete cross-surface suite or a final finding
 register. The 55-threat map remains `docs/THREAT_REGISTER.md`.
 
@@ -43,6 +43,11 @@ Current landed slices:
   set shapes, resolved and unresolved IDs, and limit boundaries. Accepted
   requests preserve identity and reject an alternate snapshot; successful
   responses respect every accepted bound, and judgments repeat deterministically.
+- VM canonical-input persistent libFuzzer slice: nine fixed valid functions
+  cover six identity types and the restricted `BoolNot`, `BoolAnd`, and `BoolOr`
+  opcodes. Bounded canonical or deliberately mismatched typed inputs and limit
+  profiles must produce deterministic input-hash and execution judgments.
+  Successful outcomes retain epoch, root, function, and observation bindings.
 
 Closed development finding `S20-700-HARNESS-001` retains minimized input `c2`.
 The initial fuzz-only type generator could expand that cyclic one-byte stream
@@ -61,9 +66,10 @@ cargo test -p sley-mutate mutation_value_codec_adversarial --locked
 Vulcan's bounded implementation review and Merlin's independent read-only code
 review found no report-grade issue in the earlier landed slices. Generic
 `Option<T>`, `ConstValue`, aggregate, and runtime mutation-candidate codecs, plus
-merge, protocol, VM-input, and adapter-response fuzz targets remain outside
-these slices. The six persistent targets do not complete S20-700; persistent
-harnesses for the remaining required surfaces remain absent.
+merge, protocol, and adapter-response fuzz targets remain outside these slices.
+The restricted VM target does not define or execute raw bytecode and does not
+complete S20-270. The seven persistent targets do not complete S20-700;
+persistent harnesses for the remaining required surfaces remain absent.
 Persistent fuzzing and minimized finding retention remain mandatory before
 S20-700 completion. Independent review of the new targets is deferred because
 the local Forge OAuth session returns 401.
@@ -102,6 +108,13 @@ The restricted-query request persistent smoke is selected by:
 ```bash
 make query-persistent-fuzz-smoke
 python3 scripts/run_query_persistent_fuzz.py --manual
+```
+
+The VM canonical-input persistent smoke is selected by:
+
+```bash
+make vm-persistent-fuzz-smoke
+python3 scripts/run_vm_persistent_fuzz.py --manual
 ```
 
 The bounded mutation-value post-commit environment, command durations, results,
