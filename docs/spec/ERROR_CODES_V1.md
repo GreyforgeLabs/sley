@@ -20,6 +20,7 @@ and ambiguity are failures, never success.
 
 - `SCB_*`: framing, canonical encoding, schema, epoch, digest, and limits.
 - `ID_*`: identity derivation, collision, reuse, and workspace mismatch.
+- `STORE_*`: immutable-object lookup, substitution, persistence, and local I/O.
 - `GRAPH_*`, `TYPE_*`, `CFG_*`, `EFFECT_*`, `CONTRACT_*`: kernel judgment.
 - `STALE_*`, `TXN_*`, `REF_*`, `RECOVERY_*`: transaction and durability.
 - `POLICY_*`, `CAP_*`, `ADAPTER_*`: authority boundary.
