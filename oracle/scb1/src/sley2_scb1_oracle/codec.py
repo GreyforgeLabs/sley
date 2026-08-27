@@ -249,7 +249,7 @@ def _decode_required_bool(payload: bytes) -> None:
     cursor.finish()
 
 
-def decode_standalone(data: bytes) -> None:
+def decode_standalone(data: bytes, expected_contract_tag: int | None = None) -> None:
     if len(data) > MAX_STORED_BYTES:
         raise ScbError("SCB_RESOURCE_LIMIT")
     cursor = Cursor(data)
@@ -259,6 +259,8 @@ def decode_standalone(data: bytes) -> None:
         raise ScbError("SCB_VERSION_UNSUPPORTED")
     contract_tag = decode_uvar(cursor, 32)
     if contract_tag not in (1, 2):
+        raise ScbError("SCB_CONTRACT_UNKNOWN")
+    if expected_contract_tag is not None and contract_tag != expected_contract_tag:
         raise ScbError("SCB_CONTRACT_UNKNOWN")
     if cursor.read(32) != EPOCH_ID:
         raise ScbError("SCB_EPOCH_MISMATCH")
@@ -365,8 +367,11 @@ def _decode_nested_list(cursor: Cursor, depth: int) -> None:
 
 
 def decode_declared_value(declared_type: str, data: bytes) -> None:
-    if declared_type in {"FixtureEmptyObject", "FixtureRequiredBool"}:
-        decode_standalone(data)
+    if declared_type == "FixtureEmptyObject":
+        decode_standalone(data, expected_contract_tag=1)
+        return
+    if declared_type == "FixtureRequiredBool":
+        decode_standalone(data, expected_contract_tag=2)
         return
     cursor = Cursor(data)
     if declared_type in {"UInt64", "UInt8"}:

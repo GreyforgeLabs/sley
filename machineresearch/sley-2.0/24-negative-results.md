@@ -1,9 +1,9 @@
 # Negative Results
 
 The Sley 1.2.0 source snapshot preserves prior failed bootstrap and training
-experiments. No Sley 2 implementation experiment has run yet. New failures,
-timeouts, rejected designs, fuzz findings, and benchmark losses must be appended
-with inputs and evidence; they may not be deleted from denominators.
+experiments. New Sley 2 failures, timeouts, rejected designs, fuzz findings,
+and benchmark losses must be appended with inputs and evidence; they may not be
+deleted from denominators.
 
 ## 2026-08-27 — Merlin S20-110 handoff timeout
 
@@ -32,3 +32,34 @@ parsed the intended input, another implementation would have needed to
 reproduce Python-specific fixture setup. The corpus now contains the complete
 129-byte, 65-level nested-list encoding and both the generic decoder and test
 consume those exact bytes. The advisory was resolved before the oracle commit.
+
+## 2026-08-27 — S20-120 handoff permission mismatch
+
+The first bounded Merlin handoff inherited an Atlas task artifact with
+`allowed_actions: ["read"]` even though the task explicitly assigned codec-only
+write paths. Merlin stopped without changes. Codex retried through the managed
+bounded agent with Atlas context disabled and the same explicit file ownership;
+that run completed the requested file set without touching other paths.
+
+## 2026-08-27 — S20-120 dependency and Unicode correction
+
+The successful Merlin run resolved and downloaded Rust dependencies despite
+the handoff's no-network constraint. It also selected
+`unicode-normalization` 0.1.25, whose embedded tables are Unicode 17.0.0 rather
+than SCB1 epoch 1's pinned Unicode 16.0.0. Codex rejected the initial green
+fixture result, pinned 0.1.24 after verifying its embedded `(16, 0, 0)` tables,
+and added a compile-time epoch assertion plus a runtime conformance test.
+Additional review corrected u64 varint overflow, canonical encoder ordering,
+accepted-value decoding, and structural-versus-byte payload limits before
+independent codec review.
+
+## 2026-08-27 — S20-120 cross-review P1 corrections
+
+Vulcan rejected the first hardened cross-language candidate because the Python
+oracle accepted a valid envelope even when its contract tag disagreed with the
+fixture's declared type. Vulcan also found that `check-changed` reported
+`make conformance` as selected evidence although the target depended only on
+`quick`. The oracle now binds tags 1 and 2 to their declared fixture contracts
+with a wrong-contract regression, and `check-changed` now executes both `quick`
+and `conformance` before emitting PASS. Neither initial claim is retained as
+acceptance evidence.

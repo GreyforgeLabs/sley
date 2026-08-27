@@ -16,14 +16,14 @@
   "publication_authorized": false,
   "schema_epoch": null,
   "scb1": {
-    "status": "S20_100_SPEC_AND_S20_130_ORACLE_COMPLETE",
+    "status": "S20_100_SPEC_S20_120_CODEC_S20_130_ORACLE_COMPLETE",
     "accepted_vectors": 23,
     "rejected_vectors": 26,
     "rejection_codes": 22,
     "accepted_fixture_sha256": "c6b7097b4f03d82c0181b473c3f3d90e028fe53c0ec8ff640c715954b5151e93",
     "rejected_fixture_sha256": "aaf7f3b2db7c26d79ad212c01858857e145e3ace3547390a53617811ad77f278",
     "ariadne_review": "PASS",
-    "codec_implemented": false,
+    "codec_implemented": true,
     "independent_oracle_implemented": true
   },
   "ssmc1": {"status": "DRAFT"},
@@ -45,14 +45,20 @@
     "language": "Python",
     "blake3_version": "1.0.9",
     "unicode_version": "16.0.0",
-    "unit_tests": 6,
+    "unit_tests": 7,
     "accepted_byte_agreement": 23,
     "accepted_decode_agreement": 23,
     "rejected_code_agreement": 26,
     "rust_dependency_check": "PASS",
-    "vulcan_review": "PASS",
-    "resolved_review_findings": 1,
-    "cross_implementation_agreement": "PENDING_S20_120"
+    "rust_codec": "crates/sley-scb1",
+    "rust_blake3_version": "1.8.2",
+    "rust_unicode_normalization_version": "0.1.24",
+    "rust_unicode_version": "16.0.0",
+    "rust_integration_tests": 3,
+    "vulcan_oracle_review": "PASS",
+    "vulcan_codec_review": "PASS",
+    "resolved_review_findings": 3,
+    "cross_implementation_agreement": "PASS"
   },
   "adversarial": {"status": "NOT_IMPLEMENTED"},
   "succession": {
@@ -84,11 +90,11 @@
   },
   "open_findings": {"p0": 0, "p1": 0, "p2": 0, "p3": 0, "p4": 0},
   "evidence_gaps": [
-    "S20-120 Rust SCB1 codec and cross-implementation agreement",
+    "S20-140 schema epoch registry and migration skeleton",
     "M2 through M6 implementation and release evidence"
   ],
   "open_risks": [
-    "The independent oracle is green, but the Rust codec does not yet exist",
+    "SCB1 fixture conformance is green, but the production schema registry does not yet exist",
     "No object store or VM exists",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]

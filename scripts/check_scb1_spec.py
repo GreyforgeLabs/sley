@@ -165,7 +165,7 @@ print(
             "accepted_vectors": len(ACCEPTED["vectors"]),
             "rejected_vectors": len(REJECTED["vectors"]),
             "rejection_codes": len(observed_codes),
-            "codec_implemented": False,
+            "codec_implemented": (ROOT / "crates/sley-scb1/Cargo.toml").is_file(),
             "oracle_implemented": (ROOT / "oracle/scb1/pyproject.toml").is_file(),
         },
         sort_keys=True,

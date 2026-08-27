@@ -6,14 +6,21 @@ import unittest
 from pathlib import Path
 
 import unicodedata2
+from blake3 import blake3
 
 from sley2_scb1_oracle.codec import (
     Cursor,
+    EPOCH_ID,
+    FORMAT_VERSION,
+    MAGIC,
+    OBJECT_DOMAIN,
     decode_accepted_vector,
     decode_declared_value,
     decode_uvar,
     encode_accepted_vector,
     encode_nested_empty_list,
+    encode_record,
+    encode_sized,
     encode_uvar,
 )
 from sley2_scb1_oracle.conformance import check
@@ -41,6 +48,20 @@ class OracleTests(unittest.TestCase):
         self.assertGreater(len(encoded), 65)
         with self.assertRaisesRegex(ScbError, "SCB_RESOURCE_LIMIT"):
             decode_declared_value("NestedListFixture", encoded)
+
+    def test_standalone_contract_must_match_declared_type(self) -> None:
+        payload = encode_record(((1, b"\x01"),))
+        preimage = (
+            MAGIC
+            + encode_uvar(FORMAT_VERSION)
+            + encode_uvar(2)
+            + EPOCH_ID
+            + encode_sized(payload)
+        )
+        stored = preimage + blake3(OBJECT_DOMAIN + preimage).digest()
+        decode_declared_value("FixtureRequiredBool", stored)
+        with self.assertRaisesRegex(ScbError, "SCB_CONTRACT_UNKNOWN"):
+            decode_declared_value("FixtureEmptyObject", stored)
 
     def test_every_accepted_vector_matches(self) -> None:
         fixture = json.loads(ACCEPTED.read_text(encoding="utf-8"))
