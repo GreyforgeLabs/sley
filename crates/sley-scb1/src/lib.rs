@@ -198,10 +198,33 @@ pub fn encode_uvar(mut value: u64) -> Vec<u8> {
     }
 }
 
+/// Encodes an unsigned 128-bit integer as canonical SCB1 uvarint.
+#[must_use]
+pub fn encode_uvar128(mut value: u128) -> Vec<u8> {
+    let mut out = Vec::with_capacity(19);
+    loop {
+        let mut byte = (value & 0x7f) as u8;
+        value >>= 7;
+        if value != 0 {
+            byte |= 0x80;
+        }
+        out.push(byte);
+        if value == 0 {
+            return out;
+        }
+    }
+}
+
 /// Encodes a signed 64-bit integer using SCB1 `ZigZag`.
 #[must_use]
 pub fn encode_sint64(value: i64) -> Vec<u8> {
     encode_uvar(((value << 1) ^ (value >> 63)).cast_unsigned())
+}
+
+/// Encodes a signed 128-bit integer using SCB1 `ZigZag`.
+#[must_use]
+pub fn encode_sint128(value: i128) -> Vec<u8> {
+    encode_uvar128(((value << 1) ^ (value >> 127)).cast_unsigned())
 }
 
 /// Encodes a boolean.
@@ -584,6 +607,21 @@ impl<'a> ScbValueCursor<'a> {
         self.reader.read_uvar_width(width)
     }
 
+    /// Reads a canonical unsigned varint with an explicit supported bit width.
+    ///
+    /// Supported widths are `1..=128`.
+    ///
+    /// # Errors
+    ///
+    /// Returns stable SCB1 varint, integer, or length errors from the strict
+    /// decoder. Unsupported widths return `SCB_INTEGER_OVERFLOW`.
+    pub fn read_uvar128(&mut self, width: u8) -> Result<u128> {
+        if width == 0 || width > 128 {
+            return Err(ScbError::new(ScbErrorCode::IntegerOverflow));
+        }
+        self.reader.read_uvar128_width(width)
+    }
+
     /// Reads a canonical ZigZag-encoded signed 64-bit integer.
     ///
     /// # Errors
@@ -592,6 +630,17 @@ impl<'a> ScbValueCursor<'a> {
     /// decoder.
     pub fn read_sint64(&mut self) -> Result<i64> {
         let encoded = self.read_uvar(64)?;
+        Ok((encoded >> 1).cast_signed() ^ -(encoded & 1).cast_signed())
+    }
+
+    /// Reads a canonical ZigZag-encoded signed 128-bit integer.
+    ///
+    /// # Errors
+    ///
+    /// Returns stable SCB1 varint, integer, or length errors from the strict
+    /// decoder.
+    pub fn read_sint128(&mut self) -> Result<i128> {
+        let encoded = self.read_uvar128(128)?;
         Ok((encoded >> 1).cast_signed() ^ -(encoded & 1).cast_signed())
     }
 
@@ -1182,6 +1231,42 @@ impl<'a> Reader<'a> {
         }
     }
 
+    fn read_uvar128_width(&mut self, width: u8) -> Result<u128> {
+        let mut value = 0_u128;
+        let mut shift = 0_u32;
+        let mut bytes_read = 0_u8;
+        loop {
+            let byte = self.read_u8()?;
+            bytes_read += 1;
+            let payload = u128::from(byte & 0x7f);
+            if shift >= 128 && payload != 0 {
+                return Err(ScbError::new(ScbErrorCode::IntegerOverflow));
+            }
+            if shift < 128 {
+                if shift == 126 && payload > 3 {
+                    return Err(ScbError::new(ScbErrorCode::IntegerOverflow));
+                }
+                value |= payload
+                    .checked_shl(shift)
+                    .ok_or_else(|| ScbError::new(ScbErrorCode::IntegerOverflow))?;
+            }
+
+            if byte & 0x80 == 0 {
+                if bytes_read > 1 && payload == 0 {
+                    return Err(ScbError::new(ScbErrorCode::VarintNonMinimal));
+                }
+                if width < 128 && value >= (1_u128 << width) {
+                    return Err(ScbError::new(ScbErrorCode::IntegerOverflow));
+                }
+                return Ok(value);
+            }
+            shift += 7;
+            if shift >= 128 + 7 {
+                return Err(ScbError::new(ScbErrorCode::IntegerOverflow));
+            }
+        }
+    }
+
     fn read_len(&mut self, max: usize) -> Result<usize> {
         let len = self.read_uvar_width(64)?;
         let len = usize::try_from(len).map_err(|_| ScbError::new(ScbErrorCode::LengthOverflow))?;
@@ -1212,8 +1297,19 @@ impl<'a> Reader<'a> {
 mod tests {
     use super::{
         ScbErrorCode, ScbValueCursor, encode_bool, encode_bytes, encode_f32_bits, encode_f64_bits,
-        encode_list, encode_record, encode_sint64, encode_text, encode_union, encode_uvar,
+        encode_list, encode_record, encode_sint64, encode_sint128, encode_text, encode_union,
+        encode_uvar, encode_uvar128,
     };
+
+    fn to_hex(bytes: &[u8]) -> String {
+        const HEX: &[u8; 16] = b"0123456789abcdef";
+        let mut out = String::with_capacity(bytes.len() * 2);
+        for byte in bytes {
+            out.push(char::from(HEX[usize::from(byte >> 4)]));
+            out.push(char::from(HEX[usize::from(byte & 0x0f)]));
+        }
+        out
+    }
 
     #[test]
     fn value_cursor_decodes_low_level_round_trip_primitives() {
@@ -1330,6 +1426,144 @@ mod tests {
         );
 
         let cursor = ScbValueCursor::new(&[0, 1]).unwrap();
+        assert_eq!(
+            cursor.check_finished().unwrap_err().code(),
+            ScbErrorCode::TrailingBytes
+        );
+    }
+
+    #[test]
+    fn uvar128_round_trips_canonical_boundaries() {
+        let cases = [
+            (0_u128, 1_u8, "00"),
+            (127, 7, "7f"),
+            (128, 8, "8001"),
+            (u128::from(u64::MAX), 64, "ffffffffffffffffff01"),
+            (u128::from(u64::MAX) + 1, 65, "80808080808080808002"),
+            (u128::MAX, 128, "ffffffffffffffffffffffffffffffffffff03"),
+        ];
+
+        for (value, width, expected_hex) in cases {
+            let encoded = encode_uvar128(value);
+            assert_eq!(to_hex(&encoded), expected_hex);
+            let mut cursor = ScbValueCursor::new(&encoded).unwrap();
+            assert_eq!(cursor.read_uvar128(width).unwrap(), value);
+            cursor.check_finished().unwrap();
+        }
+    }
+
+    #[test]
+    fn sint128_round_trips_extrema_and_signs() {
+        let cases = [
+            (0_i128, "00"),
+            (-1, "01"),
+            (1, "02"),
+            (-2, "03"),
+            (i128::MAX, "feffffffffffffffffffffffffffffffffff03"),
+            (i128::MIN, "ffffffffffffffffffffffffffffffffffff03"),
+        ];
+
+        for (value, expected_hex) in cases {
+            let encoded = encode_sint128(value);
+            assert_eq!(to_hex(&encoded), expected_hex);
+            let mut cursor = ScbValueCursor::new(&encoded).unwrap();
+            assert_eq!(cursor.read_sint128().unwrap(), value);
+            cursor.check_finished().unwrap();
+        }
+    }
+
+    #[test]
+    fn uvar128_rejects_invalid_widths_and_overflows() {
+        let mut zero_width = ScbValueCursor::new(&[0]).unwrap();
+        assert_eq!(
+            zero_width.read_uvar128(0).unwrap_err().code(),
+            ScbErrorCode::IntegerOverflow
+        );
+        assert_eq!(zero_width.position(), 0);
+        let mut excessive_width = ScbValueCursor::new(&[0]).unwrap();
+        assert_eq!(
+            excessive_width.read_uvar128(129).unwrap_err().code(),
+            ScbErrorCode::IntegerOverflow
+        );
+        assert_eq!(excessive_width.position(), 0);
+        assert_eq!(
+            ScbValueCursor::new(&encode_uvar128(128))
+                .unwrap()
+                .read_uvar128(7)
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::IntegerOverflow
+        );
+        assert_eq!(
+            ScbValueCursor::new(&[0xff; 19])
+                .unwrap()
+                .read_uvar128(128)
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::IntegerOverflow
+        );
+        assert_eq!(
+            ScbValueCursor::new(&[
+                0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                0xff, 0xff, 0xff, 0xff, 0x04,
+            ])
+            .unwrap()
+            .read_uvar128(128)
+            .unwrap_err()
+            .code(),
+            ScbErrorCode::IntegerOverflow
+        );
+    }
+
+    #[test]
+    fn uvar128_rejects_nonminimal_trailing_and_exhausted_input() {
+        assert_eq!(
+            ScbValueCursor::new(&[0x80, 0x00])
+                .unwrap()
+                .read_uvar128(128)
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::VarintNonMinimal
+        );
+        let mut overlong_zero = vec![0x80; 19];
+        overlong_zero.push(0x00);
+        assert_eq!(
+            ScbValueCursor::new(&overlong_zero)
+                .unwrap()
+                .read_uvar128(128)
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::VarintNonMinimal
+        );
+        let mut twentieth_nonzero = vec![0x80; 19];
+        twentieth_nonzero.push(0x01);
+        assert_eq!(
+            ScbValueCursor::new(&twentieth_nonzero)
+                .unwrap()
+                .read_uvar128(128)
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::IntegerOverflow
+        );
+        assert_eq!(
+            ScbValueCursor::new(&[0x80; 20])
+                .unwrap()
+                .read_uvar128(128)
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::IntegerOverflow
+        );
+        assert_eq!(
+            ScbValueCursor::new(&[0x80])
+                .unwrap()
+                .read_uvar128(128)
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::LengthOverflow
+        );
+
+        let mut cursor = ScbValueCursor::new(&[0, 1]).unwrap();
+        assert_eq!(cursor.read_uvar128(128).unwrap(), 0);
         assert_eq!(
             cursor.check_finished().unwrap_err().code(),
             ScbErrorCode::TrailingBytes

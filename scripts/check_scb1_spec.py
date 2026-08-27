@@ -13,6 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 ACCEPTED = json.loads((ROOT / "conformance/scb1/v1/accepted.json").read_text())
 REJECTED = json.loads((ROOT / "conformance/scb1/v1/rejected.json").read_text())
 SPEC = (ROOT / "docs/spec/SCB1.md").read_text()
+SCB1_SRC = (ROOT / "crates/sley-scb1/src/lib.rs").read_text()
+SCB1_README = (ROOT / "crates/sley-scb1/README.md").read_text()
 SUMS = ROOT / "conformance/scb1/v1/SHA256SUMS"
 
 
@@ -148,6 +150,37 @@ for marker in required_spec_markers:
     if marker not in normalized_spec:
         problems.append(f"missing normative marker: {marker}")
 
+required_u128_source_markers = [
+    "pub fn encode_uvar128",
+    "pub fn encode_sint128",
+    "pub fn read_uvar128",
+    "pub fn read_sint128",
+    "fn read_uvar128_width",
+]
+for marker in required_u128_source_markers:
+    if marker not in SCB1_SRC:
+        problems.append(f"missing SCB1 u128 primitive marker: {marker}")
+
+required_u128_readme_markers = [
+    "read_uvar128",
+    "sint128",
+    "encode_uvar128",
+    "encode_sint128",
+]
+for marker in required_u128_readme_markers:
+    if marker not in SCB1_README:
+        problems.append(f"missing README u128 primitive marker: {marker}")
+
+required_u128_test_markers = [
+    "fn uvar128_round_trips_canonical_boundaries",
+    "fn sint128_round_trips_extrema_and_signs",
+    "fn uvar128_rejects_invalid_widths_and_overflows",
+    "fn uvar128_rejects_nonminimal_trailing_and_exhausted_input",
+]
+for marker in required_u128_test_markers:
+    if marker not in SCB1_SRC:
+        problems.append(f"missing SCB1 u128 unit-test marker: {marker}")
+
 if problems:
     print(
         json.dumps(
@@ -167,6 +200,8 @@ print(
             "rejection_codes": len(observed_codes),
             "codec_implemented": (ROOT / "crates/sley-scb1/Cargo.toml").is_file(),
             "oracle_implemented": (ROOT / "oracle/scb1/pyproject.toml").is_file(),
+            "u128_source_markers": len(required_u128_source_markers),
+            "u128_unit_test_markers": len(required_u128_test_markers),
         },
         sort_keys=True,
     )
