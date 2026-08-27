@@ -309,7 +309,7 @@ def check_partial_fixtures() -> None:
     for marker in (
         "S20-350 partial mutation-value exact 18-vector rejection-code matrix",
         "126 accepted private mutation-value seeds with 698 deterministic trailing/prefix mutations",
-        "persistent harnesses beyond the bounded S20-700 schema and mutation-value smoke slices",
+        "persistent libFuzzer targets remain separate from this bounded make fuzz-smoke profile",
         "blocked mutation families",
     ):
         if gate_source.count(marker) != 1:

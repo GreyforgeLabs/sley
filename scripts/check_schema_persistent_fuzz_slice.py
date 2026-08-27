@@ -87,9 +87,9 @@ if slice_status.get("vulcan_review") != "DEFERRED_FORGE_OAUTH_401":
     problems.append("machine-summary-vulcan-review-drift")
 
 for path, marker in [
-    (RESULTS, "schema bootstrap persistent libFuzzer slice"),
+    (RESULTS, "Schema bootstrap persistent libFuzzer slice"),
     (RESULTS, "do not complete S20-700"),
-    (GAPS, "remaining persistent targets are still absent"),
+    (GAPS, "persistent targets are still absent"),
     (AUDIT, "make schema-persistent-fuzz-smoke"),
 ]:
     if marker not in path.read_text():

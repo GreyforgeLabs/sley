@@ -714,9 +714,6 @@
     "runtime_evidence": "evidence/runtime/s20-700-scb1-libfuzzer/evidence.json",
     "manual_command": "python3 scripts/run_scb1_persistent_fuzz.py --manual",
     "deferred_surfaces": [
-      "SSMC graph validator",
-      "type checker",
-      "CFG checker",
       "query requests",
       "mutation candidates",
       "merge engine",
@@ -740,9 +737,6 @@
     "registry_dispatch_covered": false,
     "vulcan_review": "DEFERRED_FORGE_OAUTH_401",
     "deferred_surfaces": [
-      "SSMC graph validator",
-      "type checker",
-      "CFG checker",
       "query requests",
       "mutation candidates",
       "merge engine",
@@ -769,9 +763,41 @@
     "full_s20_540_profile_covered": false,
     "vulcan_review": "DEFERRED_FORGE_OAUTH_401",
     "deferred_surfaces": [
-      "SSMC graph validator",
-      "type checker",
-      "CFG checker",
+      "query requests",
+      "mutation candidates",
+      "merge engine",
+      "VM canonical inputs",
+      "adapter responses"
+    ]
+  },
+  "s20_700_semantic_checkers_persistent_fuzz_slice": {
+    "status": "IMPLEMENTED_SCOPED_PUBLIC_TYPED_S20_210_S20_220_ONLY",
+    "targets": [
+      "fuzz/targets/type_checker.rs",
+      "fuzz/targets/ssmc_graph_cfg_checker.rs"
+    ],
+    "runner": "scripts/run_semantic_checkers_persistent_fuzz.py",
+    "checker": "scripts/check_semantic_checkers_persistent_fuzz_slice.py",
+    "persistent_fuzz_harness": true,
+    "full_s20_700_complete": false,
+    "canonical_graph_decoder_claimed": false,
+    "private_mutation_codec_used": false,
+    "max_input_bytes": 4096,
+    "max_generated_type_nodes": 512,
+    "type_checker_seed_count": 385,
+    "graph_cfg_seed_count": 396,
+    "graph_template_count": 4,
+    "graph_mutation_class_count": 33,
+    "max_graph_mutations_per_input": 8,
+    "runtime_evidence": "evidence/runtime/s20-700-semantic-checkers-libfuzzer/evidence.json",
+    "type_checker_manual_command": "python3 scripts/run_semantic_checkers_persistent_fuzz.py --manual --target type-checker",
+    "graph_cfg_manual_command": "python3 scripts/run_semantic_checkers_persistent_fuzz.py --manual --target graph-cfg",
+    "closed_harness_findings": 1,
+    "closed_harness_finding_ids": [
+      "S20-700-HARNESS-001"
+    ],
+    "vulcan_review": "DEFERRED_FORGE_OAUTH_401",
+    "deferred_surfaces": [
       "query requests",
       "mutation candidates",
       "merge engine",

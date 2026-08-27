@@ -5,6 +5,16 @@ experiments. New Sley 2 failures, timeouts, rejected designs, fuzz findings,
 and benchmark losses must be appended with inputs and evidence; they may not be
 deleted from denominators.
 
+## 2026-08-27: semantic-checker fuzz generator OOM
+
+The first persistent S20-210 type-checker smoke hit libFuzzer's 2 GB memory
+limit on minimized one-byte input `c2`. The production checker was not the
+source: the fuzz-only byte cursor repeated that seed through branching type
+constructors, so a depth-only guard still allowed exponential allocation.
+`S20-700-HARNESS-001` retains the input and root-cause disposition. A global
+512-node construction budget now bounds the generator, corpus generation
+consumes the regression fixture, and both semantic-checker smoke targets pass.
+
 ## 2026-08-27 — S20-270 handoff permission mismatch and rejected green candidate
 
 The first bounded Merlin implementation handoff inherited a read-only Atlas

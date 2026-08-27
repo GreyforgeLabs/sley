@@ -89,7 +89,7 @@ if slice_status.get("vulcan_review") != "DEFERRED_FORGE_OAUTH_401":
     problems.append("machine-summary-vulcan-review-drift")
 
 for path, marker in [
-    (RESULTS, "repository-pack importer persistent libFuzzer slice"),
+    (RESULTS, "Repository-pack importer persistent libFuzzer slice"),
     (RESULTS, "do not complete S20-700"),
     (GAPS, "importer persistent libFuzzer slices now exist"),
     (AUDIT, "make pack-persistent-fuzz-smoke"),

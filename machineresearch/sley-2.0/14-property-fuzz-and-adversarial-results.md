@@ -1,6 +1,6 @@
 # Property, Fuzz, and Adversarial Results
 
-Status: bounded partial S20-700 evidence with three scoped persistent libFuzzer
+Status: bounded partial S20-700 evidence with five scoped persistent libFuzzer
 harnesses. This is not the complete cross-surface suite or a final finding
 register. The 55-threat map remains `docs/THREAT_REGISTER.md`.
 
@@ -31,6 +31,20 @@ Current landed slices:
   receives bounded direct or outer-trailer-rehashed inputs derived from the
   committed S20-170 pack fixture. Failed preflight must promote no object;
   successful import must preserve the exact pack ID and repeat idempotently.
+- Type-checker persistent libFuzzer slice: fuzz-only typed constructors feed the
+  public typed S20-210 type checker under a global 512-node construction budget.
+  Environment, type-shape, trait, and instantiation judgments must repeat
+  identically.
+- Graph/CFG persistent libFuzzer slice: four accepted function-graph templates
+  receive up to eight mutations from 33 classes before the public typed S20-220
+  graph/CFG validator runs twice with an identical result.
+
+Closed development finding `S20-700-HARNESS-001` retains minimized input `c2`.
+The initial fuzz-only type generator could expand that cyclic one-byte stream
+exponentially and reach libFuzzer's memory limit. A global 512-node construction
+budget fixes the harness-only issue; the committed regression fixture is part
+of corpus generation, and the repeated smoke passes. No production checker
+defect was found by that event.
 
 The mutation-value slice is selected by:
 
@@ -41,12 +55,13 @@ cargo test -p sley-mutate mutation_value_codec_adversarial --locked
 
 Vulcan's bounded implementation review and Merlin's independent read-only code
 review found no report-grade issue in the earlier landed slices. Generic
-`Option<T>`, `ConstValue`, aggregate, candidate, runtime, merge, protocol,
-VM-input, and adapter-response fuzz targets remain outside these slices. The
-SCB1, schema bootstrap, and repository-pack importer persistent libFuzzer slices
-do not complete S20-700; persistent harnesses for the remaining required
-surfaces remain absent. Persistent fuzzing and minimized finding retention
-remain mandatory before S20-700 completion.
+`Option<T>`, `ConstValue`, aggregate, and runtime mutation-candidate codecs, plus
+query, merge, protocol, VM-input, and adapter-response fuzz targets remain
+outside these slices. The five persistent targets do not complete S20-700;
+persistent harnesses for the remaining required surfaces remain absent.
+Persistent fuzzing and minimized finding retention remain mandatory before
+S20-700 completion. Independent review of the new targets is deferred because
+the local Forge OAuth session returns 401.
 
 The SCB1 decoder persistent smoke is selected by:
 
@@ -67,6 +82,14 @@ The repository-pack importer persistent smoke is selected by:
 ```bash
 make pack-persistent-fuzz-smoke
 python3 scripts/run_pack_persistent_fuzz.py --manual
+```
+
+The semantic-checker persistent smoke is selected by:
+
+```bash
+make semantic-checkers-persistent-fuzz-smoke
+python3 scripts/run_semantic_checkers_persistent_fuzz.py --manual --target type-checker
+python3 scripts/run_semantic_checkers_persistent_fuzz.py --manual --target graph-cfg
 ```
 
 The bounded mutation-value post-commit environment, command durations, results,

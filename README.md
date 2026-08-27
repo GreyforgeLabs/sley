@@ -119,16 +119,19 @@ supported accepted fixtures through 252 trailing-byte and 446 distinct proper-
 prefix mutations with panic containment and deterministic errors, while the 18
 committed rejection vectors retain exact codes. It does not cover the blocked
 `Option<T>`, `ConstValue`, aggregate, candidate, or runtime surfaces. These
-slices do not complete the required cross-surface adversarial suite. Three
-honest persistent slices now cover the SCB1 decoder, direct `SLEYEP01` schema
-bootstrap importer, and S20-170 repository-pack importer. The pack target has a
+slices do not complete the required cross-surface adversarial suite. Five
+honest persistent targets now cover the SCB1 decoder, direct `SLEYEP01` schema
+bootstrap importer, S20-170 repository-pack importer, public typed S20-210 type
+checker, and public typed S20-220 graph/CFG validator. The pack target has a
 direct-input lane and a rehashed-trailer lane that reaches beyond the outer
-digest check while preserving failed-preflight no-write assertions. The three
-`*-persistent-fuzz-smoke` Make targets build local libFuzzer targets from
-`fuzz/` with installed Clang/nightly runtimes, generate deterministic seed
-corpus bytes from committed conformance fixtures, and record runtime evidence
-under `evidence/runtime/`. Each matching runner also supports `--manual` for an
-indefinite local run.
+digest check while preserving failed-preflight no-write assertions. The two
+semantic-checker targets use bounded fuzz-only typed constructors, not a
+parallel canonical decoder or the private mutation codec. Their 512-node type
+budget retains minimized harness-OOM input `S20-700-HARNESS-001` as a closed
+regression. The scoped `*-persistent-fuzz-smoke` Make targets use installed
+Clang/nightly runtimes, generate deterministic fixture-derived or synthetic
+corpora as documented, and record runtime evidence under `evidence/runtime/`.
+The matching runners document their manual indefinite-run form.
 
 ## Authority
 

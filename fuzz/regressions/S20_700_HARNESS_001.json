@@ -1,0 +1,11 @@
+{
+  "classification": "HARNESS_ONLY_FIXED",
+  "contract": "s20-700-fuzz-harness-regression-v1",
+  "disposition": "A global 512-node construction budget replaces depth-only recursive allocation control.",
+  "expected": "Both persistent semantic-checker targets complete without an OOM or crash.",
+  "finding_id": "S20-700-HARNESS-001",
+  "input_hex": "c2",
+  "production_checker_defect": false,
+  "root_cause": "The original fuzz-only type generator cycled a one-byte seed through branching recursive constructors and could allocate exponentially before reaching its depth bound.",
+  "target": "type_checker"
+}

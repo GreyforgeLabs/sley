@@ -52,8 +52,8 @@ SCOPES = {
             "126 accepted private mutation-value seeds with 698 deterministic trailing/prefix mutations",
         ],
         "deferred_unimplemented": [
-            "persistent harnesses beyond the bounded S20-700 schema and mutation-value smoke slices",
-            "future graph, type, CFG, query, blocked mutation families, merge, protocol, VM, and adapter targets",
+            "persistent libFuzzer targets remain separate from this bounded make fuzz-smoke profile",
+            "future query, blocked mutation families, merge, protocol, VM, and adapter targets",
         ],
     },
 }

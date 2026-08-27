@@ -64,7 +64,7 @@ if slice_status.get("selector_count") != 22:
 for path, marker in [
     (RESULTS, "SCB1 decoder persistent libFuzzer slice"),
     (RESULTS, "not complete S20-700"),
-    (GAPS, "remaining persistent targets are still absent"),
+    (GAPS, "persistent targets are still absent"),
 ]:
     if marker not in path.read_text():
         problems.append(f"doc-missing:{path.relative_to(ROOT)}:{marker}")
