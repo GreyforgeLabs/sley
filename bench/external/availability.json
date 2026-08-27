@@ -1,0 +1,33 @@
+{
+  "acquisition_or_network_search_performed": false,
+  "arm_id": "zerolang",
+  "availability_status": "UNAVAILABLE_NO_FROZEN_COMPARISON_PACKAGE",
+  "benchmark_plan_arm_status": "UNESTABLISHED",
+  "benchmark_plan_sha256": "10dae462f0a9520cbe4b3d4fd763897ea2d8af2b3d66915e00db802f8b8560ad",
+  "comparison_trials_executed": 0,
+  "contract": "sley2.external-arm-availability.v1",
+  "corpus_sha256": "7370b6ccb8ccd3f58fa2a90e316edf4bc5a1319b41a55253a2ee14bb5d73988d",
+  "global_project_availability_claimed": false,
+  "performance_claim": false,
+  "public_claim_authorized": false,
+  "reason_codes": [
+    "NO_REGISTERED_EXACT_VERSION",
+    "NO_REGISTERED_RUNNABLE_ARTIFACT_DIGEST",
+    "NO_REGISTERED_EQUIVALENT_FIXTURE",
+    "NO_REGISTERED_TOOL_DESCRIPTION_DIGEST",
+    "NO_REGISTERED_ENVIRONMENT_DIGEST",
+    "NO_REGISTERED_ORACLE_DIGEST"
+  ],
+  "registered_artifact_sha256": null,
+  "registered_artifact_size_bytes": null,
+  "registered_environment_digest": null,
+  "registered_exact_version": null,
+  "registered_fixture_digest": null,
+  "registered_oracle_digest": null,
+  "registered_tool_description_digest": null,
+  "required_arm": false,
+  "result": "EXPLICIT_UNAVAILABLE",
+  "scope": "REPOSITORY_REGISTERED_EVIDENCE_ONLY",
+  "superiority_claim": false,
+  "work_package": "S20-650"
+}

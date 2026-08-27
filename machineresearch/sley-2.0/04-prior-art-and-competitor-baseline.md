@@ -5,6 +5,9 @@ Status: S20-040 corpus v1 frozen
 The frozen Sley 1.2.0 artifact and raw-file editing are mandatory succession
 arms. Zerolang is optional only when an exact runnable version and equivalent
 environment can be preserved. No performance or superiority claim exists yet.
+S20-650 now records the optional arm as explicitly unavailable within this
+repository because no exact version, artifact, fixture, tool, environment, or
+oracle digest is registered. This is not a global project-availability claim.
 
 Corpus v1 contains one representation-neutral task for each of the 15 mandatory
 classes. Its task manifest SHA-256 is
