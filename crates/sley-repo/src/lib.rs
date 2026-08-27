@@ -1,6 +1,10 @@
 #![forbid(unsafe_code)]
 #![doc = include_str!("../README.md")]
 
+mod gc;
+
+pub use gc::*;
+
 use core::fmt;
 use std::collections::BTreeSet;
 
@@ -1585,5 +1589,24 @@ mod tests {
             );
         }
         assert!(!clean.root().join("objects").exists());
+    }
+
+    #[test]
+    fn bounded_pack_import_fuzz_smoke_rejects_rehashed_mutations() {
+        let (_source_temp, source, root, _) = fixture();
+        let pack = export_conformance_pack(&source, &[root], &verifier).unwrap();
+        let preimage_len = pack.stored_bytes.len() - ID_LEN;
+        let mutable_len = preimage_len - MAGIC.len();
+        for seed in 0..128_usize {
+            let mut bytes = pack.stored_bytes.clone();
+            let index = MAGIC.len() + (seed.wrapping_mul(2_654_435_761) % mutable_len);
+            bytes[index] ^= 1_u8 << (seed % 8);
+            let mutated_id = RepositoryPackId::derive(&bytes[..preimage_len]);
+            bytes[preimage_len..].copy_from_slice(mutated_id.as_bytes());
+            let clean_temp = TempRoot::new("pack-fuzz-smoke");
+            let clean = ObjectStore::new(&clean_temp.0);
+            assert!(import_conformance_pack(&clean, &bytes, &verifier).is_err());
+            assert!(!clean.root().join("objects").exists());
+        }
     }
 }

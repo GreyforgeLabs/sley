@@ -2,7 +2,7 @@
   "project": "Sley",
   "target_version": "2.0.0",
   "lineage": "machine-native",
-  "phase": "M1",
+  "phase": "M2",
   "legacy_freeze": {
     "version": "1.2.0",
     "commit": "397fa28ded15ddbeca5404ee00a3f5bd5546b296",
@@ -116,6 +116,47 @@
     "vulcan_review": "PASS",
     "implementation_complete": true
   },
+  "garbage_collection": {
+    "status": "S20_180_COMPLETE",
+    "contract": "docs/spec/GARBAGE_COLLECTION_V1.md",
+    "implementation": "crates/sley-repo/src/gc.rs",
+    "retention_anchor_kinds": 7,
+    "anchor_kinds": [
+      "ref",
+      "tag",
+      "lease",
+      "transaction",
+      "pack_manifest",
+      "protected_root",
+      "session_pin"
+    ],
+    "timestamp_reachability": "FORBIDDEN",
+    "schema_selected_object_reference_traversal": true,
+    "root_dependency_closure": true,
+    "canonical_inventory_required": true,
+    "dry_run_machine_report": true,
+    "exclusive_guarded_collection": true,
+    "partial_delete_report": true,
+    "idempotent_collection": true,
+    "gc_unit_tests": 19,
+    "sley_repo_total_unit_tests": 36,
+    "threat_evidence": ["T40"],
+    "nabu_design_review": "PASS",
+    "vulcan_review": "PASS",
+    "implementation_complete": true
+  },
+  "m1_exit": {
+    "status": "PASS",
+    "core": "PASS_IMPLEMENTED_M1_SCOPE",
+    "conformance": "PASS",
+    "adversarial": "PASS_IMPLEMENTED_M1_SCOPE",
+    "fuzz_smoke": "PASS_IMPLEMENTED_M1_SCOPE",
+    "rust_unit_and_integration_tests": 95,
+    "deterministic_fuzz_smoke_inputs": 512,
+    "persistent_fuzzing": "DEFERRED_TO_S20_700",
+    "future_surface_targets": "DEFERRED_UNTIL_IMPLEMENTED",
+    "v2_required": false
+  },
   "protocol": {"status": "DRAFT"},
   "identifiers": {
     "status": "S20_110_COMPLETE",
@@ -179,13 +220,13 @@
   },
   "open_findings": {"p0": 0, "p1": 0, "p2": 0, "p3": 0, "p4": 0},
   "evidence_gaps": [
-    "S20-180 reachability, pin, lease, and garbage collection",
     "M2 through M6 implementation and release evidence"
   ],
   "open_risks": [
     "The schema registry is executable, but production SSMC descriptor rows await S20-200",
     "The StateRoot row is a conformance epoch; the complete production epoch awaits S20-200",
     "The S20-170 pack profile is root/object-only; refs, transactions, compression, signatures, and clone equivalence await S20-540 or a new profile",
+    "The S20-180 exclusive GC guard is a local witness; S20-390 and S20-500 must integrate all accepted-state mutation with the same ownership boundary",
     "No VM exists",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]

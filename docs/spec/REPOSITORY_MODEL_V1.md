@@ -36,3 +36,10 @@ Timestamps never imply reachability.
 
 Recovery accepts exactly the old complete state or the new complete state with
 a valid receipt. Unreachable staged objects are permitted and later collectible.
+
+`GARBAGE_COLLECTION_V1.md` freezes the S20-180 retention snapshot, mark/report,
+and guarded collection profile. The snapshot consumes explicit typed
+ref/tag/lease/transaction/pack/protected-root/session-pin targets but does not
+create or authorize those repository facts. No timestamp or path age can imply
+retention. Later ref and transaction implementations must coordinate accepted
+state movement with the exclusive GC ownership boundary.

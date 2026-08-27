@@ -8,9 +8,14 @@ quick:
 	python3 scripts/check_object_store_spec.py
 	python3 scripts/check_state_root_spec.py
 	python3 scripts/check_repository_pack_spec.py
+	python3 scripts/check_gc_spec.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked
+
+core:
+	cargo test --workspace --locked
+	python3 scripts/check_m1_gate.py core
 
 conformance:
 	python3 scripts/check_scb1_spec.py
@@ -26,8 +31,19 @@ conformance:
 	uv run --project oracle/scb1 --frozen python scripts/check_state_root_vector.py
 	uv run --project oracle/scb1 --frozen python scripts/check_repository_pack_vector.py
 
-check-changed: quick conformance
+adversarial:
+	cargo test -p sley-store --locked
+	cargo test -p sley-repo --locked
+	python3 scripts/check_m1_gate.py adversarial
+
+fuzz-smoke:
+	cargo test -p sley-scb1 bounded_scb1_decoder_fuzz_smoke --locked
+	cargo test -p sley-store randomized_invalid_records_never_promote --locked
+	cargo test -p sley-repo bounded_pack_import_fuzz_smoke --locked
+	python3 scripts/check_m1_gate.py fuzz-smoke
+
+check-changed: quick core conformance adversarial fuzz-smoke
 	@python3 scripts/check_changed.py
 
-core adversarial fuzz-smoke v2 release-check:
+v2 release-check:
 	@python3 scripts/gate_status.py $@

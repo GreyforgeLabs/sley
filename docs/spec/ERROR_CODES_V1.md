@@ -46,6 +46,23 @@ S20-170 freezes these repository-pack codes:
 - `PACK_DECOMPRESSION_LIMIT` (reserved until a compressed profile exists)
 - `PACK_PROFILE_UNSUPPORTED`
 
+S20-180 freezes these garbage-collection codes:
+
+- `GC_RESOURCE_LIMIT`
+- `GC_ANCHOR_MALFORMED`
+- `GC_ANCHOR_UNRESOLVED`
+- `GC_ROOT_MISSING`
+- `GC_ROOT_INVALID`
+- `GC_DEPENDENCY_MISSING`
+- `GC_OBJECT_REFERENCE_MALFORMED`
+- `GC_OBJECT_MISSING`
+- `GC_INVENTORY_INVALID`
+- `GC_DRY_RUN_REQUIRED`
+- `GC_EXCLUSIVE_LOCK_REQUIRED`
+- `GC_DELETE_IO`
+- `GC_REACHABILITY_VIOLATION`
+- `GC_INTERNAL_INVARIANT`
+
 Numeric ranges and exact detail schemas are frozen with their owning contract,
 generated into all transports, and checked for drift. Bridges may not invent or
 collapse codes.

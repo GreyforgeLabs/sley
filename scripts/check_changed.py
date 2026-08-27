@@ -13,7 +13,7 @@ changed = subprocess.run(
 print(
     json.dumps(
         {
-            "phase": "M1",
+            "phase": "M2",
             "changed_files": changed,
             "affected_crates": [
                 "sley-id",
@@ -35,6 +35,7 @@ print(
                 "S20-150 immutable object store and corruption recovery",
                 "S20-160 deterministic state roots",
                 "S20-170 repository packs and clean reconstruction",
+                "S20-180 explicit retention and guarded garbage collection",
             ],
             "selected_checks": [
                 "scripts/check_m0.py",
@@ -44,19 +45,20 @@ print(
                 "scripts/check_object_store_spec.py",
                 "scripts/check_state_root_spec.py",
                 "scripts/check_repository_pack_spec.py",
+                "scripts/check_gc_spec.py",
                 "cargo fmt --check",
                 "cargo check --workspace --locked",
                 "cargo test --workspace --locked",
                 "make conformance",
+                "make core",
+                "make adversarial",
+                "make fuzz-smoke",
             ],
             "skipped_checks": [
-                "core",
-                "adversarial",
-                "fuzz-smoke",
                 "v2",
                 "release-check",
             ],
-            "skip_rationale": "S20-120 through S20-170 establish SCB1, schema-epoch, immutable-store, deterministic-root, and root/object pack conformance; GC, semantic kernel, clone-equivalent profiles, and later product gates remain unavailable.",
+            "skip_rationale": "M1 canonical-state implementation and scoped exit profiles pass; the M2 executable semantic kernel, clone-equivalent profiles, and later product/release gates remain unavailable.",
             "v2_required": False,
             "cache_use": "none",
             "result": "PASS",

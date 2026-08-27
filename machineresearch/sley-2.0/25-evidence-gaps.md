@@ -1,7 +1,8 @@
 # Evidence Gaps
 
-- S20-180 reachability, pins, leases, and garbage-collection evidence needed to
-  finish M1.
+- M1 is complete for its implemented canonical-state scope. Persistent fuzzing
+  remains S20-700 work and future-surface fuzz targets activate only when their
+  SSMC, mutation, merge, protocol, and VM boundaries exist.
 - All M2–M6 semantic-kernel, runtime, query, mutation, policy, repository,
   adversarial, succession, packaging, reproducibility, and independent-review
   evidence.

@@ -5,6 +5,16 @@ experiments. New Sley 2 failures, timeouts, rejected designs, fuzz findings,
 and benchmark losses must be appended with inputs and evidence; they may not be
 deleted from denominators.
 
+## 2026-08-27 — stale M0 gate placeholders at the M1 boundary
+
+The first S20-180 exit audit found that `make core`, `make adversarial`, and
+`make fuzz-smoke` still invoked the original M0 fail-closed placeholder and
+reported that no canonical kernel existed. Codex did not relabel that output as
+an M1 pass. The profiles now execute the implemented M1 surfaces, include
+deterministic decoder/store/pack fuzz smoke, and explicitly list future and
+persistent-fuzz targets as deferred. `make v2` and `make release-check` remain
+fail-closed.
+
 ## 2026-08-27 — Merlin S20-170 handoff timeout
 
 The bounded Merlin implementation handoff encountered an OpenClaw gateway

@@ -1,10 +1,11 @@
 # Object Store and State Roots
 
-Status: S20-170 repository packs and clean reconstruction complete.
+Status: S20-180 garbage collection and retention complete.
 
 StateRoot inputs are explicitly bounded in `REPOSITORY_MODEL_V1.md` and exclude
-refs, ancestry, timestamps, paths, locks, caches, and Git. S20-170 now provides
-root/object pack reconstruction; S20-180 still owns reachability and GC.
+refs, ancestry, timestamps, paths, locks, caches, and Git. S20-170 provides
+root/object pack reconstruction, and S20-180 provides explicit retention and
+guarded GC.
 
 S20-110 evidence:
 
@@ -105,3 +106,40 @@ The conformance pack reconstructs the exact S20-160 root/object surface. It is
 not a pack manifest retention implementation, compressed transport, repository
 head, transaction DAG, ref importer, or clone-equivalent profile. S20-180 owns
 GC roots/pins/leases, and S20-540 owns later exchange equivalence.
+
+S20-180 evidence:
+
+- `GARBAGE_COLLECTION_V1.md` freezes seven explicit anchor kinds, forbids
+  timestamp/age inference, closes root/object/reference/inventory/report limits,
+  and separates caller-owned retention authority from GC reachability judgment;
+- `RetentionSnapshot` canonicalizes unordered anchors, targets, and roots while
+  rejecting duplicate/empty anchor facts and invalid root catalogs;
+- mark traversal retains root dependencies plus direct and schema-resolved
+  transitive object references, and fails closed on missing dependencies,
+  missing objects, or malformed reference shape;
+- inventory accepts only exact lowercase final `.scb1` fan-out paths, rejects
+  symlinks, staging/foreign/malformed entries, and canonically verifies both
+  reachable objects and deletion candidates;
+- dry-run is deterministic and mutation-free; collection replans under an
+  exact store-bound exclusive guard, rereads candidates, deletes only the set
+  difference, syncs directories, and is idempotent;
+- delete and sync fault injection returns `GC_DELETE_IO` with an exact partial
+  report and never a false collected decision;
+- 19 GC tests cover all seven anchor kinds, empty retention, dependency and
+  object-reference closure, T40 candidate disjointness, malformed/corrupt/
+  symlink inventory, lock contention and wrong-store guards, dry-run purity,
+  actual preservation/deletion, idempotence, and partial host failures;
+- Nabu design review and Vulcan implementation/security triage both returned
+  PASS with no report-grade finding.
+
+The M1 exit profiles now pass for implemented scope: 95 Rust unit/integration
+tests, independent SCB1/schema/root/pack conformance, corruption and T40/T41
+adversarial coverage, and 512 deterministic bounded fuzz-smoke inputs across
+SCB1, invalid store records, and rehashed pack mutations. The gate reports
+explicitly defer persistent fuzzing to S20-700 and do not claim targets for
+future graph, mutation, merge, protocol, or VM boundaries.
+
+S20-180 does not create refs, transactions, tags, lease/session authority,
+pack-manifest policy, or protected policy governance. Its local guard prevents
+concurrent GC runs and witnesses wider exclusive ownership; S20-390/S20-500
+must make future accepted-state mutation honor the same boundary.

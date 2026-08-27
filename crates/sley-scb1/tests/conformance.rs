@@ -91,6 +91,26 @@ fn rejected_vectors_return_frozen_codes() {
     }
 }
 
+#[test]
+fn bounded_scb1_decoder_fuzz_smoke_rejects_seeded_noise() {
+    let mut seed = 0x5cb1_f022_5eed_u64;
+    for len in 0..256_usize {
+        let mut input = Vec::with_capacity(len);
+        for _ in 0..len {
+            seed = seed.wrapping_mul(6_364_136_223_846_793_005).wrapping_add(1);
+            input.push(seed.to_le_bytes()[4]);
+        }
+        assert!(
+            decode_standalone_fixture(&input, FixtureContract::EmptyObject).is_err(),
+            "seeded noise unexpectedly decoded at length {len}"
+        );
+        assert!(
+            decode_standalone_fixture(&input, FixtureContract::RequiredBool).is_err(),
+            "seeded noise unexpectedly decoded at length {len}"
+        );
+    }
+}
+
 fn encode_accepted(vector: &AcceptedVector) -> Vec<u8> {
     match vector.kind.as_str() {
         "uvar" => encode_uvar(vector.value.as_u64().unwrap()),
