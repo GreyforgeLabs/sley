@@ -26,7 +26,7 @@ LIBFUZZER = Path("/usr/lib/llvm-18/lib/clang/18/lib/linux/libclang_rt.fuzzer-x86
 MAX_LEN = 4097
 SMOKE_RUNS = 256
 SMOKE_TIMEOUT_SECONDS = 60
-SELECTOR_COUNT = 18
+SELECTOR_COUNT = 22
 
 
 def main() -> int:

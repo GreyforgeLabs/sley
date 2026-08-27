@@ -705,7 +705,7 @@
     "checker": "scripts/check_scb1_persistent_fuzz_slice.py",
     "persistent_fuzz_harness": true,
     "full_s20_700_complete": false,
-    "selector_count": 18,
+    "selector_count": 22,
     "seed_source": [
       "conformance/scb1/v1/accepted.json",
       "conformance/scb1/v1/rejected.json"

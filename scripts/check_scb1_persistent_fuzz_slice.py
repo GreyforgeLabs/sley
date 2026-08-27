@@ -23,6 +23,8 @@ for marker in [
     "encode_standalone_fixture(decoded.contract, &decoded.payload)",
     "encoded, payload",
     "assert_eq!(object_id, decoded.object_id",
+    "Schema::FixtureEmptyObject",
+    "Schema::FixtureRequiredBool",
     "Schema::NestedListFixture",
     "FixtureContract::RequiredBool",
 ]:
@@ -34,7 +36,7 @@ for marker in [
     "libclang_rt.fuzzer-x86_64.a",
     "nightly-2026-02-27",
     "conformance/scb1/v1",
-    "SELECTOR_COUNT = 18",
+    "SELECTOR_COUNT = 22",
     "\"full_s20_700_complete\": False",
     "\"SCB1_DECODER_ONLY\"",
 ]:
@@ -56,7 +58,7 @@ if slice_status.get("persistent_fuzz_harness") is not True:
     problems.append("machine-summary-persistent-harness-not-true")
 if slice_status.get("full_s20_700_complete") is not False:
     problems.append("machine-summary-full-s20-700-not-false")
-if slice_status.get("selector_count") != 18:
+if slice_status.get("selector_count") != 22:
     problems.append("machine-summary-selector-count-drift")
 
 for path, marker in [

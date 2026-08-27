@@ -9,7 +9,7 @@ use sley_scb1::{
 };
 
 const MAX_FUZZ_INPUT_BYTES: usize = 4096;
-const SELECTOR_COUNT: u8 = 18;
+const SELECTOR_COUNT: u8 = 22;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn LLVMFuzzerTestOneInput(data: *const u8, len: usize) -> i32 {
@@ -47,11 +47,11 @@ fn fuzz_one(input: &[u8]) {
         14 => decode_payload(&Schema::OptionUInt64, payload),
         15 => decode_payload(&Schema::UnionBool(7), payload),
         16 => decode_payload(&Schema::FixtureRecord, payload),
-        17 => {
-            decode_payload(&Schema::FixtureAcceptedRecord, payload);
-            decode_payload(&Schema::FixtureExtensibleRecord, payload);
-            decode_payload(&Schema::NestedListFixture, payload);
-        }
+        17 => decode_payload(&Schema::FixtureAcceptedRecord, payload),
+        18 => decode_payload(&Schema::FixtureEmptyObject, payload),
+        19 => decode_payload(&Schema::FixtureRequiredBool, payload),
+        20 => decode_payload(&Schema::FixtureExtensibleRecord, payload),
+        21 => decode_payload(&Schema::NestedListFixture, payload),
         _ => unreachable!(),
     }
 }
