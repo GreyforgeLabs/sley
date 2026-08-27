@@ -26,6 +26,6 @@
     {"id": "map-duplicate-key", "declared_type": "Map<UInt8,UInt8>", "input_hex": "020101010a01010114", "expected_code": "SCB_MAP_DUPLICATE"},
     {"id": "value-trailing-byte", "declared_type": "Bool", "input_hex": "0100", "expected_code": "SCB_TRAILING_BYTES"},
     {"id": "unknown-extension", "declared_type": "FixtureExtensibleRecord", "input_hex": "01011e011c04011000000000000000000000000000000000020101030101040100", "expected_code": "SCB_EXTENSION_UNKNOWN"},
-    {"id": "resource-nesting-65", "declared_type": "NestedListFixture", "input_hex": "", "generator": "nested_empty_list_depth_65", "expected_code": "SCB_RESOURCE_LIMIT"}
+    {"id": "resource-nesting-65", "declared_type": "NestedListFixture", "input_hex": "017f017d017b01790177017501730171016f016d016b01690167016501630161015f015d015b01590157015501530151014f014d014b01490147014501430141013f013d013b01390137013501330131012f012d012b01290127012501230121011f011d011b01190117011501130111010f010d010b0109010701050103010100", "expected_code": "SCB_RESOURCE_LIMIT"}
   ]
 }

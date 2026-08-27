@@ -54,14 +54,22 @@ def encode(vector: dict[str, object]) -> bytes:
         return uvar(len(items)) + b"".join(sized(item) for item in items)
     if kind == "record_bool_uvar":
         fields = [(1, b"\x01"), (3, uvar(int(value["3"])))]
-        return uvar(len(fields)) + b"".join(uvar(tag) + sized(item) for tag, item in fields)
+        return uvar(len(fields)) + b"".join(
+            uvar(tag) + sized(item) for tag, item in fields
+        )
     if kind == "map_uvar_text":
-        entries = [(uvar(int(key)), sized(str(text).encode("utf-8"))) for key, text in value]
-        return uvar(len(entries)) + b"".join(sized(key) + sized(item) for key, item in entries)
+        entries = [
+            (uvar(int(key)), sized(str(text).encode("utf-8"))) for key, text in value
+        ]
+        return uvar(len(entries)) + b"".join(
+            sized(key) + sized(item) for key, item in entries
+        )
     if kind == "option_uvar":
         return b"\x00\x00" if value is None else b"\x01" + sized(uvar(int(value)))
     if kind == "union_bool":
-        return uvar(int(vector["tag"])) + b"\x01" + (b"\x01" if value is True else b"\x00")
+        return (
+            uvar(int(vector["tag"])) + b"\x01" + (b"\x01" if value is True else b"\x00")
+        )
     if kind == "standalone_fixture_object":
         digest = str(vector["expected_digest_hex"])
         if digest != vector["expected_object_id"]:
@@ -79,24 +87,42 @@ for vector in ACCEPTED["vectors"]:
     accepted_ids.add(vector_id)
     actual = encode(vector).hex()
     if actual != vector["expected_hex"]:
-        problems.append(f"{vector_id}: expected {vector['expected_hex']}, computed {actual}")
+        problems.append(
+            f"{vector_id}: expected {vector['expected_hex']}, computed {actual}"
+        )
 
 required_codes = {
-    "SCB_MAGIC_INVALID", "SCB_VERSION_UNSUPPORTED", "SCB_CONTRACT_UNKNOWN",
-    "SCB_EPOCH_MISMATCH", "SCB_DIGEST_MISMATCH", "SCB_FIELD_MISSING",
+    "SCB_MAGIC_INVALID",
+    "SCB_VERSION_UNSUPPORTED",
+    "SCB_CONTRACT_UNKNOWN",
+    "SCB_EPOCH_MISMATCH",
+    "SCB_DIGEST_MISMATCH",
+    "SCB_FIELD_MISSING",
     "SCB_FIELD_UNKNOWN",
-    "SCB_VARINT_NON_MINIMAL", "SCB_INTEGER_OVERFLOW", "SCB_BOOL_INVALID",
-    "SCB_UTF8_INVALID", "SCB_LABEL_NOT_NFC", "SCB_FLOAT_NON_CANONICAL",
-    "SCB_LENGTH_OVERFLOW", "SCB_FIELD_DUPLICATE", "SCB_FIELD_ORDER",
-    "SCB_UNION_INVALID", "SCB_MAP_ORDER", "SCB_MAP_DUPLICATE",
-    "SCB_TRAILING_BYTES", "SCB_EXTENSION_UNKNOWN", "SCB_RESOURCE_LIMIT",
+    "SCB_VARINT_NON_MINIMAL",
+    "SCB_INTEGER_OVERFLOW",
+    "SCB_BOOL_INVALID",
+    "SCB_UTF8_INVALID",
+    "SCB_LABEL_NOT_NFC",
+    "SCB_FLOAT_NON_CANONICAL",
+    "SCB_LENGTH_OVERFLOW",
+    "SCB_FIELD_DUPLICATE",
+    "SCB_FIELD_ORDER",
+    "SCB_UNION_INVALID",
+    "SCB_MAP_ORDER",
+    "SCB_MAP_DUPLICATE",
+    "SCB_TRAILING_BYTES",
+    "SCB_EXTENSION_UNKNOWN",
+    "SCB_RESOURCE_LIMIT",
 }
 rejected_ids = [vector["id"] for vector in REJECTED["vectors"]]
 if len(rejected_ids) != len(set(rejected_ids)):
     problems.append("duplicate rejected vector ID")
 observed_codes = {vector["expected_code"] for vector in REJECTED["vectors"]}
 if not required_codes.issubset(observed_codes):
-    problems.append(f"missing rejection codes: {sorted(required_codes - observed_codes)}")
+    problems.append(
+        f"missing rejection codes: {sorted(required_codes - observed_codes)}"
+    )
 
 expected_sums = {
     fields[1]: fields[0]
@@ -123,15 +149,25 @@ for marker in required_spec_markers:
         problems.append(f"missing normative marker: {marker}")
 
 if problems:
-    print(json.dumps({"contract": "s20-100-check-v1", "result": "FAIL", "problems": problems}, indent=2))
+    print(
+        json.dumps(
+            {"contract": "s20-100-check-v1", "result": "FAIL", "problems": problems},
+            indent=2,
+        )
+    )
     raise SystemExit(1)
 
-print(json.dumps({
-    "contract": "s20-100-check-v1",
-    "result": "PASS",
-    "accepted_vectors": len(ACCEPTED["vectors"]),
-    "rejected_vectors": len(REJECTED["vectors"]),
-    "rejection_codes": len(observed_codes),
-    "codec_implemented": False,
-    "oracle_implemented": False,
-}, sort_keys=True))
+print(
+    json.dumps(
+        {
+            "contract": "s20-100-check-v1",
+            "result": "PASS",
+            "accepted_vectors": len(ACCEPTED["vectors"]),
+            "rejected_vectors": len(REJECTED["vectors"]),
+            "rejection_codes": len(observed_codes),
+            "codec_implemented": False,
+            "oracle_implemented": (ROOT / "oracle/scb1/pyproject.toml").is_file(),
+        },
+        sort_keys=True,
+    )
+)

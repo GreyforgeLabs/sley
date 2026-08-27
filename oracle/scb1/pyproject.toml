@@ -1,0 +1,20 @@
+[project]
+name = "sley2-scb1-oracle"
+version = "0.1.0"
+description = "Independent Python conformance oracle for Sley Canonical Binary v1"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "blake3==1.0.9",
+  "unicodedata2==16.0.0",
+]
+
+[project.scripts]
+sley2-scb1-oracle = "sley2_scb1_oracle.conformance:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sley2_scb1_oracle"]

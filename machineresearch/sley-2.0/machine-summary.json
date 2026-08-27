@@ -16,15 +16,15 @@
   "publication_authorized": false,
   "schema_epoch": null,
   "scb1": {
-    "status": "S20_100_SPEC_COMPLETE",
+    "status": "S20_100_SPEC_AND_S20_130_ORACLE_COMPLETE",
     "accepted_vectors": 23,
     "rejected_vectors": 26,
     "rejection_codes": 22,
     "accepted_fixture_sha256": "c6b7097b4f03d82c0181b473c3f3d90e028fe53c0ec8ff640c715954b5151e93",
-    "rejected_fixture_sha256": "525c6ec13b9f15d52237da94bf89221e0f22cbfb8a2fc6cffe410e22891dd055",
+    "rejected_fixture_sha256": "aaf7f3b2db7c26d79ad212c01858857e145e3ace3547390a53617811ad77f278",
     "ariadne_review": "PASS",
     "codec_implemented": false,
-    "independent_oracle_implemented": false
+    "independent_oracle_implemented": true
   },
   "ssmc1": {"status": "DRAFT"},
   "protocol": {"status": "DRAFT"},
@@ -39,7 +39,21 @@
     "ariadne_spec_review": "PASS",
     "vulcan_implementation_review": "PASS"
   },
-  "conformance": {"status": "NOT_IMPLEMENTED"},
+  "conformance": {
+    "status": "S20_130_COMPLETE",
+    "implementation": "oracle/scb1",
+    "language": "Python",
+    "blake3_version": "1.0.9",
+    "unicode_version": "16.0.0",
+    "unit_tests": 6,
+    "accepted_byte_agreement": 23,
+    "accepted_decode_agreement": 23,
+    "rejected_code_agreement": 26,
+    "rust_dependency_check": "PASS",
+    "vulcan_review": "PASS",
+    "resolved_review_findings": 1,
+    "cross_implementation_agreement": "PENDING_S20_120"
+  },
   "adversarial": {"status": "NOT_IMPLEMENTED"},
   "succession": {
     "corpus_version": 1,
@@ -70,12 +84,12 @@
   },
   "open_findings": {"p0": 0, "p1": 0, "p2": 0, "p3": 0, "p4": 0},
   "evidence_gaps": [
-    "S20-040 frozen benchmark design",
-    "M1 through M6 implementation and release evidence"
+    "S20-120 Rust SCB1 codec and cross-implementation agreement",
+    "M2 through M6 implementation and release evidence"
   ],
   "open_risks": [
-    "SCB1 tags and exact schemas are not frozen",
-    "Only the identifier crate is implemented; no codec, store, or VM exists",
-    "No succession benchmark exists"
+    "The independent oracle is green, but the Rust codec does not yet exist",
+    "No object store or VM exists",
+    "The succession corpus is frozen but no benchmark trial has executed"
   ]
 }
