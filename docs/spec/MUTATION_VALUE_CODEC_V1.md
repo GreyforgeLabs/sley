@@ -1,7 +1,7 @@
 # Mutation Value Codec v1
 
-Status: S20-345 normative contract freeze; S20-350a closed host model
-implemented; binary codecs and descriptor bindings deferred.
+Status: S20-345 normative contract freeze; S20-350a closed host model and
+S20-350b typed descriptor bindings implemented; binary codecs deferred.
 
 ## Exact schema source
 
@@ -33,8 +33,12 @@ The landed S20-350a slice generates the eighteen body structs,
 `EntityBodyValue`, and a seventy-five-variant `FieldValue` directly from the
 digest-pinned manifest. It includes a canonical unique raw-ID-ordered
 `EntityIdSet`; it deliberately exposes no encoder, decoder, runtime type-name
-selector, descriptor admission, precondition, or candidate builder. Those
-remain separate gates rather than implied behavior of the host representation.
+selector, precondition, or candidate builder. S20-350b adds a generated closed
+discriminant for every body and field plus one exact type-selection-only binding
+for each of S20-340's 179 immutable descriptors. Admission compares only those
+closed discriminants; it does not encode or validate value contents. Binary
+codecs and later candidate surfaces remain separate gates rather than implied
+behavior of the host representation.
 
 ## Canonical rules
 

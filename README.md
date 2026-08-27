@@ -57,9 +57,11 @@ kinds and all sixteen primitive classes from the exact frozen manifest. It
 provides no candidate construction, executable mutation, validation, policy,
 session, commit, or transaction authority. The first decomposed S20-350 slice
 now generates closed proposal-only host values for all eighteen entity bodies
-and all seventy-five body fields, with no runtime type-name dispatch. Binary
-codecs, the 179 descriptor bindings, preconditions, candidate records, and
-candidate construction remain deferred. S20-370 now
+and all seventy-five body fields, with no runtime type-name dispatch. A second
+slice binds all 179 immutable descriptors to exact closed body/field
+discriminants and performs type-selection-only admission. Binary codecs,
+preconditions, candidate records, and candidate construction remain deferred.
+S20-370 now
 adds a separately registry-authorized protected policy root with exact opaque
 principals, principal-specific grants, protected entity bindings, and mandatory
 test/contract finalization. It has no authenticated policy-transition,

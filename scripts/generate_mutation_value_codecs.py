@@ -5,13 +5,16 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import re
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "docs/spec/SSMC1_EPOCH1_SCHEMA.txt"
 OUTPUT = ROOT / "crates/sley-mutate/src/value_generated.rs"
+SCHEMA_GENERATOR = ROOT / "scripts/generate_mutation_schema.py"
 EXPECTED_SHA256 = "d0a3097c4d62cf5812934932cb18c2b55a6f7beddda1cf2c3092715706aa0918"
 EXPECTED_BLAKE3 = "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73"
 
@@ -33,6 +36,16 @@ class Entity:
     name: str
     body_name: str
     fields: tuple[Field, ...]
+
+
+def load_schema_generator():
+    spec = importlib.util.spec_from_file_location("sley2_mutation_schema_codegen", SCHEMA_GENERATOR)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("cannot load mutation schema generator")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 def split_top_level(value: str) -> list[str]:
@@ -130,7 +143,7 @@ def pascal(value: str) -> str:
     return "".join(piece[:1].upper() + piece[1:] for piece in value.split("_"))
 
 
-def render(entities: list[Entity]) -> str:
+def render(entities: list[Entity], operations) -> str:
     digest_bytes = ", ".join(
         f"0x{EXPECTED_BLAKE3[index:index + 2]}" for index in range(0, 64, 2)
     )
@@ -144,6 +157,8 @@ def render(entities: list[Entity]) -> str:
         f"pub const ENTITY_BODY_VALUE_COUNT: usize = {len(entities)};",
         "/// Closed entity-body field-value count.",
         f"pub const FIELD_VALUE_COUNT: usize = {sum(len(entity.fields) for entity in entities)};",
+        "/// Exact immutable descriptor-to-typed-value binding count.",
+        f"pub const TYPED_VALUE_BINDING_COUNT: usize = {len(operations)};",
         "",
     ]
     for entity in entities:
@@ -160,6 +175,29 @@ def render(entities: list[Entity]) -> str:
         lines.extend(["}", ""])
 
     lines.extend([
+        "/// Closed discriminant for one complete SSMC1 entity-body value.",
+        "#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]",
+        "pub enum EntityBodyValueKind {",
+    ])
+    for entity in entities:
+        lines.extend([
+            f"    /// Entity kind {entity.tag} (`{entity.name}`).",
+            f"    {entity.name},",
+        ])
+    lines.extend([
+        "}",
+        "",
+        "impl EntityBodyValueKind {",
+        "    /// Returns the exact closed SSMC1 entity-kind tag.",
+        "    #[must_use]",
+        "    pub const fn kind_tag(self) -> u16 {",
+        "        match self {",
+    ])
+    for entity in entities:
+        lines.append(f"            Self::{entity.name} => {entity.tag},")
+    lines.extend(["        }", "    }", "}", ""])
+
+    lines.extend([
         "/// Closed typed value for one complete SSMC1 entity body.",
         "#[derive(Clone, Debug, Eq, PartialEq)]",
         "pub enum EntityBodyValue {",
@@ -173,13 +211,53 @@ def render(entities: list[Entity]) -> str:
         "}",
         "",
         "impl EntityBodyValue {",
-        "    /// Returns the exact closed SSMC1 entity-kind tag.",
+        "    /// Returns the exact closed body-value discriminant.",
         "    #[must_use]",
-        "    pub const fn kind_tag(&self) -> u16 {",
+        "    pub const fn value_kind(&self) -> EntityBodyValueKind {",
         "        match self {",
     ])
     for entity in entities:
-        lines.append(f"            Self::{entity.name}(..) => {entity.tag},")
+        lines.append(
+            f"            Self::{entity.name}(..) => EntityBodyValueKind::{entity.name},"
+        )
+    lines.extend([
+        "        }",
+        "    }",
+        "",
+        "    /// Returns the exact closed SSMC1 entity-kind tag.",
+        "    #[must_use]",
+        "    pub const fn kind_tag(&self) -> u16 {",
+        "        self.value_kind().kind_tag()",
+        "    }",
+        "}",
+        "",
+    ])
+
+    lines.extend([
+        "/// Closed discriminant for one exact SSMC1 entity-body field value.",
+        "#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]",
+        "pub enum FieldValueKind {",
+    ])
+    for entity in entities:
+        for field in entity.fields:
+            variant = f"{entity.name}{pascal(field.name)}"
+            lines.extend([
+                f"    /// Kind {entity.tag}, field {field.tag} (`{entity.name}.{field.name}`).",
+                f"    {variant},",
+            ])
+    lines.extend([
+        "}",
+        "",
+        "impl FieldValueKind {",
+        "    /// Returns the exact `(entity_kind, field_tag)` selected by this discriminant.",
+        "    #[must_use]",
+        "    pub const fn field_key(self) -> (u16, u16) {",
+        "        match self {",
+    ])
+    for entity in entities:
+        for field in entity.fields:
+            variant = f"{entity.name}{pascal(field.name)}"
+            lines.append(f"            Self::{variant} => ({entity.tag}, {field.tag}),")
     lines.extend(["        }", "    }", "}", ""])
 
     lines.extend([
@@ -198,18 +276,38 @@ def render(entities: list[Entity]) -> str:
         "}",
         "",
         "impl FieldValue {",
-        "    /// Returns the exact `(entity_kind, field_tag)` selected by this value.",
+        "    /// Returns the exact closed field-value discriminant.",
         "    #[must_use]",
-        "    pub const fn field_key(&self) -> (u16, u16) {",
+        "    pub const fn value_kind(&self) -> FieldValueKind {",
         "        match self {",
     ])
     for entity in entities:
         for field in entity.fields:
             variant = f"{entity.name}{pascal(field.name)}"
-            lines.append(f"            Self::{variant}(..) => ({entity.tag}, {field.tag}),")
-    lines.extend(["        }", "    }", "}", ""])
+            lines.append(f"            Self::{variant}(..) => FieldValueKind::{variant},")
+    lines.extend([
+        "        }",
+        "    }",
+        "",
+        "    /// Returns the exact `(entity_kind, field_tag)` selected by this value.",
+        "    #[must_use]",
+        "    pub const fn field_key(&self) -> (u16, u16) {",
+        "        self.value_kind().field_key()",
+        "    }",
+        "}",
+        "",
+    ])
 
     lines.extend([
+        "/// Closed descriptor-selectable proposal-value discriminant.",
+        "#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]",
+        "pub enum ProposalValueKind {",
+        "    /// One complete entity-body kind.",
+        "    EntityBody(EntityBodyValueKind),",
+        "    /// One exact body-field kind.",
+        "    Field(FieldValueKind),",
+        "}",
+        "",
         "/// Closed proposal value before any candidate record exists.",
         "#[derive(Clone, Debug, Eq, PartialEq)]",
         "pub enum ProposalValue {",
@@ -219,7 +317,56 @@ def render(entities: list[Entity]) -> str:
         "    Field(FieldValue),",
         "}",
         "",
+        "impl ProposalValue {",
+        "    /// Returns the exact closed discriminant used for descriptor admission.",
+        "    #[must_use]",
+        "    pub const fn value_kind(&self) -> ProposalValueKind {",
+        "        match self {",
+        "            Self::EntityBody(value) => ProposalValueKind::EntityBody(value.value_kind()),",
+        "            Self::Field(value) => ProposalValueKind::Field(value.value_kind()),",
+        "        }",
+        "    }",
+        "}",
+        "",
+        "/// One exact immutable mutation descriptor to closed value-kind binding.",
+        "#[derive(Clone, Copy, Debug, Eq, PartialEq)]",
+        "pub struct TypedValueBinding {",
+        "    /// Closed mutation class.",
+        "    pub class: MutationClass,",
+        "    /// Exact target entity kind.",
+        "    pub target_kind: u16,",
+        "    /// Exact field tag, or `None` for a complete body.",
+        "    pub field_tag: Option<u16>,",
+        "    /// Exact closed proposal-value kind.",
+        "    pub value_kind: ProposalValueKind,",
+        "}",
+        "",
+        "/// Complete immutable descriptor-to-value-kind binding table.",
+        "pub const TYPED_VALUE_BINDINGS: &[TypedValueBinding] = &[",
     ])
+    entity_by_tag = {entity.tag: entity for entity in entities}
+    for operation in operations:
+        entity = entity_by_tag[operation.target_kind]
+        if operation.field_tag is None:
+            field_tag = "None"
+            value_kind = (
+                "ProposalValueKind::EntityBody("
+                f"EntityBodyValueKind::{entity.name})"
+            )
+        else:
+            field_tag = f"Some({operation.field_tag})"
+            field = entity.fields[operation.field_tag - 1]
+            variant = f"{entity.name}{pascal(field.name)}"
+            value_kind = f"ProposalValueKind::Field(FieldValueKind::{variant})"
+        lines.extend([
+            "    TypedValueBinding {",
+            f"        class: MutationClass::{operation.class_name},",
+            f"        target_kind: {operation.target_kind},",
+            f"        field_tag: {field_tag},",
+            f"        value_kind: {value_kind},",
+            "    },",
+        ])
+    lines.extend(["];", ""])
     return "\n".join(lines)
 
 
@@ -227,7 +374,14 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true", help="fail if committed output differs")
     args = parser.parse_args()
-    generated = render(parse_manifest(MANIFEST.read_bytes()))
+    raw = MANIFEST.read_bytes()
+    entities = parse_manifest(raw)
+    schema_generator = load_schema_generator()
+    schema_entities, enum_names = schema_generator.parse_manifest(raw)
+    operations = schema_generator.build_operations(schema_entities, enum_names)
+    if len(operations) != 179:
+        raise ValueError("descriptor binding inventory must remain exactly 179")
+    generated = render(entities, operations)
     if args.check:
         if not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != generated:
             raise SystemExit(

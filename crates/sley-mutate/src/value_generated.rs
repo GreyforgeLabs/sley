@@ -7,6 +7,8 @@ pub const VALUE_HOST_SOURCE_SCHEMA_BLAKE3: [u8; 32] = [0x04, 0x4d, 0x21, 0xd3, 0
 pub const ENTITY_BODY_VALUE_COUNT: usize = 18;
 /// Closed entity-body field-value count.
 pub const FIELD_VALUE_COUNT: usize = 75;
+/// Exact immutable descriptor-to-typed-value binding count.
+pub const TYPED_VALUE_BINDING_COUNT: usize = 179;
 
 /// Closed proposal-only body for entity kind 1 (`Workspace`).
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -248,6 +250,74 @@ pub struct DependencyBindingBody {
     pub local_namespace: EntityId,
 }
 
+/// Closed discriminant for one complete SSMC1 entity-body value.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum EntityBodyValueKind {
+    /// Entity kind 1 (`Workspace`).
+    Workspace,
+    /// Entity kind 2 (`Package`).
+    Package,
+    /// Entity kind 3 (`Namespace`).
+    Namespace,
+    /// Entity kind 4 (`TypeDef`).
+    TypeDef,
+    /// Entity kind 5 (`Function`).
+    Function,
+    /// Entity kind 6 (`Parameter`).
+    Parameter,
+    /// Entity kind 7 (`Block`).
+    Block,
+    /// Entity kind 8 (`Operation`).
+    Operation,
+    /// Entity kind 9 (`Constant`).
+    Constant,
+    /// Entity kind 10 (`GlobalValue`).
+    GlobalValue,
+    /// Entity kind 11 (`EffectDef`).
+    EffectDef,
+    /// Entity kind 12 (`CapabilityRequirement`).
+    CapabilityRequirement,
+    /// Entity kind 13 (`Contract`).
+    Contract,
+    /// Entity kind 14 (`TestCase`).
+    TestCase,
+    /// Entity kind 15 (`AdapterImport`).
+    AdapterImport,
+    /// Entity kind 16 (`EntryPoint`).
+    EntryPoint,
+    /// Entity kind 17 (`PolicyBinding`).
+    PolicyBinding,
+    /// Entity kind 18 (`DependencyBinding`).
+    DependencyBinding,
+}
+
+impl EntityBodyValueKind {
+    /// Returns the exact closed SSMC1 entity-kind tag.
+    #[must_use]
+    pub const fn kind_tag(self) -> u16 {
+        match self {
+            Self::Workspace => 1,
+            Self::Package => 2,
+            Self::Namespace => 3,
+            Self::TypeDef => 4,
+            Self::Function => 5,
+            Self::Parameter => 6,
+            Self::Block => 7,
+            Self::Operation => 8,
+            Self::Constant => 9,
+            Self::GlobalValue => 10,
+            Self::EffectDef => 11,
+            Self::CapabilityRequirement => 12,
+            Self::Contract => 13,
+            Self::TestCase => 14,
+            Self::AdapterImport => 15,
+            Self::EntryPoint => 16,
+            Self::PolicyBinding => 17,
+            Self::DependencyBinding => 18,
+        }
+    }
+}
+
 /// Closed typed value for one complete SSMC1 entity body.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum EntityBodyValue {
@@ -290,28 +360,273 @@ pub enum EntityBodyValue {
 }
 
 impl EntityBodyValue {
+    /// Returns the exact closed body-value discriminant.
+    #[must_use]
+    pub const fn value_kind(&self) -> EntityBodyValueKind {
+        match self {
+            Self::Workspace(..) => EntityBodyValueKind::Workspace,
+            Self::Package(..) => EntityBodyValueKind::Package,
+            Self::Namespace(..) => EntityBodyValueKind::Namespace,
+            Self::TypeDef(..) => EntityBodyValueKind::TypeDef,
+            Self::Function(..) => EntityBodyValueKind::Function,
+            Self::Parameter(..) => EntityBodyValueKind::Parameter,
+            Self::Block(..) => EntityBodyValueKind::Block,
+            Self::Operation(..) => EntityBodyValueKind::Operation,
+            Self::Constant(..) => EntityBodyValueKind::Constant,
+            Self::GlobalValue(..) => EntityBodyValueKind::GlobalValue,
+            Self::EffectDef(..) => EntityBodyValueKind::EffectDef,
+            Self::CapabilityRequirement(..) => EntityBodyValueKind::CapabilityRequirement,
+            Self::Contract(..) => EntityBodyValueKind::Contract,
+            Self::TestCase(..) => EntityBodyValueKind::TestCase,
+            Self::AdapterImport(..) => EntityBodyValueKind::AdapterImport,
+            Self::EntryPoint(..) => EntityBodyValueKind::EntryPoint,
+            Self::PolicyBinding(..) => EntityBodyValueKind::PolicyBinding,
+            Self::DependencyBinding(..) => EntityBodyValueKind::DependencyBinding,
+        }
+    }
+
     /// Returns the exact closed SSMC1 entity-kind tag.
     #[must_use]
     pub const fn kind_tag(&self) -> u16 {
+        self.value_kind().kind_tag()
+    }
+}
+
+/// Closed discriminant for one exact SSMC1 entity-body field value.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum FieldValueKind {
+    /// Kind 1, field 1 (`Workspace.packages`).
+    WorkspacePackages,
+    /// Kind 1, field 2 (`Workspace.root_namespace`).
+    WorkspaceRootNamespace,
+    /// Kind 1, field 3 (`Workspace.capability_requirements`).
+    WorkspaceCapabilityRequirements,
+    /// Kind 1, field 4 (`Workspace.contracts`).
+    WorkspaceContracts,
+    /// Kind 1, field 5 (`Workspace.tests`).
+    WorkspaceTests,
+    /// Kind 2, field 1 (`Package.workspace`).
+    PackageWorkspace,
+    /// Kind 2, field 2 (`Package.root_namespace`).
+    PackageRootNamespace,
+    /// Kind 2, field 3 (`Package.dependencies`).
+    PackageDependencies,
+    /// Kind 2, field 4 (`Package.exports`).
+    PackageExports,
+    /// Kind 3, field 1 (`Namespace.parent`).
+    NamespaceParent,
+    /// Kind 3, field 2 (`Namespace.members`).
+    NamespaceMembers,
+    /// Kind 4, field 1 (`TypeDef.type_parameters`).
+    TypeDefTypeParameters,
+    /// Kind 4, field 2 (`TypeDef.form`).
+    TypeDefForm,
+    /// Kind 4, field 3 (`TypeDef.invariants`).
+    TypeDefInvariants,
+    /// Kind 4, field 4 (`TypeDef.visibility`).
+    TypeDefVisibility,
+    /// Kind 5, field 1 (`Function.type_parameters`).
+    FunctionTypeParameters,
+    /// Kind 5, field 2 (`Function.parameters`).
+    FunctionParameters,
+    /// Kind 5, field 3 (`Function.result_type`).
+    FunctionResultType,
+    /// Kind 5, field 4 (`Function.effects`).
+    FunctionEffects,
+    /// Kind 5, field 5 (`Function.entry_block`).
+    FunctionEntryBlock,
+    /// Kind 5, field 6 (`Function.blocks`).
+    FunctionBlocks,
+    /// Kind 5, field 7 (`Function.contracts`).
+    FunctionContracts,
+    /// Kind 5, field 8 (`Function.visibility`).
+    FunctionVisibility,
+    /// Kind 6, field 1 (`Parameter.owner`).
+    ParameterOwner,
+    /// Kind 6, field 2 (`Parameter.role`).
+    ParameterRole,
+    /// Kind 6, field 3 (`Parameter.ordinal`).
+    ParameterOrdinal,
+    /// Kind 6, field 4 (`Parameter.value_type`).
+    ParameterValueType,
+    /// Kind 7, field 1 (`Block.function`).
+    BlockFunction,
+    /// Kind 7, field 2 (`Block.parameters`).
+    BlockParameters,
+    /// Kind 7, field 3 (`Block.operations`).
+    BlockOperations,
+    /// Kind 7, field 4 (`Block.terminator`).
+    BlockTerminator,
+    /// Kind 7, field 5 (`Block.reachability`).
+    BlockReachability,
+    /// Kind 8, field 1 (`Operation.block`).
+    OperationBlock,
+    /// Kind 8, field 2 (`Operation.ordinal`).
+    OperationOrdinal,
+    /// Kind 8, field 3 (`Operation.opcode`).
+    OperationOpcode,
+    /// Kind 8, field 4 (`Operation.operands`).
+    OperationOperands,
+    /// Kind 8, field 5 (`Operation.result_types`).
+    OperationResultTypes,
+    /// Kind 8, field 6 (`Operation.immediate`).
+    OperationImmediate,
+    /// Kind 9, field 1 (`Constant.value`).
+    ConstantValue,
+    /// Kind 10, field 1 (`GlobalValue.value_type`).
+    GlobalValueValueType,
+    /// Kind 10, field 2 (`GlobalValue.initializer`).
+    GlobalValueInitializer,
+    /// Kind 10, field 3 (`GlobalValue.visibility`).
+    GlobalValueVisibility,
+    /// Kind 11, field 1 (`EffectDef.effect_kind`).
+    EffectDefEffectKind,
+    /// Kind 11, field 2 (`EffectDef.scope_type`).
+    EffectDefScopeType,
+    /// Kind 11, field 3 (`EffectDef.request_type`).
+    EffectDefRequestType,
+    /// Kind 11, field 4 (`EffectDef.response_type`).
+    EffectDefResponseType,
+    /// Kind 11, field 5 (`EffectDef.failure_type`).
+    EffectDefFailureType,
+    /// Kind 11, field 6 (`EffectDef.visibility`).
+    EffectDefVisibility,
+    /// Kind 12, field 1 (`CapabilityRequirement.effect`).
+    CapabilityRequirementEffect,
+    /// Kind 12, field 2 (`CapabilityRequirement.allowed_scopes`).
+    CapabilityRequirementAllowedScopes,
+    /// Kind 12, field 3 (`CapabilityRequirement.constraint_contracts`).
+    CapabilityRequirementConstraintContracts,
+    /// Kind 13, field 1 (`Contract.target`).
+    ContractTarget,
+    /// Kind 13, field 2 (`Contract.contract_kind`).
+    ContractContractKind,
+    /// Kind 13, field 3 (`Contract.predicate`).
+    ContractPredicate,
+    /// Kind 13, field 4 (`Contract.bindings`).
+    ContractBindings,
+    /// Kind 13, field 5 (`Contract.resource_limits`).
+    ContractResourceLimits,
+    /// Kind 14, field 1 (`TestCase.target`).
+    TestCaseTarget,
+    /// Kind 14, field 2 (`TestCase.inputs`).
+    TestCaseInputs,
+    /// Kind 14, field 3 (`TestCase.effect_environment`).
+    TestCaseEffectEnvironment,
+    /// Kind 14, field 4 (`TestCase.expected`).
+    TestCaseExpected,
+    /// Kind 14, field 5 (`TestCase.observations`).
+    TestCaseObservations,
+    /// Kind 14, field 6 (`TestCase.resource_limits`).
+    TestCaseResourceLimits,
+    /// Kind 15, field 1 (`AdapterImport.adapter_id`).
+    AdapterImportAdapterId,
+    /// Kind 15, field 2 (`AdapterImport.abi_version`).
+    AdapterImportAbiVersion,
+    /// Kind 15, field 3 (`AdapterImport.request_type`).
+    AdapterImportRequestType,
+    /// Kind 15, field 4 (`AdapterImport.response_type`).
+    AdapterImportResponseType,
+    /// Kind 15, field 5 (`AdapterImport.failure_type`).
+    AdapterImportFailureType,
+    /// Kind 15, field 6 (`AdapterImport.effects`).
+    AdapterImportEffects,
+    /// Kind 16, field 1 (`EntryPoint.function`).
+    EntryPointFunction,
+    /// Kind 16, field 2 (`EntryPoint.exposure`).
+    EntryPointExposure,
+    /// Kind 17, field 1 (`PolicyBinding.subject`).
+    PolicyBindingSubject,
+    /// Kind 17, field 2 (`PolicyBinding.requirements`).
+    PolicyBindingRequirements,
+    /// Kind 18, field 1 (`DependencyBinding.dependency_root`).
+    DependencyBindingDependencyRoot,
+    /// Kind 18, field 2 (`DependencyBinding.external_package`).
+    DependencyBindingExternalPackage,
+    /// Kind 18, field 3 (`DependencyBinding.local_namespace`).
+    DependencyBindingLocalNamespace,
+}
+
+impl FieldValueKind {
+    /// Returns the exact `(entity_kind, field_tag)` selected by this discriminant.
+    #[must_use]
+    pub const fn field_key(self) -> (u16, u16) {
         match self {
-            Self::Workspace(..) => 1,
-            Self::Package(..) => 2,
-            Self::Namespace(..) => 3,
-            Self::TypeDef(..) => 4,
-            Self::Function(..) => 5,
-            Self::Parameter(..) => 6,
-            Self::Block(..) => 7,
-            Self::Operation(..) => 8,
-            Self::Constant(..) => 9,
-            Self::GlobalValue(..) => 10,
-            Self::EffectDef(..) => 11,
-            Self::CapabilityRequirement(..) => 12,
-            Self::Contract(..) => 13,
-            Self::TestCase(..) => 14,
-            Self::AdapterImport(..) => 15,
-            Self::EntryPoint(..) => 16,
-            Self::PolicyBinding(..) => 17,
-            Self::DependencyBinding(..) => 18,
+            Self::WorkspacePackages => (1, 1),
+            Self::WorkspaceRootNamespace => (1, 2),
+            Self::WorkspaceCapabilityRequirements => (1, 3),
+            Self::WorkspaceContracts => (1, 4),
+            Self::WorkspaceTests => (1, 5),
+            Self::PackageWorkspace => (2, 1),
+            Self::PackageRootNamespace => (2, 2),
+            Self::PackageDependencies => (2, 3),
+            Self::PackageExports => (2, 4),
+            Self::NamespaceParent => (3, 1),
+            Self::NamespaceMembers => (3, 2),
+            Self::TypeDefTypeParameters => (4, 1),
+            Self::TypeDefForm => (4, 2),
+            Self::TypeDefInvariants => (4, 3),
+            Self::TypeDefVisibility => (4, 4),
+            Self::FunctionTypeParameters => (5, 1),
+            Self::FunctionParameters => (5, 2),
+            Self::FunctionResultType => (5, 3),
+            Self::FunctionEffects => (5, 4),
+            Self::FunctionEntryBlock => (5, 5),
+            Self::FunctionBlocks => (5, 6),
+            Self::FunctionContracts => (5, 7),
+            Self::FunctionVisibility => (5, 8),
+            Self::ParameterOwner => (6, 1),
+            Self::ParameterRole => (6, 2),
+            Self::ParameterOrdinal => (6, 3),
+            Self::ParameterValueType => (6, 4),
+            Self::BlockFunction => (7, 1),
+            Self::BlockParameters => (7, 2),
+            Self::BlockOperations => (7, 3),
+            Self::BlockTerminator => (7, 4),
+            Self::BlockReachability => (7, 5),
+            Self::OperationBlock => (8, 1),
+            Self::OperationOrdinal => (8, 2),
+            Self::OperationOpcode => (8, 3),
+            Self::OperationOperands => (8, 4),
+            Self::OperationResultTypes => (8, 5),
+            Self::OperationImmediate => (8, 6),
+            Self::ConstantValue => (9, 1),
+            Self::GlobalValueValueType => (10, 1),
+            Self::GlobalValueInitializer => (10, 2),
+            Self::GlobalValueVisibility => (10, 3),
+            Self::EffectDefEffectKind => (11, 1),
+            Self::EffectDefScopeType => (11, 2),
+            Self::EffectDefRequestType => (11, 3),
+            Self::EffectDefResponseType => (11, 4),
+            Self::EffectDefFailureType => (11, 5),
+            Self::EffectDefVisibility => (11, 6),
+            Self::CapabilityRequirementEffect => (12, 1),
+            Self::CapabilityRequirementAllowedScopes => (12, 2),
+            Self::CapabilityRequirementConstraintContracts => (12, 3),
+            Self::ContractTarget => (13, 1),
+            Self::ContractContractKind => (13, 2),
+            Self::ContractPredicate => (13, 3),
+            Self::ContractBindings => (13, 4),
+            Self::ContractResourceLimits => (13, 5),
+            Self::TestCaseTarget => (14, 1),
+            Self::TestCaseInputs => (14, 2),
+            Self::TestCaseEffectEnvironment => (14, 3),
+            Self::TestCaseExpected => (14, 4),
+            Self::TestCaseObservations => (14, 5),
+            Self::TestCaseResourceLimits => (14, 6),
+            Self::AdapterImportAdapterId => (15, 1),
+            Self::AdapterImportAbiVersion => (15, 2),
+            Self::AdapterImportRequestType => (15, 3),
+            Self::AdapterImportResponseType => (15, 4),
+            Self::AdapterImportFailureType => (15, 5),
+            Self::AdapterImportEffects => (15, 6),
+            Self::EntryPointFunction => (16, 1),
+            Self::EntryPointExposure => (16, 2),
+            Self::PolicyBindingSubject => (17, 1),
+            Self::PolicyBindingRequirements => (17, 2),
+            Self::DependencyBindingDependencyRoot => (18, 1),
+            Self::DependencyBindingExternalPackage => (18, 2),
+            Self::DependencyBindingLocalNamespace => (18, 3),
         }
     }
 }
@@ -472,87 +787,102 @@ pub enum FieldValue {
 }
 
 impl FieldValue {
+    /// Returns the exact closed field-value discriminant.
+    #[must_use]
+    pub const fn value_kind(&self) -> FieldValueKind {
+        match self {
+            Self::WorkspacePackages(..) => FieldValueKind::WorkspacePackages,
+            Self::WorkspaceRootNamespace(..) => FieldValueKind::WorkspaceRootNamespace,
+            Self::WorkspaceCapabilityRequirements(..) => FieldValueKind::WorkspaceCapabilityRequirements,
+            Self::WorkspaceContracts(..) => FieldValueKind::WorkspaceContracts,
+            Self::WorkspaceTests(..) => FieldValueKind::WorkspaceTests,
+            Self::PackageWorkspace(..) => FieldValueKind::PackageWorkspace,
+            Self::PackageRootNamespace(..) => FieldValueKind::PackageRootNamespace,
+            Self::PackageDependencies(..) => FieldValueKind::PackageDependencies,
+            Self::PackageExports(..) => FieldValueKind::PackageExports,
+            Self::NamespaceParent(..) => FieldValueKind::NamespaceParent,
+            Self::NamespaceMembers(..) => FieldValueKind::NamespaceMembers,
+            Self::TypeDefTypeParameters(..) => FieldValueKind::TypeDefTypeParameters,
+            Self::TypeDefForm(..) => FieldValueKind::TypeDefForm,
+            Self::TypeDefInvariants(..) => FieldValueKind::TypeDefInvariants,
+            Self::TypeDefVisibility(..) => FieldValueKind::TypeDefVisibility,
+            Self::FunctionTypeParameters(..) => FieldValueKind::FunctionTypeParameters,
+            Self::FunctionParameters(..) => FieldValueKind::FunctionParameters,
+            Self::FunctionResultType(..) => FieldValueKind::FunctionResultType,
+            Self::FunctionEffects(..) => FieldValueKind::FunctionEffects,
+            Self::FunctionEntryBlock(..) => FieldValueKind::FunctionEntryBlock,
+            Self::FunctionBlocks(..) => FieldValueKind::FunctionBlocks,
+            Self::FunctionContracts(..) => FieldValueKind::FunctionContracts,
+            Self::FunctionVisibility(..) => FieldValueKind::FunctionVisibility,
+            Self::ParameterOwner(..) => FieldValueKind::ParameterOwner,
+            Self::ParameterRole(..) => FieldValueKind::ParameterRole,
+            Self::ParameterOrdinal(..) => FieldValueKind::ParameterOrdinal,
+            Self::ParameterValueType(..) => FieldValueKind::ParameterValueType,
+            Self::BlockFunction(..) => FieldValueKind::BlockFunction,
+            Self::BlockParameters(..) => FieldValueKind::BlockParameters,
+            Self::BlockOperations(..) => FieldValueKind::BlockOperations,
+            Self::BlockTerminator(..) => FieldValueKind::BlockTerminator,
+            Self::BlockReachability(..) => FieldValueKind::BlockReachability,
+            Self::OperationBlock(..) => FieldValueKind::OperationBlock,
+            Self::OperationOrdinal(..) => FieldValueKind::OperationOrdinal,
+            Self::OperationOpcode(..) => FieldValueKind::OperationOpcode,
+            Self::OperationOperands(..) => FieldValueKind::OperationOperands,
+            Self::OperationResultTypes(..) => FieldValueKind::OperationResultTypes,
+            Self::OperationImmediate(..) => FieldValueKind::OperationImmediate,
+            Self::ConstantValue(..) => FieldValueKind::ConstantValue,
+            Self::GlobalValueValueType(..) => FieldValueKind::GlobalValueValueType,
+            Self::GlobalValueInitializer(..) => FieldValueKind::GlobalValueInitializer,
+            Self::GlobalValueVisibility(..) => FieldValueKind::GlobalValueVisibility,
+            Self::EffectDefEffectKind(..) => FieldValueKind::EffectDefEffectKind,
+            Self::EffectDefScopeType(..) => FieldValueKind::EffectDefScopeType,
+            Self::EffectDefRequestType(..) => FieldValueKind::EffectDefRequestType,
+            Self::EffectDefResponseType(..) => FieldValueKind::EffectDefResponseType,
+            Self::EffectDefFailureType(..) => FieldValueKind::EffectDefFailureType,
+            Self::EffectDefVisibility(..) => FieldValueKind::EffectDefVisibility,
+            Self::CapabilityRequirementEffect(..) => FieldValueKind::CapabilityRequirementEffect,
+            Self::CapabilityRequirementAllowedScopes(..) => FieldValueKind::CapabilityRequirementAllowedScopes,
+            Self::CapabilityRequirementConstraintContracts(..) => FieldValueKind::CapabilityRequirementConstraintContracts,
+            Self::ContractTarget(..) => FieldValueKind::ContractTarget,
+            Self::ContractContractKind(..) => FieldValueKind::ContractContractKind,
+            Self::ContractPredicate(..) => FieldValueKind::ContractPredicate,
+            Self::ContractBindings(..) => FieldValueKind::ContractBindings,
+            Self::ContractResourceLimits(..) => FieldValueKind::ContractResourceLimits,
+            Self::TestCaseTarget(..) => FieldValueKind::TestCaseTarget,
+            Self::TestCaseInputs(..) => FieldValueKind::TestCaseInputs,
+            Self::TestCaseEffectEnvironment(..) => FieldValueKind::TestCaseEffectEnvironment,
+            Self::TestCaseExpected(..) => FieldValueKind::TestCaseExpected,
+            Self::TestCaseObservations(..) => FieldValueKind::TestCaseObservations,
+            Self::TestCaseResourceLimits(..) => FieldValueKind::TestCaseResourceLimits,
+            Self::AdapterImportAdapterId(..) => FieldValueKind::AdapterImportAdapterId,
+            Self::AdapterImportAbiVersion(..) => FieldValueKind::AdapterImportAbiVersion,
+            Self::AdapterImportRequestType(..) => FieldValueKind::AdapterImportRequestType,
+            Self::AdapterImportResponseType(..) => FieldValueKind::AdapterImportResponseType,
+            Self::AdapterImportFailureType(..) => FieldValueKind::AdapterImportFailureType,
+            Self::AdapterImportEffects(..) => FieldValueKind::AdapterImportEffects,
+            Self::EntryPointFunction(..) => FieldValueKind::EntryPointFunction,
+            Self::EntryPointExposure(..) => FieldValueKind::EntryPointExposure,
+            Self::PolicyBindingSubject(..) => FieldValueKind::PolicyBindingSubject,
+            Self::PolicyBindingRequirements(..) => FieldValueKind::PolicyBindingRequirements,
+            Self::DependencyBindingDependencyRoot(..) => FieldValueKind::DependencyBindingDependencyRoot,
+            Self::DependencyBindingExternalPackage(..) => FieldValueKind::DependencyBindingExternalPackage,
+            Self::DependencyBindingLocalNamespace(..) => FieldValueKind::DependencyBindingLocalNamespace,
+        }
+    }
+
     /// Returns the exact `(entity_kind, field_tag)` selected by this value.
     #[must_use]
     pub const fn field_key(&self) -> (u16, u16) {
-        match self {
-            Self::WorkspacePackages(..) => (1, 1),
-            Self::WorkspaceRootNamespace(..) => (1, 2),
-            Self::WorkspaceCapabilityRequirements(..) => (1, 3),
-            Self::WorkspaceContracts(..) => (1, 4),
-            Self::WorkspaceTests(..) => (1, 5),
-            Self::PackageWorkspace(..) => (2, 1),
-            Self::PackageRootNamespace(..) => (2, 2),
-            Self::PackageDependencies(..) => (2, 3),
-            Self::PackageExports(..) => (2, 4),
-            Self::NamespaceParent(..) => (3, 1),
-            Self::NamespaceMembers(..) => (3, 2),
-            Self::TypeDefTypeParameters(..) => (4, 1),
-            Self::TypeDefForm(..) => (4, 2),
-            Self::TypeDefInvariants(..) => (4, 3),
-            Self::TypeDefVisibility(..) => (4, 4),
-            Self::FunctionTypeParameters(..) => (5, 1),
-            Self::FunctionParameters(..) => (5, 2),
-            Self::FunctionResultType(..) => (5, 3),
-            Self::FunctionEffects(..) => (5, 4),
-            Self::FunctionEntryBlock(..) => (5, 5),
-            Self::FunctionBlocks(..) => (5, 6),
-            Self::FunctionContracts(..) => (5, 7),
-            Self::FunctionVisibility(..) => (5, 8),
-            Self::ParameterOwner(..) => (6, 1),
-            Self::ParameterRole(..) => (6, 2),
-            Self::ParameterOrdinal(..) => (6, 3),
-            Self::ParameterValueType(..) => (6, 4),
-            Self::BlockFunction(..) => (7, 1),
-            Self::BlockParameters(..) => (7, 2),
-            Self::BlockOperations(..) => (7, 3),
-            Self::BlockTerminator(..) => (7, 4),
-            Self::BlockReachability(..) => (7, 5),
-            Self::OperationBlock(..) => (8, 1),
-            Self::OperationOrdinal(..) => (8, 2),
-            Self::OperationOpcode(..) => (8, 3),
-            Self::OperationOperands(..) => (8, 4),
-            Self::OperationResultTypes(..) => (8, 5),
-            Self::OperationImmediate(..) => (8, 6),
-            Self::ConstantValue(..) => (9, 1),
-            Self::GlobalValueValueType(..) => (10, 1),
-            Self::GlobalValueInitializer(..) => (10, 2),
-            Self::GlobalValueVisibility(..) => (10, 3),
-            Self::EffectDefEffectKind(..) => (11, 1),
-            Self::EffectDefScopeType(..) => (11, 2),
-            Self::EffectDefRequestType(..) => (11, 3),
-            Self::EffectDefResponseType(..) => (11, 4),
-            Self::EffectDefFailureType(..) => (11, 5),
-            Self::EffectDefVisibility(..) => (11, 6),
-            Self::CapabilityRequirementEffect(..) => (12, 1),
-            Self::CapabilityRequirementAllowedScopes(..) => (12, 2),
-            Self::CapabilityRequirementConstraintContracts(..) => (12, 3),
-            Self::ContractTarget(..) => (13, 1),
-            Self::ContractContractKind(..) => (13, 2),
-            Self::ContractPredicate(..) => (13, 3),
-            Self::ContractBindings(..) => (13, 4),
-            Self::ContractResourceLimits(..) => (13, 5),
-            Self::TestCaseTarget(..) => (14, 1),
-            Self::TestCaseInputs(..) => (14, 2),
-            Self::TestCaseEffectEnvironment(..) => (14, 3),
-            Self::TestCaseExpected(..) => (14, 4),
-            Self::TestCaseObservations(..) => (14, 5),
-            Self::TestCaseResourceLimits(..) => (14, 6),
-            Self::AdapterImportAdapterId(..) => (15, 1),
-            Self::AdapterImportAbiVersion(..) => (15, 2),
-            Self::AdapterImportRequestType(..) => (15, 3),
-            Self::AdapterImportResponseType(..) => (15, 4),
-            Self::AdapterImportFailureType(..) => (15, 5),
-            Self::AdapterImportEffects(..) => (15, 6),
-            Self::EntryPointFunction(..) => (16, 1),
-            Self::EntryPointExposure(..) => (16, 2),
-            Self::PolicyBindingSubject(..) => (17, 1),
-            Self::PolicyBindingRequirements(..) => (17, 2),
-            Self::DependencyBindingDependencyRoot(..) => (18, 1),
-            Self::DependencyBindingExternalPackage(..) => (18, 2),
-            Self::DependencyBindingLocalNamespace(..) => (18, 3),
-        }
+        self.value_kind().field_key()
     }
+}
+
+/// Closed descriptor-selectable proposal-value discriminant.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum ProposalValueKind {
+    /// One complete entity-body kind.
+    EntityBody(EntityBodyValueKind),
+    /// One exact body-field kind.
+    Field(FieldValueKind),
 }
 
 /// Closed proposal value before any candidate record exists.
@@ -563,3 +893,1105 @@ pub enum ProposalValue {
     /// One exact entity-body field.
     Field(FieldValue),
 }
+
+impl ProposalValue {
+    /// Returns the exact closed discriminant used for descriptor admission.
+    #[must_use]
+    pub const fn value_kind(&self) -> ProposalValueKind {
+        match self {
+            Self::EntityBody(value) => ProposalValueKind::EntityBody(value.value_kind()),
+            Self::Field(value) => ProposalValueKind::Field(value.value_kind()),
+        }
+    }
+}
+
+/// One exact immutable mutation descriptor to closed value-kind binding.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct TypedValueBinding {
+    /// Closed mutation class.
+    pub class: MutationClass,
+    /// Exact target entity kind.
+    pub target_kind: u16,
+    /// Exact field tag, or `None` for a complete body.
+    pub field_tag: Option<u16>,
+    /// Exact closed proposal-value kind.
+    pub value_kind: ProposalValueKind,
+}
+
+/// Complete immutable descriptor-to-value-kind binding table.
+pub const TYPED_VALUE_BINDINGS: &[TypedValueBinding] = &[
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 1,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Workspace),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 2,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Package),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 3,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Namespace),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 4,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::TypeDef),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 5,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Function),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 6,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Parameter),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 7,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Block),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 8,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Operation),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 9,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Constant),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 10,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::GlobalValue),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 11,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::EffectDef),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 12,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::CapabilityRequirement),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 13,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Contract),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 14,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::TestCase),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 15,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::AdapterImport),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 16,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::EntryPoint),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 17,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::PolicyBinding),
+    },
+    TypedValueBinding {
+        class: MutationClass::CreateEntity,
+        target_kind: 18,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::DependencyBinding),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 1,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Workspace),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 2,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Package),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 3,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Namespace),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 4,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::TypeDef),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 5,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Function),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 6,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Parameter),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 7,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Block),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 8,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Operation),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 9,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Constant),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 10,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::GlobalValue),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 11,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::EffectDef),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 12,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::CapabilityRequirement),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 13,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Contract),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 14,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::TestCase),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 15,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::AdapterImport),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 16,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::EntryPoint),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 17,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::PolicyBinding),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceEntityVersion,
+        target_kind: 18,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::DependencyBinding),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 1,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Workspace),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 2,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Package),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 3,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Namespace),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 4,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::TypeDef),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 5,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Function),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 6,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Parameter),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 7,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Block),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 8,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Operation),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 9,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Constant),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 10,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::GlobalValue),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 11,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::EffectDef),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 12,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::CapabilityRequirement),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 13,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Contract),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 14,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::TestCase),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 15,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::AdapterImport),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 16,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::EntryPoint),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 17,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::PolicyBinding),
+    },
+    TypedValueBinding {
+        class: MutationClass::DeleteEntityBinding,
+        target_kind: 18,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::DependencyBinding),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 4,
+        field_tag: Some(4),
+        value_kind: ProposalValueKind::Field(FieldValueKind::TypeDefVisibility),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 5,
+        field_tag: Some(8),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionVisibility),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 6,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ParameterRole),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 6,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ParameterOrdinal),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 7,
+        field_tag: Some(5),
+        value_kind: ProposalValueKind::Field(FieldValueKind::BlockReachability),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 8,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::OperationOrdinal),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 8,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::OperationOpcode),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 10,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::GlobalValueVisibility),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 11,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::EffectDefEffectKind),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 11,
+        field_tag: Some(6),
+        value_kind: ProposalValueKind::Field(FieldValueKind::EffectDefVisibility),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 13,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ContractContractKind),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 15,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::AdapterImportAdapterId),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 15,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::AdapterImportAbiVersion),
+    },
+    TypedValueBinding {
+        class: MutationClass::SetScalarField,
+        target_kind: 16,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::EntryPointExposure),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 1,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::WorkspacePackages),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 1,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::WorkspaceRootNamespace),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 1,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::WorkspaceCapabilityRequirements),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 1,
+        field_tag: Some(4),
+        value_kind: ProposalValueKind::Field(FieldValueKind::WorkspaceContracts),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 1,
+        field_tag: Some(5),
+        value_kind: ProposalValueKind::Field(FieldValueKind::WorkspaceTests),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 2,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::PackageWorkspace),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 2,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::PackageRootNamespace),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 2,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::PackageDependencies),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 2,
+        field_tag: Some(4),
+        value_kind: ProposalValueKind::Field(FieldValueKind::PackageExports),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 3,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::NamespaceParent),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 3,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::NamespaceMembers),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 4,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::TypeDefTypeParameters),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 4,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::TypeDefForm),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 4,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::TypeDefInvariants),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 4,
+        field_tag: Some(4),
+        value_kind: ProposalValueKind::Field(FieldValueKind::TypeDefVisibility),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 5,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionTypeParameters),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 5,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionParameters),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 5,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionResultType),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 5,
+        field_tag: Some(4),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionEffects),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 5,
+        field_tag: Some(5),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionEntryBlock),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 5,
+        field_tag: Some(6),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionBlocks),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 5,
+        field_tag: Some(7),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionContracts),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 5,
+        field_tag: Some(8),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionVisibility),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 6,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ParameterOwner),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 6,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ParameterRole),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 6,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ParameterOrdinal),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 6,
+        field_tag: Some(4),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ParameterValueType),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 7,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::BlockFunction),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 7,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::BlockParameters),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 7,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::BlockOperations),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 7,
+        field_tag: Some(4),
+        value_kind: ProposalValueKind::Field(FieldValueKind::BlockTerminator),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 7,
+        field_tag: Some(5),
+        value_kind: ProposalValueKind::Field(FieldValueKind::BlockReachability),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 8,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::OperationBlock),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 8,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::OperationOrdinal),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 8,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::OperationOpcode),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 8,
+        field_tag: Some(4),
+        value_kind: ProposalValueKind::Field(FieldValueKind::OperationOperands),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 8,
+        field_tag: Some(5),
+        value_kind: ProposalValueKind::Field(FieldValueKind::OperationResultTypes),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 8,
+        field_tag: Some(6),
+        value_kind: ProposalValueKind::Field(FieldValueKind::OperationImmediate),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 9,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ConstantValue),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 10,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::GlobalValueValueType),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 10,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::GlobalValueInitializer),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 10,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::GlobalValueVisibility),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 11,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::EffectDefEffectKind),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 11,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::EffectDefScopeType),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 11,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::EffectDefRequestType),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 11,
+        field_tag: Some(4),
+        value_kind: ProposalValueKind::Field(FieldValueKind::EffectDefResponseType),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 11,
+        field_tag: Some(5),
+        value_kind: ProposalValueKind::Field(FieldValueKind::EffectDefFailureType),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 11,
+        field_tag: Some(6),
+        value_kind: ProposalValueKind::Field(FieldValueKind::EffectDefVisibility),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 12,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::CapabilityRequirementEffect),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 12,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::CapabilityRequirementAllowedScopes),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 12,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::CapabilityRequirementConstraintContracts),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 13,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ContractTarget),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 13,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ContractContractKind),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 13,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ContractPredicate),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 13,
+        field_tag: Some(4),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ContractBindings),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 13,
+        field_tag: Some(5),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ContractResourceLimits),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 14,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::TestCaseTarget),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 14,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::TestCaseInputs),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 14,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::TestCaseEffectEnvironment),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 14,
+        field_tag: Some(4),
+        value_kind: ProposalValueKind::Field(FieldValueKind::TestCaseExpected),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 14,
+        field_tag: Some(5),
+        value_kind: ProposalValueKind::Field(FieldValueKind::TestCaseObservations),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 14,
+        field_tag: Some(6),
+        value_kind: ProposalValueKind::Field(FieldValueKind::TestCaseResourceLimits),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 15,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::AdapterImportAdapterId),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 15,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::AdapterImportAbiVersion),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 15,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::AdapterImportRequestType),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 15,
+        field_tag: Some(4),
+        value_kind: ProposalValueKind::Field(FieldValueKind::AdapterImportResponseType),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 15,
+        field_tag: Some(5),
+        value_kind: ProposalValueKind::Field(FieldValueKind::AdapterImportFailureType),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 15,
+        field_tag: Some(6),
+        value_kind: ProposalValueKind::Field(FieldValueKind::AdapterImportEffects),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 16,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::EntryPointFunction),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 16,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::EntryPointExposure),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 17,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::PolicyBindingSubject),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 17,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::PolicyBindingRequirements),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 18,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::DependencyBindingDependencyRoot),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 18,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::DependencyBindingExternalPackage),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTypedField,
+        target_kind: 18,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::DependencyBindingLocalNamespace),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 1,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::WorkspaceRootNamespace),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 2,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::PackageWorkspace),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 2,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::PackageRootNamespace),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 3,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::NamespaceParent),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 5,
+        field_tag: Some(5),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionEntryBlock),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 6,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ParameterOwner),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 7,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::BlockFunction),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 8,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::OperationBlock),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 10,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::GlobalValueInitializer),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 12,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::CapabilityRequirementEffect),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 13,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ContractTarget),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 13,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::ContractPredicate),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 14,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::TestCaseTarget),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 16,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::EntryPointFunction),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 17,
+        field_tag: Some(1),
+        value_kind: ProposalValueKind::Field(FieldValueKind::PolicyBindingSubject),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 18,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::DependencyBindingExternalPackage),
+    },
+    TypedValueBinding {
+        class: MutationClass::RetargetReference,
+        target_kind: 18,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::DependencyBindingLocalNamespace),
+    },
+    TypedValueBinding {
+        class: MutationClass::InsertOrderedChild,
+        target_kind: 5,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionParameters),
+    },
+    TypedValueBinding {
+        class: MutationClass::InsertOrderedChild,
+        target_kind: 5,
+        field_tag: Some(6),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionBlocks),
+    },
+    TypedValueBinding {
+        class: MutationClass::InsertOrderedChild,
+        target_kind: 7,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::BlockParameters),
+    },
+    TypedValueBinding {
+        class: MutationClass::InsertOrderedChild,
+        target_kind: 7,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::BlockOperations),
+    },
+    TypedValueBinding {
+        class: MutationClass::RemoveOrderedChild,
+        target_kind: 5,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionParameters),
+    },
+    TypedValueBinding {
+        class: MutationClass::RemoveOrderedChild,
+        target_kind: 5,
+        field_tag: Some(6),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionBlocks),
+    },
+    TypedValueBinding {
+        class: MutationClass::RemoveOrderedChild,
+        target_kind: 7,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::BlockParameters),
+    },
+    TypedValueBinding {
+        class: MutationClass::RemoveOrderedChild,
+        target_kind: 7,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::BlockOperations),
+    },
+    TypedValueBinding {
+        class: MutationClass::MoveOrderedChild,
+        target_kind: 5,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionParameters),
+    },
+    TypedValueBinding {
+        class: MutationClass::MoveOrderedChild,
+        target_kind: 5,
+        field_tag: Some(6),
+        value_kind: ProposalValueKind::Field(FieldValueKind::FunctionBlocks),
+    },
+    TypedValueBinding {
+        class: MutationClass::MoveOrderedChild,
+        target_kind: 7,
+        field_tag: Some(2),
+        value_kind: ProposalValueKind::Field(FieldValueKind::BlockParameters),
+    },
+    TypedValueBinding {
+        class: MutationClass::MoveOrderedChild,
+        target_kind: 7,
+        field_tag: Some(3),
+        value_kind: ProposalValueKind::Field(FieldValueKind::BlockOperations),
+    },
+    TypedValueBinding {
+        class: MutationClass::AddEntryPoint,
+        target_kind: 16,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::EntryPoint),
+    },
+    TypedValueBinding {
+        class: MutationClass::RemoveEntryPoint,
+        target_kind: 16,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::EntryPoint),
+    },
+    TypedValueBinding {
+        class: MutationClass::AddTest,
+        target_kind: 14,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::TestCase),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceTest,
+        target_kind: 14,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::TestCase),
+    },
+    TypedValueBinding {
+        class: MutationClass::AddContract,
+        target_kind: 13,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Contract),
+    },
+    TypedValueBinding {
+        class: MutationClass::ReplaceContract,
+        target_kind: 13,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Contract),
+    },
+    TypedValueBinding {
+        class: MutationClass::UpdateDependencyBinding,
+        target_kind: 18,
+        field_tag: None,
+        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::DependencyBinding),
+    },
+];

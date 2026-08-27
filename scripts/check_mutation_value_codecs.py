@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the closed S20-350a mutation proposal host-value model."""
+"""Check closed S20-350 proposal host values and typed descriptor bindings."""
 
 from __future__ import annotations
 
@@ -12,9 +12,16 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "docs/spec/SSMC1_EPOCH1_SCHEMA.txt"
 GENERATED = ROOT / "crates/sley-mutate/src/value_generated.rs"
 VALUE_SOURCE = ROOT / "crates/sley-mutate/src/value.rs"
+DESCRIPTORS = ROOT / "crates/sley-mutate/src/generated.rs"
 
 ENTITY_RE = re.compile(r"^entity ([0-9]+) ([A-Za-z][A-Za-z0-9]*) ([A-Za-z][A-Za-z0-9]*)$")
 RECORD_RE = re.compile(r"^record ([A-Za-z][A-Za-z0-9]*)\((.*)\)$")
+DESCRIPTOR_RE = re.compile(
+    r"MutationOperationDescriptor \{\s+"
+    r"class: MutationClass::([A-Za-z][A-Za-z0-9]*),\s+"
+    r"target_kind: ([0-9]+),\s+"
+    r"field_tag: (None|Some\(([0-9]+)\)),"
+)
 
 
 def pascal(value: str) -> str:
@@ -52,6 +59,7 @@ def main() -> int:
     manifest = MANIFEST.read_text(encoding="utf-8")
     generated = GENERATED.read_text(encoding="utf-8")
     value_source = VALUE_SOURCE.read_text(encoding="utf-8")
+    descriptors = DESCRIPTORS.read_text(encoding="utf-8")
     records = {
         match[1]: body_fields(match[2])
         for line in manifest.splitlines()
@@ -71,7 +79,8 @@ def main() -> int:
         required = [
             f"pub struct {body} {{",
             f"{name}({body}),",
-            f"Self::{name}(..) => {tag},",
+            f"Self::{name} => {tag},",
+            f"Self::{name}(..) => EntityBodyValueKind::{name},",
         ]
         for field_tag, (field_name, _value_type, required_field) in enumerate(
             records[body], start=1
@@ -80,7 +89,8 @@ def main() -> int:
             required.extend(
                 [
                     f"\n    {variant}(",
-                    f"Self::{variant}(..) => ({tag}, {field_tag}),",
+                    f"Self::{variant} => ({tag}, {field_tag}),",
+                    f"Self::{variant}(..) => FieldValueKind::{variant},",
                 ]
             )
             if not required_field:
@@ -98,6 +108,41 @@ def main() -> int:
         for marker in required:
             if generated.count(marker) != 1:
                 raise SystemExit(f"mutation value host model marker drift: {marker}")
+
+    entity_by_tag = {tag: (name, body) for tag, name, body in entities}
+    descriptor_rows = DESCRIPTOR_RE.findall(descriptors)
+    if len(descriptor_rows) != 179:
+        raise SystemExit("immutable descriptor inventory is not exactly 179")
+    if generated.count("\n    TypedValueBinding {") != 179:
+        raise SystemExit("typed value binding inventory is not exactly 179")
+    for class_name, target_raw, field_option, field_raw in descriptor_rows:
+        target = int(target_raw)
+        entity_name, body = entity_by_tag[target]
+        if field_option == "None":
+            expected_kind = (
+                "ProposalValueKind::EntityBody("
+                f"EntityBodyValueKind::{entity_name})"
+            )
+        else:
+            field_tag = int(field_raw)
+            field_name = records[body][field_tag - 1][0]
+            variant = f"{entity_name}{pascal(field_name)}"
+            expected_kind = f"ProposalValueKind::Field(FieldValueKind::{variant})"
+        marker = "\n".join(
+            [
+                "    TypedValueBinding {",
+                f"        class: MutationClass::{class_name},",
+                f"        target_kind: {target},",
+                f"        field_tag: {field_option},",
+                f"        value_kind: {expected_kind},",
+                "    },",
+            ]
+        )
+        if generated.count(marker) != 1:
+            raise SystemExit(
+                "typed value binding does not match immutable descriptor: "
+                f"{class_name}/{target}/{field_option}"
+            )
 
     forbidden = [
         "ManifestValue",
