@@ -1,10 +1,10 @@
 # Object Store and State Roots
 
-Status: S20-150 immutable object store complete; state roots not implemented.
+Status: S20-160 deterministic state roots complete.
 
 StateRoot inputs are explicitly bounded in `REPOSITORY_MODEL_V1.md` and exclude
-refs, ancestry, timestamps, paths, locks, caches, and Git. S20-160 through
-S20-180 will provide state-root, pack, and GC evidence.
+refs, ancestry, timestamps, paths, locks, caches, and Git. S20-170 and S20-180
+will provide pack and GC evidence.
 
 S20-110 evidence:
 
@@ -47,3 +47,29 @@ S20-150 evidence:
 S20-150 does not create refs, transactions, reachability, GC, packs, state
 roots, or a cross-process repository lock. A crash after promotion may leave an
 unreachable immutable object but cannot advance accepted state.
+
+S20-160 evidence:
+
+- `STATE_ROOT_V1.md` freezes contract tag 160, nine required fields, exact
+  ordering, registry authorization, interpretation flags, exclusions, and
+  strict import behavior;
+- `sley-state-root` exposes no public unregistered derivation route: accepted
+  construction/import requires the exact nonzero conformance epoch row,
+  descriptor, and preserved decoder;
+- the zero-epoch byte fixture remains synthetic and is rejected with
+  `SCHEMA_EPOCH_MISMATCH` at the authorization boundary;
+- the independent Python reconstruction agrees on raw descriptor digests,
+  182-byte epoch record, epoch ID `a7fcf97a85d41ef9b1c89394a324f2dc7ec875b9ded48a783104314857dc870e`,
+  415-byte payload, 460-byte preimage, 492-byte stored record, and StateRoot
+  `d3914cbffcde449959d6a35eddb16293c3424f4980e64e687a4f47358ad2770a`;
+- unordered builder inputs derive identical roots, while strict import rejects
+  field/map/set disorder, duplicates, missing/unknown fields, nonminimal
+  varints, epoch mismatch, digest mismatch, trailing bytes, and limits;
+- 12 Rust tests, the independent vector gate, format, and strict Clippy pass;
+- Ariadne's initial zero-epoch authorization ambiguity was corrected before
+  implementation acceptance;
+- Vulcan review: PASS with no P0/P1 report-grade finding.
+
+The conformance epoch is not the complete production schema epoch. S20-200
+must add the full SSMC contract set, and S20-170/S20-390 still own pack and
+transaction/ancestry evidence.

@@ -66,6 +66,30 @@
     "vulcan_final_review": "PASS",
     "implementation_complete": true
   },
+  "state_root": {
+    "status": "S20_160_COMPLETE",
+    "contract": "docs/spec/STATE_ROOT_V1.md",
+    "implementation": "crates/sley-state-root",
+    "contract_tag": 160,
+    "digest_domain_tag": 4,
+    "kind_tag": 160,
+    "field_schema_hash": "93583a0796c6aa114de0850014b2e6ce7005479eb0e30a5a68da0a3eb023ee53",
+    "decoder_limits_hash": "c4831bde6913620994ab5a226fc2868e626e0dd07b9524bd3d7293fbd8ae0623",
+    "conformance_epoch_id": "a7fcf97a85d41ef9b1c89394a324f2dc7ec875b9ded48a783104314857dc870e",
+    "accepted_fixture_sha256": "848044e1f6e51d38368bda3bbcc95a8e04f6ad22928e49fd35f9ef772b3ba832",
+    "payload_bytes": 415,
+    "preimage_bytes": 460,
+    "stored_bytes": 492,
+    "accepted_state_root": "d3914cbffcde449959d6a35eddb16293c3424f4980e64e687a4f47358ad2770a",
+    "registry_authorization_required": true,
+    "synthetic_zero_epoch_rejected": true,
+    "interpretation_flags_epoch_1": "EMPTY_ONLY",
+    "rust_unit_tests": 12,
+    "independent_python_vector": "PASS",
+    "ariadne_design_review": "PASS_WITH_ZERO_EPOCH_AUTHORIZATION_CORRECTION",
+    "vulcan_review": "PASS",
+    "implementation_complete": true
+  },
   "protocol": {"status": "DRAFT"},
   "identifiers": {
     "status": "S20_110_COMPLETE",
@@ -129,12 +153,13 @@
   },
   "open_findings": {"p0": 0, "p1": 0, "p2": 0, "p3": 0, "p4": 0},
   "evidence_gaps": [
-    "S20-160 deterministic state roots",
+    "S20-170 repository packs and S20-180 reachability/GC",
     "M2 through M6 implementation and release evidence"
   ],
   "open_risks": [
     "The schema registry is executable, but production SSMC descriptor rows await S20-200",
-    "No deterministic state-root implementation or VM exists",
+    "The StateRoot row is a conformance epoch; the complete production epoch awaits S20-200",
+    "No VM exists",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]
 }

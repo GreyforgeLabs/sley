@@ -1,0 +1,15 @@
+[package]
+name = "sley-state-root"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Sley 2 deterministic StateRoot contract."
+
+[dependencies]
+sley-id = { path = "../sley-id" }
+sley-scb1 = { path = "../sley-scb1" }
+sley-schema = { path = "../sley-schema" }
+
+[lints]
+workspace = true

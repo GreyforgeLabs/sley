@@ -167,6 +167,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "sley-state-root"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "sley-id",
+ "sley-scb1",
+ "sley-schema",
+]
+
+[[package]]
 name = "sley-store"
 version = "2.0.0-alpha.0"
 dependencies = [

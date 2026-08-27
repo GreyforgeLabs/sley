@@ -6,6 +6,7 @@ quick:
 	python3 scripts/check_scb1_spec.py
 	python3 scripts/check_schema_epoch_spec.py
 	python3 scripts/check_object_store_spec.py
+	python3 scripts/check_state_root_spec.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked
@@ -16,9 +17,11 @@ conformance:
 	cargo test -p sley-scb1 --locked
 	cargo test -p sley-schema --locked
 	cargo test -p sley-store --locked
+	cargo test -p sley-state-root --locked
 	uv run --project oracle/scb1 --frozen python -m unittest discover -s oracle/scb1/tests -v
 	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check --accepted conformance/scb1/v1/accepted.json --rejected conformance/scb1/v1/rejected.json
 	uv run --project oracle/scb1 --frozen python scripts/check_schema_epoch_vector.py
+	uv run --project oracle/scb1 --frozen python scripts/check_state_root_vector.py
 
 check-changed: quick conformance
 	@python3 scripts/check_changed.py

@@ -22,6 +22,18 @@ allowlist. This uses the existing S20-140 descriptor shape; it does not add or
 reinterpret descriptor fields. Epoch 1 accepts only an empty interpretation
 flag set until a descriptor-bound decoder explicitly declares tags.
 
+The conformance descriptor freezes raw BLAKE3-256 digests of these exact ASCII
+descriptor texts. They are fixed schema evidence, not `ObjectId` values and do
+not reuse the `sley2.object.v1` domain:
+
+```text
+field schema preimage = sley2.state-root.v1.schema:required(1:workspace_id fixed32,2:schema_epoch_id fixed32,3:entity_bindings map fixed32 fixed32,4:entry_points set fixed32,5:dependency_roots set fixed32,6:contract_root fixed32,7:test_root fixed32,8:policy_root fixed32,9:interpretation_flags set u32);flags=empty;epoch=1
+field_schema_hash = 93583a0796c6aa114de0850014b2e6ce7005479eb0e30a5a68da0a3eb023ee53
+
+decoder limits preimage = sley2.state-root.v1.decoder-limits:scb1-epoch1
+decoder_limits_hash = c4831bde6913620994ab5a226fc2868e626e0dd07b9524bd3d7293fbd8ae0623
+```
+
 S20-160 proves root construction and strict import. Object existence,
 cross-object semantic validity, ref movement, transaction ancestry, and commit
 authority remain later validation/transaction obligations.

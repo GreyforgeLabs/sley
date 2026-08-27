@@ -114,3 +114,13 @@ despite an explicit read-only exclusion and reported its unrelated dirty HEAD.
 It made no changes. Codex discarded those repository observations, confirmed
 the Sley 2 worktree locally, and retained only the abstract authorization
 correction after reconciling it with the actual S20-140 API.
+
+## 2026-08-27 — S20-160 descriptor domain reuse correction
+
+Merlin's first green StateRoot candidate derived `field_schema_hash` and
+`decoder_limits_hash` through `ObjectId::derive`, which reused the closed
+`sley2.object.v1` domain for non-object schema evidence. Codex rejected the
+candidate despite its passing Rust tests, froze raw BLAKE3 descriptor digests
+with exact ASCII preimages, updated the resulting epoch/root vectors, and added
+an independent Python reconstruction. The corrected 12-test candidate passed
+Vulcan review.
