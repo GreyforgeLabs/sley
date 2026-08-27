@@ -139,6 +139,14 @@ cancellation, and atomic in-memory mutation. Exact earlier `TYPE_*` and
 `FINGERPRINT_*` failures are preserved. These codes do not claim VM adapter
 opcode execution, protected capability judgment, or confined live host access.
 
+S20-290 freezes numeric codes 29000 through 29007 for the exact `REPORT_*` and
+`TEST_REPORT_*` failures listed in `REPORT_ENVELOPE_PROFILE_V1.md`. They cover
+only deterministic derived-envelope profile/context/cache/observation/plan/
+execution/resource consistency. Exact earlier `TYPE_*`, `FINGERPRINT_*`, and
+`VM_LOWER_*` failures are preserved. These codes do not claim canonical report
+entity validity, persistence, protected-policy finality, complete resource
+evidence, a passed TestCase, or the M2 exit.
+
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum
 (`NEVER`, `AFTER_REQUERY`, `AFTER_CAPABILITY`, `AFTER_LIMIT_CHANGE`,

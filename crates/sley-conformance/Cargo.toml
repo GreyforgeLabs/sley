@@ -1,0 +1,16 @@
+[package]
+name = "sley-conformance"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Sley 2 restricted deterministic execution and test report envelopes."
+
+[dependencies]
+sley-check = { path = "../sley-check" }
+sley-id = { path = "../sley-id" }
+sley-ssmc = { path = "../sley-ssmc" }
+sley-vm = { path = "../sley-vm" }
+
+[lints]
+workspace = true

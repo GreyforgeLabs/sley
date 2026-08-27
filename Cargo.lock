@@ -159,6 +159,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "sley-conformance"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "sley-check",
+ "sley-id",
+ "sley-ssmc",
+ "sley-vm",
+]
+
+[[package]]
 name = "sley-id"
 version = "2.0.0-alpha.0"
 dependencies = [

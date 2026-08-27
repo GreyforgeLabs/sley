@@ -11,7 +11,8 @@ mod lower;
 pub use execute::{
     ExecutionError, ExecutionErrorCode, ExecutionLimits, ExecutionOutcome, ExecutionRequest,
     ExecutionStatusCode, ExecutionTermination, MAX_EXECUTION_INPUT_VALUE_UNITS,
-    MAX_EXECUTION_INPUTS, MAX_OBSERVATION_PREIMAGE_BYTES, ResourceKind, execute_function,
+    MAX_EXECUTION_INPUTS, MAX_OBSERVATION_PREIMAGE_BYTES, ResourceKind, derive_observation_id,
+    execute_function, execution_value_units, validated_execution_input_hashes,
 };
 pub use lower::{
     BlockSlot, BytecodeBlock, BytecodeFunction, BytecodeSwitchArgument, BytecodeSwitchCase,

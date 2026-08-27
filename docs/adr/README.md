@@ -15,3 +15,4 @@ Current records:
 - ADR-0007: dedicated SSMC canonical value-hash domain
 - ADR-0008: dedicated derived VM bytecode cache-key domain
 - ADR-0009: reference adapter identity/state/transcript domains
+- ADR-0010: restricted derived execution/test report envelopes

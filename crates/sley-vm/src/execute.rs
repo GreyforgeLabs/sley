@@ -61,7 +61,9 @@ pub enum ResourceKind {
 }
 
 impl ResourceKind {
-    const fn tag(self) -> u32 {
+    /// Returns the exact frozen observation/report tag.
+    #[must_use]
+    pub const fn tag(self) -> u32 {
         match self {
             Self::Instruction => 1,
             Self::Fuel => 2,
@@ -305,6 +307,28 @@ type RuntimeResult<T> = Result<T, RuntimeFault>;
 struct ValidatedInputs {
     hashes: Vec<ValueHash>,
     value_units: u64,
+}
+
+/// Validates exact S20-270 Function inputs and returns their ordered hashes.
+///
+/// This is the report/conformance evidence boundary for input count, complete
+/// constant/type/hashability judgment, exact parameter types, and aggregate
+/// input value-unit limits.
+///
+/// # Errors
+///
+/// Preserves the exact S20-210/S20-250/S20-270 input failure.
+pub fn validated_execution_input_hashes(
+    input: LoweringInput<'_>,
+    request: &ExecutionRequest,
+) -> Result<Vec<ValueHash>, ExecutionError> {
+    Ok(validate_inputs(input, request)?.hashes)
+}
+
+/// Returns the S20-270 saturating semantic value units for one constant.
+#[must_use]
+pub fn execution_value_units(value: &ConstValue) -> u64 {
+    value_units_const(value)
 }
 
 #[derive(Clone, Debug)]
@@ -791,7 +815,7 @@ fn finish(
     fuel_used: u64,
     peak_value_units: u64,
 ) -> Result<ExecutionOutcome, ExecutionError> {
-    let observation_id = observation_id(
+    let observation_id = derive_observation_id(
         input,
         limits,
         cache_key,
@@ -814,8 +838,17 @@ fn finish(
     })
 }
 
+/// Rederives one S20-270 observation through the VM semantic authority.
+///
+/// Callers must supply input hashes produced only after the S20-210/S20-250
+/// checks required by `VM_EXEC_RESTRICTED_V1`.
+///
+/// # Errors
+///
+/// Preserves exact type/fingerprint failures or returns a bounded resource
+/// failure when the canonical observation preimage cannot be encoded.
 #[allow(clippy::too_many_arguments)]
-fn observation_id(
+pub fn derive_observation_id(
     input: LoweringInput<'_>,
     limits: ExecutionLimits,
     cache_key: BytecodeCacheKey,

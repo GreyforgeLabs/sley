@@ -9,3 +9,5 @@ re-lowering, validated/hashable constant inputs, deterministic Boolean
 execution, all terminators, strict fuel/value/output/cancellation limits, and a
 canonical observation ID. Unsupported opcode signatures, generics, adapters,
 live cancellation, and persistent execution/test reports remain fail-closed.
+S20-290 exposes observation rederivation to `sley-conformance`; the VM does not
+own report aggregation or persistence.

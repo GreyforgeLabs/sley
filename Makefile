@@ -17,6 +17,7 @@ quick:
 	python3 scripts/check_vm_lowering_profile.py
 	python3 scripts/check_vm_execution_profile.py
 	python3 scripts/check_reference_adapter_profile.py
+	python3 scripts/check_report_envelope_profile.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked

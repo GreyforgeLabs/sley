@@ -3,6 +3,7 @@ resolver = "3"
 members = [
     "crates/sley-adapter",
     "crates/sley-check",
+    "crates/sley-conformance",
     "crates/sley-id",
     "crates/sley-repo",
     "crates/sley-query",

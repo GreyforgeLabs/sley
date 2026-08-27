@@ -35,7 +35,10 @@ observation digest. S20-280 now adds eight restricted deterministic,
 request-owned reference adapter fixtures with exact identity, state, replay,
 limit, atomicity, and transcript rules. VM adapter opcodes, live host access,
 protected capabilities, live cancellation, and persistent report semantics
-remain explicit gaps. Every next package must follow `docs/WORK_PACKAGES.md`.
+remain explicit gaps. S20-290 now provides restricted derived execution/test
+report envelopes that verify VM observations and compare selected expectations
+without claiming canonical persistence, policy/resource finality, test pass,
+or the M2 exit. Every next package must follow `docs/WORK_PACKAGES.md`.
 
 ## Authority
 
@@ -58,6 +61,6 @@ work belongs to a separate session and repository worktree.
 
 `make quick` and `make check-changed` validate the implemented M0/M1 and
 current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering/
-execution/reference-adapter surface. Later profiles are present but intentionally fail closed
+execution/reference-adapter/report-envelope surface. Later profiles are present but intentionally fail closed
 until their corresponding work packages land.
 `make v2` remains the eventual authoritative full gate.
