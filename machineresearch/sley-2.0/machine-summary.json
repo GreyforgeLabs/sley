@@ -417,11 +417,45 @@
     "m3_exit_complete": false,
     "implementation_complete": true
   },
+  "mutation_value_profile": {
+    "status": "S20_350_PARTIAL_PRIVATE_VALUE_CODEC_AND_CONFORMANCE",
+    "contract": "docs/spec/MUTATION_VALUE_CODEC_V1.md",
+    "implementation": "crates/sley-mutate",
+    "visibility": "CRATE_PRIVATE",
+    "schema_manifest_blake3": "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73",
+    "host_entity_body_variants": 18,
+    "host_typed_field_variants": 75,
+    "bound_operation_descriptors": 179,
+    "private_type_expr_variants": 20,
+    "private_entity_body_codecs": 11,
+    "independent_accepted_vectors": 126,
+    "independent_rejected_vectors": 18,
+    "manifest_field_fixtures": 65,
+    "blocked_manifest_fields": 10,
+    "accepted_fixture_sha256": "57b1e3845dad4264c379e0f293131b4fc1076abc28fb786f15ff9e6977beca3e",
+    "rejected_fixture_sha256": "44a2752f830a057aad3a636c266d64ab9738f5800ed6fbf6404f91c6c1eee756",
+    "bounded_adversarial_seeds": 126,
+    "bounded_trailing_mutations": 252,
+    "bounded_proper_prefix_mutations": 446,
+    "bounded_derived_mutations": 698,
+    "exact_rejection_code_vectors": 18,
+    "generic_option_canon_resolved": false,
+    "const_value_canon_resolved": false,
+    "aggregate_codecs": false,
+    "candidate_construction": false,
+    "runtime_mutation": false,
+    "full_s20_350_complete": false,
+    "nabu_review": "NO_DEPENDENCY_SAFE_RECURSIVE_FAMILY_REMAINS",
+    "vulcan_review": "PASS_NO_REPORT_GRADE_FINDINGS",
+    "merlin_review": "PASS_NO_REPORT_GRADE_FINDINGS"
+  },
   "candidate_construction_profile": {
-    "status": "S20_350_DEFERRED_TYPED_VALUE_AND_RECORD_PREREQUISITES_MISSING",
+    "status": "S20_350_CANDIDATE_CONSTRUCTION_DEFERRED_AFTER_PARTIAL_CODEC_FOUNDATION",
     "implementation_started": false,
+    "private_value_codec_foundation_started": true,
+    "candidate_construction": false,
     "proposal_claim_hashing_sufficient": false,
-    "required_contracts": [
+    "remaining_implementation_prerequisites": [
       "all_18_kind_typed_mutation_value_codecs",
       "candidate_canonical_record_and_digest_preimage",
       "bound_precondition_payloads",
@@ -437,7 +471,7 @@
       "restricted_12_kind_runtime_model",
       "caller_claims_as_verified_authority"
     ],
-    "nabu_architecture_review": "DEFER_HIGH_CONFIDENCE",
+    "nabu_architecture_review": "DEFER_LOCKED_OPTION_AND_CONST_VALUE_BLOCKERS",
     "unblocked_by_s20_340_descriptors": false,
     "independent_s20_370_can_continue": true
   },
@@ -640,7 +674,8 @@
     "surfaces": [
       "SLEYEP01 bootstrap import and exact registry decoder selection",
       "authorized adapter request binding before ledger charge",
-      "object-store root and fan-out symlink confinement"
+      "object-store root and fan-out symlink confinement",
+      "private mutation-value trailing, truncation, canonicality, and resource rejection"
     ],
     "bounded_inputs": 512,
     "max_input_bytes": 2048,
@@ -649,10 +684,18 @@
     "adapter_binding_ledger_or_fixture_mutations": 0,
     "object_store_symlink_cases": 3,
     "object_store_symlink_outside_writes": 0,
+    "mutation_value_accepted_seeds": 126,
+    "mutation_value_trailing_cases": 252,
+    "mutation_value_proper_prefix_cases": 446,
+    "mutation_value_derived_cases": 698,
+    "mutation_value_exact_rejection_vectors": 18,
+    "mutation_value_panics": 0,
     "full_s20_700_complete": false,
     "vulcan_schema_review": "PASS_NO_OPEN_P0_P1_P2",
     "vulcan_adapter_binding_review": "PASS_NO_OPEN_P0_P1_P2",
-    "vulcan_object_store_symlink_review": "PASS_NO_OPEN_P0_P1_P2"
+    "vulcan_object_store_symlink_review": "PASS_NO_OPEN_P0_P1_P2",
+    "vulcan_mutation_value_review": "PASS_NO_REPORT_GRADE_FINDINGS",
+    "merlin_mutation_value_review": "PASS_NO_REPORT_GRADE_FINDINGS"
   },
   "candidate_contract_freeze": {
     "status": "S20_345_CONTRACT_AND_IDENTITY_FREEZE_COMPLETE",
@@ -712,7 +755,7 @@
     "S20-320 is only a complete restricted-query evidence envelope with a distinct ID; master context capsules, verified workspace/root/session facts, lawful omission/continuation, downstream S20-330/S20-400/S20-620, M3, M5, and GA remain blocked",
     "S20-330 is deliberately unimplemented until negotiated session, verified workspace/root, and epoch authority exist; claimed roots and capsule IDs are forbidden substitutes",
     "S20-340 is immutable descriptor codegen only; executable operations, fully bound candidate/preimage construction, validation, policy/capability authority, commit, receipts, M3/M4, and GA remain blocked",
-    "S20-350 is deliberately unimplemented until all-18-kind typed mutation values/codecs and the principal, capability-summary, validation-profile, expiry, precondition, and canonical candidate-record contracts are frozen; opaque bytes and caller claims are forbidden substitutes",
+    "S20-350 has a crate-private partial value-codec foundation with 11 body codecs and independent fixtures for 65 of 75 fields; locked generic Option<T> and ConstValue canon decisions still block the remaining recursive families, aggregate codecs, preconditions, candidate records, and construction",
     "S20-370 protects policy, oracle roots, and named entity bindings with principal-specific immutable grant data, but policy transition authentication, capability tokens, live scope/expiry/replay/budget enforcement, candidate integration, commit, and production-epoch assembly remain blocked",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]

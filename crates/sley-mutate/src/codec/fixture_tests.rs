@@ -4,42 +4,44 @@ use serde_json::{Map, Value};
 
 use super::*;
 
-const CONTRACT: &str = "sley2-mutation-value-v1-partial";
-const SOURCE_SCHEMA_BLAKE3: &str =
+pub(super) const CONTRACT: &str = "sley2-mutation-value-v1-partial";
+pub(super) const SOURCE_SCHEMA_BLAKE3: &str =
     "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73";
-const ACCEPTED_JSON: &str = include_str!("../../../../conformance/mutation-value/v1/accepted.json");
-const REJECTED_JSON: &str = include_str!("../../../../conformance/mutation-value/v1/rejected.json");
+pub(super) const ACCEPTED_JSON: &str =
+    include_str!("../../../../conformance/mutation-value/v1/accepted.json");
+pub(super) const REJECTED_JSON: &str =
+    include_str!("../../../../conformance/mutation-value/v1/rejected.json");
 
 #[derive(serde::Deserialize)]
-struct AcceptedCorpus {
-    contract: String,
-    claim: String,
-    source_schema_blake3: String,
-    vectors: Vec<AcceptedVector>,
+pub(super) struct AcceptedCorpus {
+    pub(super) contract: String,
+    pub(super) claim: String,
+    pub(super) source_schema_blake3: String,
+    pub(super) vectors: Vec<AcceptedVector>,
 }
 
 #[derive(serde::Deserialize)]
-struct AcceptedVector {
-    id: String,
-    declared_type: String,
-    value: Value,
-    expected_hex: String,
+pub(super) struct AcceptedVector {
+    pub(super) id: String,
+    pub(super) declared_type: String,
+    pub(super) value: Value,
+    pub(super) expected_hex: String,
 }
 
 #[derive(serde::Deserialize)]
-struct RejectedCorpus {
-    contract: String,
-    claim: String,
-    source_schema_blake3: String,
-    vectors: Vec<RejectedVector>,
+pub(super) struct RejectedCorpus {
+    pub(super) contract: String,
+    pub(super) claim: String,
+    pub(super) source_schema_blake3: String,
+    pub(super) vectors: Vec<RejectedVector>,
 }
 
 #[derive(serde::Deserialize)]
-struct RejectedVector {
-    id: String,
-    declared_type: String,
-    input_hex: String,
-    expected_code: String,
+pub(super) struct RejectedVector {
+    pub(super) id: String,
+    pub(super) declared_type: String,
+    pub(super) input_hex: String,
+    pub(super) expected_code: String,
 }
 
 #[test]
@@ -104,13 +106,13 @@ fn independent_partial_rejected_fixtures_return_exact_private_codes() {
     }
 }
 
-fn assert_fixture_header(contract: &str, claim: &str, schema_digest: &str) {
+pub(super) fn assert_fixture_header(contract: &str, claim: &str, schema_digest: &str) {
     assert_eq!(contract, CONTRACT);
     assert_eq!(claim, "partial");
     assert_eq!(schema_digest, SOURCE_SCHEMA_BLAKE3);
 }
 
-fn assert_unique_ids<'a>(ids: impl Iterator<Item = &'a str>) {
+pub(super) fn assert_unique_ids<'a>(ids: impl Iterator<Item = &'a str>) {
     let ids = ids.collect::<Vec<_>>();
     assert_eq!(
         ids.iter().copied().collect::<BTreeSet<_>>().len(),
@@ -252,7 +254,7 @@ where
     );
 }
 
-fn rejected_error(declared_type: &str, input: &[u8]) -> ScbError {
+pub(super) fn rejected_error(declared_type: &str, input: &[u8]) -> ScbError {
     match declared_type {
         "Bool" => decode_rejected::<bool>(input),
         "UInt16" => decode_rejected::<u16>(input),
@@ -323,7 +325,7 @@ fn fixture_i64(value: &Value) -> i64 {
     })
 }
 
-fn fixture_hex(value: &Value) -> Vec<u8> {
+pub(super) fn fixture_hex(value: &Value) -> Vec<u8> {
     let raw = fixture_string(value);
     assert_eq!(raw.len() % 2, 0, "fixture hex must have an even length");
     raw.as_bytes()

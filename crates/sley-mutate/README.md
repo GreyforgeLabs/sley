@@ -34,6 +34,12 @@ committed exact bytes and rejection taxonomy; private Rust tests consume those
 bytes rather than constructing their expected encodings. The corpus does not
 claim full body, field, aggregate, precondition, candidate, or runtime coverage;
 ten fields remain excluded with their blocked families named in the corpus.
+Bounded private adversarial tests derive 698 deterministic mutations from all
+126 accepted seeds: two trailing-byte cases per seed and 446 distinct proper
+prefixes. They require panic-free deterministic rejection, preserve exact
+canonical re-encoding, and also recheck the 18 committed rejection codes. This
+is a fuzz-smoke slice, not randomness, persistent fuzzing, or full S20-700
+coverage.
 `TrapTerminator`
 and the enclosing `Terminator` union remain open because the frozen SCB1 and
 SSMC manifest `Option<T>` tags conflict. It is not publicly

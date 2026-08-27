@@ -36,6 +36,7 @@ SCOPES = {
             "T50 host/Git identity exclusion",
             "T51 transport tamper detection at the pack boundary",
             "S20-380 state-root/effect/adapter request-binding confusion before charge",
+            "S20-350 partial mutation-value exact 18-vector rejection-code matrix",
         ],
         "deferred_unimplemented": [
             "candidate, query, merge, protocol, VM, and live-adapter attacks",
@@ -48,10 +49,11 @@ SCOPES = {
             "128 deterministic invalid object-store inputs",
             "128 rehashed repository-pack byte mutations",
             "GC malformed graph/inventory/reference regression matrix",
+            "126 accepted private mutation-value seeds with 698 deterministic trailing/prefix mutations",
         ],
         "deferred_unimplemented": [
-            "persistent harnesses beyond the bounded S20-700 schema smoke slice",
-            "future graph, type, CFG, query, mutation, merge, protocol, VM, and adapter targets",
+            "persistent harnesses beyond the bounded S20-700 schema and mutation-value smoke slices",
+            "future graph, type, CFG, query, blocked mutation families, merge, protocol, VM, and adapter targets",
         ],
     },
 }
@@ -84,7 +86,7 @@ def main() -> int:
                 "result": "PASS" if not problems else "FAIL",
                 "scope": (
                     "IMPLEMENTED_LANDED_SURFACES_ONLY"
-                    if GATE == "adversarial"
+                    if GATE in {"adversarial", "fuzz-smoke"}
                     else "IMPLEMENTED_M1_SURFACES_ONLY"
                 ),
             },

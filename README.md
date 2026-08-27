@@ -114,7 +114,13 @@ harness. A second bounded regression proves authorized adapter state-root,
 effect, and adapter binding confusion fails before ledger charge or fixture
 mutation. A third Unix-only regression rejects symlinked object-store roots and
 fan-out directories across put, read, and recovery without writing outside the
-store. These slices do not complete the required cross-surface adversarial suite.
+store. A fourth bounded mutation-value slice exercises all 126 currently
+supported accepted fixtures through 252 trailing-byte and 446 distinct proper-
+prefix mutations with panic containment and deterministic errors, while the 18
+committed rejection vectors retain exact codes. It does not cover the blocked
+`Option<T>`, `ConstValue`, aggregate, candidate, or runtime surfaces. These
+slices do not provide persistent fuzzing or complete the required cross-surface
+adversarial suite.
 
 ## Authority
 

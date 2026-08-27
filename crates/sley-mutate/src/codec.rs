@@ -1865,6 +1865,8 @@ impl MutationValueCodec for OperationBody {
 }
 
 #[cfg(test)]
+mod adversarial_tests;
+#[cfg(test)]
 mod fixture_tests;
 
 #[cfg(test)]

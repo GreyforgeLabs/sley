@@ -18,6 +18,13 @@ DESCRIPTORS = ROOT / "crates/sley-mutate/src/generated.rs"
 CODEC_SOURCE = ROOT / "crates/sley-mutate/src/codec.rs"
 LIB_SOURCE = ROOT / "crates/sley-mutate/src/lib.rs"
 FIXTURE_TEST_SOURCE = ROOT / "crates/sley-mutate/src/codec/fixture_tests.rs"
+ADVERSARIAL_TEST_SOURCE = ROOT / "crates/sley-mutate/src/codec/adversarial_tests.rs"
+MAKEFILE_SOURCE = ROOT / "Makefile"
+M1_GATE_SOURCE = ROOT / "scripts/check_m1_gate.py"
+MACHINE_SUMMARY = ROOT / "machineresearch/sley-2.0/machine-summary.json"
+ADVERSARIAL_DOSSIER = (
+    ROOT / "machineresearch/sley-2.0/14-property-fuzz-and-adversarial-results.md"
+)
 ORACLE_SOURCE = ROOT / "oracle/scb1/src/sley2_scb1_oracle/mutation_value.py"
 ACCEPTED_FIXTURES = ROOT / "conformance/mutation-value/v1/accepted.json"
 REJECTED_FIXTURES = ROOT / "conformance/mutation-value/v1/rejected.json"
@@ -152,6 +159,11 @@ def expected_field_fixtures() -> dict[str, str]:
 def check_partial_fixtures() -> None:
     for path in (
         FIXTURE_TEST_SOURCE,
+        ADVERSARIAL_TEST_SOURCE,
+        MAKEFILE_SOURCE,
+        M1_GATE_SOURCE,
+        MACHINE_SUMMARY,
+        ADVERSARIAL_DOSSIER,
         ORACLE_SOURCE,
         ACCEPTED_FIXTURES,
         REJECTED_FIXTURES,
@@ -263,6 +275,88 @@ def check_partial_fixtures() -> None:
     ):
         if marker not in fixture_tests:
             raise SystemExit(f"partial mutation Rust fixture consumer drift: {marker}")
+    adversarial_tests = ADVERSARIAL_TEST_SOURCE.read_text(encoding="utf-8")
+    for marker in (
+        "fn bounded_mutation_value_codec_fuzz_smoke()",
+        "fn mutation_value_codec_adversarial()",
+        "const ACCEPTED_VECTOR_COUNT: usize = 126",
+        "const REJECTED_VECTOR_COUNT: usize = 18",
+        "const PREFIX_DERIVED_CASES: usize = 446",
+        "const TOTAL_DERIVED_CASES: usize = APPENDED_DERIVED_CASES + PREFIX_DERIVED_CASES",
+        "ScbErrorCode::TrailingBytes.as_str()",
+        "\"reject_list_resource_limit\"",
+        "\"List<UInt32>\"",
+        "\"SCB_RESOURCE_LIMIT\"",
+        "catch_unwind(AssertUnwindSafe(|| decode_reencode(declared_type, input)))",
+        "unsupported mutation-value adversarial type",
+    ):
+        if marker not in adversarial_tests:
+            raise SystemExit(f"partial mutation adversarial/fuzz smoke drift: {marker}")
+    if adversarial_tests.count("\n#[test]\nfn ") != 2:
+        raise SystemExit("partial mutation adversarial/fuzz smoke test count drift")
+    makefile = MAKEFILE_SOURCE.read_text(encoding="utf-8")
+    for marker in (
+        "cargo test -p sley-mutate bounded_mutation_value_codec_fuzz_smoke --locked",
+        "cargo test -p sley-mutate mutation_value_codec_adversarial --locked",
+    ):
+        if makefile.count(marker) != 1:
+            raise SystemExit(f"partial mutation Makefile test command drift: {marker}")
+    gate_source = M1_GATE_SOURCE.read_text(encoding="utf-8")
+    for marker in (
+        "S20-350 partial mutation-value exact 18-vector rejection-code matrix",
+        "126 accepted private mutation-value seeds with 698 deterministic trailing/prefix mutations",
+        "persistent harnesses beyond the bounded S20-700 schema and mutation-value smoke slices",
+        "blocked mutation families",
+    ):
+        if gate_source.count(marker) != 1:
+            raise SystemExit(f"partial mutation gate summary drift: {marker}")
+    summary = json.loads(MACHINE_SUMMARY.read_text(encoding="utf-8"))
+    mutation_profile = summary.get("mutation_value_profile", {})
+    expected_mutation_profile = {
+        "status": "S20_350_PARTIAL_PRIVATE_VALUE_CODEC_AND_CONFORMANCE",
+        "private_entity_body_codecs": 11,
+        "independent_accepted_vectors": 126,
+        "independent_rejected_vectors": 18,
+        "manifest_field_fixtures": 65,
+        "blocked_manifest_fields": 10,
+        "bounded_adversarial_seeds": 126,
+        "bounded_trailing_mutations": 252,
+        "bounded_proper_prefix_mutations": 446,
+        "bounded_derived_mutations": 698,
+        "exact_rejection_code_vectors": 18,
+        "generic_option_canon_resolved": False,
+        "const_value_canon_resolved": False,
+        "aggregate_codecs": False,
+        "candidate_construction": False,
+        "runtime_mutation": False,
+        "full_s20_350_complete": False,
+    }
+    for key, expected in expected_mutation_profile.items():
+        if mutation_profile.get(key) != expected:
+            raise SystemExit(f"partial mutation machine-summary drift: {key}")
+    adversarial_summary = summary.get("adversarial", {})
+    expected_adversarial_summary = {
+        "mutation_value_accepted_seeds": 126,
+        "mutation_value_trailing_cases": 252,
+        "mutation_value_proper_prefix_cases": 446,
+        "mutation_value_derived_cases": 698,
+        "mutation_value_exact_rejection_vectors": 18,
+        "mutation_value_panics": 0,
+        "persistent_fuzz_harness": False,
+        "full_s20_700_complete": False,
+    }
+    for key, expected in expected_adversarial_summary.items():
+        if adversarial_summary.get(key) != expected:
+            raise SystemExit(f"partial mutation adversarial summary drift: {key}")
+    dossier = ADVERSARIAL_DOSSIER.read_text(encoding="utf-8")
+    for marker in (
+        "Status: bounded partial S20-700 evidence.",
+        "all 126 accepted fixtures seed 252 trailing-byte and",
+        "446 distinct proper-prefix cases, for 698 deterministic derived mutations",
+        "Persistent fuzzing and minimized finding retention",
+    ):
+        if dossier.count(marker) != 1:
+            raise SystemExit(f"partial mutation adversarial dossier drift: {marker}")
     oracle_source = ORACLE_SOURCE.read_text(encoding="utf-8")
     for marker in (
         "def check_mutation_value(",
@@ -397,6 +491,8 @@ def main() -> int:
         raise SystemExit("mutation value codec foundation must remain crate-private")
     if codec_source.count("\nmod fixture_tests;\n") != 1:
         raise SystemExit("private mutation fixture consumer module drift")
+    if codec_source.count("\nmod adversarial_tests;\n") != 1:
+        raise SystemExit("private mutation adversarial test module drift")
     codec_markers = [
         "trait MutationValueCodec",
         "MAX_NESTING_DEPTH",

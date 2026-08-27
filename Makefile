@@ -53,12 +53,14 @@ conformance:
 	uv run --project oracle/scb1 --frozen python scripts/check_repository_pack_vector.py
 
 adversarial:
+	cargo test -p sley-mutate mutation_value_codec_adversarial --locked
 	cargo test -p sley-store --locked
 	cargo test -p sley-repo --locked
 	cargo test -p sley-adapter authorized_adapter_request_binding_confusion_fails_before_charge --locked
 	python3 scripts/check_m1_gate.py adversarial
 
 fuzz-smoke:
+	cargo test -p sley-mutate bounded_mutation_value_codec_fuzz_smoke --locked
 	cargo test -p sley-scb1 bounded_scb1_decoder_fuzz_smoke --locked
 	cargo test -p sley-schema bounded_schema_bootstrap_import_fuzz_smoke --locked
 	cargo test -p sley-store randomized_invalid_records_never_promote --locked
