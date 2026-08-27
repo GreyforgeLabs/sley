@@ -217,6 +217,95 @@ impl Visibility {
     }
 }
 
+/// Closed epoch-1 effect kind.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum EffectKind {
+    /// Captured standard output write.
+    StdoutWrite,
+    /// Captured standard error write.
+    StderrWrite,
+    /// Confined file read.
+    FileRead,
+    /// Confined file write.
+    FileWrite,
+    /// Deterministic or replayed clock read.
+    ClockRead,
+    /// Deterministic or replayed random read.
+    RandomRead,
+    /// Explicit environment lookup.
+    EnvironmentRead,
+    /// Typed replayable adapter call.
+    AdapterCall,
+}
+
+impl EffectKind {
+    /// Returns the exact frozen SSMC1 effect-kind tag.
+    #[must_use]
+    pub const fn tag(self) -> u32 {
+        match self {
+            Self::StdoutWrite => 1,
+            Self::StderrWrite => 2,
+            Self::FileRead => 3,
+            Self::FileWrite => 4,
+            Self::ClockRead => 5,
+            Self::RandomRead => 6,
+            Self::EnvironmentRead => 7,
+            Self::AdapterCall => 8,
+        }
+    }
+}
+
+/// One immutable effect-definition semantic body.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct EffectDefinition {
+    /// Stable effect identity.
+    pub entity_id: EntityId,
+    /// Closed effect kind.
+    pub effect_kind: EffectKind,
+    /// Exact resource-scope type.
+    pub scope_type: TypeExpr,
+    /// Exact request type.
+    pub request_type: TypeExpr,
+    /// Exact response type.
+    pub response_type: TypeExpr,
+    /// Exact failure type.
+    pub failure_type: TypeExpr,
+    /// Definition visibility.
+    pub visibility: Visibility,
+}
+
+/// One static capability requirement semantic body.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CapabilityRequirement {
+    /// Stable requirement identity.
+    pub entity_id: EntityId,
+    /// Required effect definition.
+    pub effect: EntityId,
+    /// Canonically ordered exact allowed scope constants.
+    pub allowed_scopes: Vec<ConstValue>,
+    /// Raw-ID-sorted constraint contract identities.
+    pub constraint_contracts: Vec<EntityId>,
+}
+
+/// One typed adapter-import semantic body.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AdapterImport {
+    /// Stable import entity identity.
+    pub entity_id: EntityId,
+    /// Stable external adapter identity bytes.
+    pub adapter_id: [u8; 32],
+    /// Exact adapter ABI version.
+    pub abi_version: u32,
+    /// Exact request type.
+    pub request_type: TypeExpr,
+    /// Exact response type.
+    pub response_type: TypeExpr,
+    /// Exact failure type.
+    pub failure_type: TypeExpr,
+    /// Raw-ID-sorted effect identities.
+    pub effects: Vec<EntityId>,
+}
+
 /// One declaration parameter.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct TypeParameterDef {
@@ -1067,6 +1156,20 @@ mod tests {
         );
         assert_eq!(TypeDefForm::Record(Vec::new()).tag(), 1);
         assert_eq!(TypeDefForm::Variant(Vec::new()).tag(), 2);
+        assert_eq!(
+            [
+                EffectKind::StdoutWrite,
+                EffectKind::StderrWrite,
+                EffectKind::FileRead,
+                EffectKind::FileWrite,
+                EffectKind::ClockRead,
+                EffectKind::RandomRead,
+                EffectKind::EnvironmentRead,
+                EffectKind::AdapterCall,
+            ]
+            .map(EffectKind::tag),
+            [1, 2, 3, 4, 5, 6, 7, 8]
+        );
         assert_eq!(ConstData::Unit.tag(), 1);
         assert_eq!(
             ConstData::BuiltinFailure(BuiltinFailureValue {

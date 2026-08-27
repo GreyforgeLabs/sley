@@ -87,6 +87,15 @@ and bounded CFG work only; they preserve earlier `SSMC_*` and `TYPE_*` failures
 and do not claim opcode semantics, effects, contracts, lowering, or runtime
 judgment.
 
+S20-230 freezes numeric codes 23000 through 23013 for the exact `EFFECT_*`,
+`ADAPTER_*`, `CAPABILITY_*`, and `CONSTRAINT_*` failures listed in
+`EFFECT_SYSTEM_V1.md`. They cover closed entity lookup, exact least effect
+closure, direct-call/effect-operation typing, epoch-1 adapter effect
+cardinality, static capability scope constants, contract-identity boundaries,
+and bounded closure work only. Earlier type/CFG failures are preserved; these
+codes do not claim protected-policy, runtime-token, adapter-execution,
+contract-predicate, lowering, or VM judgment.
+
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum
 (`NEVER`, `AFTER_REQUERY`, `AFTER_CAPABILITY`, `AFTER_LIMIT_CHANGE`,

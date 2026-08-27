@@ -13,6 +13,8 @@ use sley_ssmc::{
 
 /// Bounded CFG and value-use validation.
 pub mod cfg;
+/// Deterministic static effect closure and scope validation.
+pub mod effects;
 
 const MAX_DEFINITIONS: usize = 1_000_000;
 const CANONICAL_F32_NAN: u32 = 0x7fc0_0000;
