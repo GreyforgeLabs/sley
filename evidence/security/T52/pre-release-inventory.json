@@ -1,0 +1,897 @@
+{
+  "blockers": [
+    "workspace-license-text:missing-operator-approved-root-license"
+  ],
+  "cargo_lock_sha256": "71e7923cfdbb60f2739d5b2426e976b80b1d2744fb2e0090de1bf76090f762fe",
+  "contract": "s20-710-pre-release-inventory-v1",
+  "full_release_sbom": false,
+  "history_anchor_commit": "51863f7b93271bd7a73f9b7b3b02eeca93447d9a",
+  "license_text_files": [],
+  "packages": [
+    {
+      "bom_ref": "pkg:cargo/arrayref@0.3.9",
+      "checksum_sha256": "76a2e8124351fda1ef8aaaa3bbd7ebbcb486bbcd4225aca0aa0d84bb2db8fecb",
+      "ecosystem": "cargo",
+      "license_declared": "BSD-2-Clause",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "BSD-2-Clause",
+      "name": "arrayref",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.3.9",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/arrayvec@0.7.8",
+      "checksum_sha256": "d3fb67a6e08acf24fdeccbac2cb6ac4305825bd1f117462e0e6f2f193345ad56",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "arrayvec",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.7.8",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/blake3@1.8.2",
+      "checksum_sha256": "3888aaa89e4b2a40fca9848e400f6a658a5a3978de7be858e209cafa8be9a4a0",
+      "ecosystem": "cargo",
+      "license_declared": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception",
+      "name": "blake3",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.8.2",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/cc@1.4.4",
+      "checksum_sha256": "0ad534f4357a5264cce5019c989cf66a4f0dc4e0d1b1d15f8aacec0ff7360273",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "cc",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.4.4",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/cfg-if@1.0.4",
+      "checksum_sha256": "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "cfg-if",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.4",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/constant_time_eq@0.3.1",
+      "checksum_sha256": "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6",
+      "ecosystem": "cargo",
+      "license_declared": "CC0-1.0 OR MIT-0 OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "CC0-1.0 OR MIT-0 OR Apache-2.0",
+      "name": "constant_time_eq",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.3.1",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/find-msvc-tools@0.1.11",
+      "checksum_sha256": "d45db016d36b838f563236e9193d0ee6ce38f3f68b6c94e914b4929c96bbb890",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "find-msvc-tools",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.1.11",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/itoa@1.0.18",
+      "checksum_sha256": "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "itoa",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.18",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/memchr@2.8.3",
+      "checksum_sha256": "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98",
+      "ecosystem": "cargo",
+      "license_declared": "Unlicense OR MIT",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "Unlicense OR MIT",
+      "name": "memchr",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "2.8.3",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/proc-macro2@1.0.107",
+      "checksum_sha256": "985e7ec9bb745e6ce6535b544d84d6cd6f7ad8bd711c398938ae983b91a766d9",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "proc-macro2",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.107",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/quote@1.0.47",
+      "checksum_sha256": "1fbf4db142a473a8d80c26bbf18454ed458bf8d26c8219c331daecfdbd079001",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "quote",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.47",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/ryu@1.0.23",
+      "checksum_sha256": "9774ba4a74de5f7b1c1451ed6cd5285a32eddb5cccb8cc655a4e50009e06477f",
+      "ecosystem": "cargo",
+      "license_declared": "Apache-2.0 OR BSL-1.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "Apache-2.0 OR BSL-1.0",
+      "name": "ryu",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.23",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/serde@1.0.228",
+      "checksum_sha256": "9a8e94ea7f378bd32cbbd37198a4a91436180c5bb472411e48b5ec2e2124ae9e",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "serde",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.228",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/serde_core@1.0.228",
+      "checksum_sha256": "41d385c7d4ca58e59fc732af25c3983b67ac852c1a25000afe1175de458b67ad",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "serde_core",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.228",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/serde_derive@1.0.228",
+      "checksum_sha256": "d540f220d3187173da220f885ab66608367b6574e925011a9353e4badda91d79",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "serde_derive",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.228",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/serde_json@1.0.145",
+      "checksum_sha256": "402a6f66d8c709116cf22f558eab210f5a50187f702eb4d7e5ef38d9a7f1c79c",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "serde_json",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.145",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/shlex@2.0.1",
+      "checksum_sha256": "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "shlex",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "2.0.1",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-adapter@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-adapter",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-check@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-check",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-conformance@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-conformance",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-id",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-mutate@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-mutate",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-policy@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-policy",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-query@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-query",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-repo@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-repo",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-scb1@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-scb1",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-schema@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-schema",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-ssmc@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-ssmc",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-state-root@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-state-root",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-store@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-store",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-vm@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-vm",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/syn@2.0.119",
+      "checksum_sha256": "872831b642d1a07999a962a351ed35b955ea2cfc8f3862091e2a240a84f17297",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "syn",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "2.0.119",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/tinyvec@1.12.0",
+      "checksum_sha256": "bb4ebadaa0af04fab11ae01eb5f9fdb5f9c5b875506e210e71c07873528baa7f",
+      "ecosystem": "cargo",
+      "license_declared": "Zlib OR Apache-2.0 OR MIT",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "Zlib OR Apache-2.0 OR MIT",
+      "name": "tinyvec",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.12.0",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/tinyvec_macros@0.1.1",
+      "checksum_sha256": "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20",
+      "ecosystem": "cargo",
+      "license_declared": "MIT OR Apache-2.0 OR Zlib",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0 OR Zlib",
+      "name": "tinyvec_macros",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.1.1",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/unicode-ident@1.0.24",
+      "checksum_sha256": "e6e4313cd5fcd3dad5cafa179702e2b244f760991f45397d14d4ebf38247da75",
+      "ecosystem": "cargo",
+      "license_declared": "(MIT OR Apache-2.0) AND Unicode-3.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "(MIT OR Apache-2.0) AND Unicode-3.0",
+      "name": "unicode-ident",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "1.0.24",
+      "workspace": false
+    },
+    {
+      "bom_ref": "pkg:cargo/unicode-normalization@0.1.24",
+      "checksum_sha256": "5033c97c4262335cded6d6fc3e5c18ab755e1a3dc96376350f3d8e9f009ad956",
+      "ecosystem": "cargo",
+      "license_declared": "MIT/Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "MIT OR Apache-2.0",
+      "name": "unicode-normalization",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "version": "0.1.24",
+      "workspace": false
+    },
+    {
+      "artifact_hashes": [
+        "sha256:021309d760b390706fecf13498f9a25aa8f689bbb65a0896029b8fa223aae18b",
+        "sha256:09a69fcedf06785bb81d4d3d39f95ee65dbaf2cb246e174cfc9ff64d027f7551",
+        "sha256:0aba416bb2e3ef0c65e74d5eba21062483c714cd78e7e303c9d03c547fc7d015",
+        "sha256:0cdfeff65488089ef86f7587c76055ff72b28d28d10e427b547f5711477c376d",
+        "sha256:128a62136c9a39c7cb9fdaa5fb38471f2418853da7f5a89f31495735d0ba6f2c",
+        "sha256:15566065ff90ab3da46ec0be1417406f00507af902b6fb0fbc6563e77f02fc42",
+        "sha256:172d44245a19dfec08ab771c1b7a506b97783163cdc65f559fe020007e403c99",
+        "sha256:1bbdff61e049297ef3180867ce1f079cea7e5b372fd76953c3183da5b8124206",
+        "sha256:1bd981dc318c05375c3160a99df493b7cc4c83fffa1a34d14b18a071b47b262b",
+        "sha256:249e5964fa9e768924bc7cc3d4efe75a425bb5dd3fb7671c3eda8eeddfa50591",
+        "sha256:28404301de485e9546365d01b30f65eaa835520c4211d6ef61242975b6722b60",
+        "sha256:2a800b87433955f37691b5f361ad29c7dd3ee089c9cd109adc5aea8e24bc4c1f",
+        "sha256:32bd4521ec2d477627ad93eb70f9ac4d01e12d1489024159bcaeff79466332f6",
+        "sha256:3cbe7f190164896dc3908e920716ee66bc31d40f1a0fb603ed59ac53290fb9cf",
+        "sha256:42609e4adc4b2d7423137f2cb35135bca598b925c5af09d2bc0a2c368b25aeb1",
+        "sha256:42fa57bf462285ef16400601b0fd32214c248ba92505bbb94b1221ab9af5a092",
+        "sha256:4865a8cfb2b3d7c0baf5267f2fa6816a3384e836cd1bd0caf359f406cb1e8fba",
+        "sha256:508ccaf8f9377cc47e6026c2897fdc37de61faeb1420dc023b6379cc2474eb65",
+        "sha256:5b35abe24a66a7b3db423eb4f8668ed7be1a362aa9c0024ab6483ec0b2c16058",
+        "sha256:5ea0c60dd9c1e3d05610606579e4bf80f562854c46ed55f9ee8545e18987a480",
+        "sha256:5fa374fa5070ca084368776c19b420157eb0f2d3f091343d6bc59189929d62e2",
+        "sha256:66c84dbc2a31eda88b55bbf5c5b711037bf0698eba0fd1faf06bdaf313c39048",
+        "sha256:6879739e7904b9c42afbedbcc2e8c36cebe140fb3fc3f5c492993579cf5cd516",
+        "sha256:689a7e4069de681d9c5d9445b8b6473ee880ad04d7960a6789c60bd788980250",
+        "sha256:69ff5aebc7650954443aa701feff2028d7c7ea5b5e18ee265f15e2104e892328",
+        "sha256:6edeb3d49a24c307995899b70dd47aa901d0e9ad51d2f8a79aba4f074f32d8c5",
+        "sha256:72cdecf088a9d25e6ec79948a578995649b0dbee407e7a46c543a9ecc0f6f281",
+        "sha256:73a48f7e9f0e047f51a445d9b0361ab1907bdc72b6857815a84dacd2e59556f8",
+        "sha256:766f1555cbe614f14f399c2fbec0983568d20edb36837ba04040807eb9e1a609",
+        "sha256:83b4a2336105af3800f7e17ac4b943f293a3927a2d66a6308d50dba944a6953e",
+        "sha256:8a99f896e7718050ed033a888245098aab3d6a5338f91cc9450c563b53f90ad5",
+        "sha256:8adb0b0032e53919ee95b3d4f911448d3268316c28cd7df232ff2a1e7c9a4ba4",
+        "sha256:91db52a809b68b5bebe7c413ddcd230e1f759398e7fa7a873104595a4fa648b6",
+        "sha256:95fc3545f80901b0dcd0508d16bc40f15ae39556709fa6cf86675f742d4f3c9c",
+        "sha256:9767f16199b99aa022b61ff825ac4dbd39864bf637ae712605a2ce1f8b6a55e0",
+        "sha256:9cef6d4d07a7de0c44f5ba17f6383d55276d9efc8d601f75113538fcaa35008b",
+        "sha256:a288664d08dee154cc496e06e62517fc9e655ecec12b0d7db538d244ac79edf1",
+        "sha256:a70c20542d5e7960983a0ff32999049a2b0e5ef1f22dbbbdfb51cf04828a4156",
+        "sha256:ab0c030cf6644c30e786b0e785bde4e4596013ae9ea6ce9877e39d52383e25d7",
+        "sha256:ae47c3d5729ff89baa6ddf6de47fcfcc915985d39eb1bfcd6db653331f3c6fcc",
+        "sha256:b25ccde5a64be070f20e5c7a81da70292db40b164b6c77588cbd6230856badbb",
+        "sha256:b27550ada40f839aca64c66127940e4318bb6ef3e291890ef913017f6f637448",
+        "sha256:b5d5bf0f68cd77108a942c95db98e960d9c3d5643b95172f783822ce22667759",
+        "sha256:bcd56a7a972c4185070f7042ccc20166927eec3c0f98b8405f375d007b604a0b",
+        "sha256:c7f648fa425138452d1e585ac625c7aefddb946d9765906c4c12d564a1523cd8",
+        "sha256:ca7dfe8fb197ff8a3f5c915424183ccd52a99e8afb12680f51b2e1f4c9c6c97f",
+        "sha256:caded2806d2cbeed638c5e2517ed8b2a94165b3452fda35e72896142d22070e0",
+        "sha256:cfaa671b07eb73883162ca940442193868358b0b904cfa266e4b74131ce966da",
+        "sha256:d1ea0bf17b184b03444007646d902207d2b4d4f3e91a0cac3836552d83db74b9",
+        "sha256:dab59b324aa65c09e937d6c43de5de85ec9581627f4e79dcc9806d85b54a1c34",
+        "sha256:eca281fedcbe5c56655bd5a4176e6036eddbbe57df96114a03838fce08b1e0ca",
+        "sha256:f5c9d57f0dcb92243b6ae575c3065793edc9df9008d0ebd98d8245cdeb7c3f84",
+        "sha256:f65d77eb05331495485048f6804f53885b192b998acb7e6fe1487d941bf08435"
+      ],
+      "bom_ref": "pkg:pypi/blake3@1.0.9",
+      "ecosystem": "pypi",
+      "license_declared": "CC0-1.0 OR Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "curated-offline-pre-release-review",
+      "license_normalized_for_review": "CC0-1.0 OR Apache-2.0",
+      "name": "blake3",
+      "source": "https://pypi.org/simple",
+      "version": "1.0.9",
+      "workspace": false
+    },
+    {
+      "artifact_hashes": [],
+      "bom_ref": "pkg:pypi/sley2-scb1-oracle@0.1.0?workspace=true",
+      "ecosystem": "pypi",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "pyproject-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley2-scb1-oracle",
+      "source": "workspace:oracle/scb1",
+      "version": "0.1.0",
+      "workspace": true
+    },
+    {
+      "artifact_hashes": [
+        "sha256:05488d6592b59cd78b61ec37d38725416b2df62efafa6a0d63a631b27aa474fc",
+        "sha256:0c8902a6c194bbff878e0553e634c36267bb8a6a00ea2f9ce03f14feb5877ac5",
+        "sha256:1ca0a62c22dec4a76ee928cb4ca54166b986fbec150dc656890b3b2fc2fa2473",
+        "sha256:4c31fd7ac232a742e14afd03c77077eb0b4b48958ed7b2ceb304c030f221613d",
+        "sha256:5600f14cc73658a4d0d39c40484ae614045359021975d50ffb321aa4e3f91e06",
+        "sha256:64fc29fd4ea52946d6105bcf1fdb42198658de2ec0bd13b996390396454437a6",
+        "sha256:676525702833b6b4fa1d2e8e5cd4f8e67e2b1c079eb2648042b259c4809e61aa",
+        "sha256:67fe65dc2a7759469f98ab34315788f597259bfd2b50c47ab58f4c1337ecd95b",
+        "sha256:716f6522c6768f40a20c9e4559d68df9df84aca59a28335aa15a6ee3650a925e",
+        "sha256:82d88dbf353dd3b785249278d6c4b4f9bbe10f65f3b60619ad94e5d3012802ac",
+        "sha256:84ee7515900913105c3382ca7624cfa9e1199f64b80ee8cf9626b4e2786a2e09",
+        "sha256:91c1f940bae6b39bc3dc9892ff0cc61de813f6d3b280775713219aaaab798210",
+        "sha256:c042613e639dfb21ed024bf39079fe560974083efc5f14ae6efe0241fdfe0275"
+      ],
+      "bom_ref": "pkg:pypi/unicodedata2@16.0.0",
+      "ecosystem": "pypi",
+      "license_declared": "Apache-2.0",
+      "license_disposition": "DECLARED_PERMISSIVE_PRE_RELEASE_REVIEW",
+      "license_evidence": "curated-offline-pre-release-review",
+      "license_normalized_for_review": "Apache-2.0",
+      "name": "unicodedata2",
+      "source": "https://pypi.org/simple",
+      "version": "16.0.0",
+      "workspace": false
+    }
+  ],
+  "python_lock_freshness": "uv lock --check --offline --no-python-downloads:PASS",
+  "relationships": [
+    {
+      "from": "pkg:cargo/blake3@1.8.2",
+      "to": "pkg:cargo/arrayref@0.3.9"
+    },
+    {
+      "from": "pkg:cargo/blake3@1.8.2",
+      "to": "pkg:cargo/arrayvec@0.7.8"
+    },
+    {
+      "from": "pkg:cargo/blake3@1.8.2",
+      "to": "pkg:cargo/cc@1.4.4"
+    },
+    {
+      "from": "pkg:cargo/blake3@1.8.2",
+      "to": "pkg:cargo/cfg-if@1.0.4"
+    },
+    {
+      "from": "pkg:cargo/blake3@1.8.2",
+      "to": "pkg:cargo/constant_time_eq@0.3.1"
+    },
+    {
+      "from": "pkg:cargo/cc@1.4.4",
+      "to": "pkg:cargo/find-msvc-tools@0.1.11"
+    },
+    {
+      "from": "pkg:cargo/cc@1.4.4",
+      "to": "pkg:cargo/shlex@2.0.1"
+    },
+    {
+      "from": "pkg:cargo/proc-macro2@1.0.107",
+      "to": "pkg:cargo/unicode-ident@1.0.24"
+    },
+    {
+      "from": "pkg:cargo/quote@1.0.47",
+      "to": "pkg:cargo/proc-macro2@1.0.107"
+    },
+    {
+      "from": "pkg:cargo/serde@1.0.228",
+      "to": "pkg:cargo/serde_core@1.0.228"
+    },
+    {
+      "from": "pkg:cargo/serde@1.0.228",
+      "to": "pkg:cargo/serde_derive@1.0.228"
+    },
+    {
+      "from": "pkg:cargo/serde_core@1.0.228",
+      "to": "pkg:cargo/serde_derive@1.0.228"
+    },
+    {
+      "from": "pkg:cargo/serde_derive@1.0.228",
+      "to": "pkg:cargo/proc-macro2@1.0.107"
+    },
+    {
+      "from": "pkg:cargo/serde_derive@1.0.228",
+      "to": "pkg:cargo/quote@1.0.47"
+    },
+    {
+      "from": "pkg:cargo/serde_derive@1.0.228",
+      "to": "pkg:cargo/syn@2.0.119"
+    },
+    {
+      "from": "pkg:cargo/serde_json@1.0.145",
+      "to": "pkg:cargo/itoa@1.0.18"
+    },
+    {
+      "from": "pkg:cargo/serde_json@1.0.145",
+      "to": "pkg:cargo/memchr@2.8.3"
+    },
+    {
+      "from": "pkg:cargo/serde_json@1.0.145",
+      "to": "pkg:cargo/ryu@1.0.23"
+    },
+    {
+      "from": "pkg:cargo/serde_json@1.0.145",
+      "to": "pkg:cargo/serde@1.0.228"
+    },
+    {
+      "from": "pkg:cargo/serde_json@1.0.145",
+      "to": "pkg:cargo/serde_core@1.0.228"
+    },
+    {
+      "from": "pkg:cargo/sley-adapter@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/blake3@1.8.2"
+    },
+    {
+      "from": "pkg:cargo/sley-adapter@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-check@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-adapter@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-adapter@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-policy@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-adapter@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-ssmc@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-check@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-check@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-ssmc@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-conformance@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-check@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-conformance@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-conformance@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-ssmc@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-conformance@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-vm@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/blake3@1.8.2"
+    },
+    {
+      "from": "pkg:cargo/sley-mutate@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/blake3@1.8.2"
+    },
+    {
+      "from": "pkg:cargo/sley-mutate@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-schema@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-policy@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/blake3@1.8.2"
+    },
+    {
+      "from": "pkg:cargo/sley-policy@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-check@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-policy@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-policy@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-mutate@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-policy@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-scb1@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-policy@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-schema@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-policy@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-ssmc@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-policy@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-state-root@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-query@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-check@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-query@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-query@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-ssmc@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-repo@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/blake3@1.8.2"
+    },
+    {
+      "from": "pkg:cargo/sley-repo@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-repo@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-scb1@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-repo@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-schema@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-repo@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-state-root@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-repo@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-store@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-scb1@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/blake3@1.8.2"
+    },
+    {
+      "from": "pkg:cargo/sley-scb1@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/serde@1.0.228"
+    },
+    {
+      "from": "pkg:cargo/sley-scb1@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/serde_json@1.0.145"
+    },
+    {
+      "from": "pkg:cargo/sley-scb1@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-scb1@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/unicode-normalization@0.1.24"
+    },
+    {
+      "from": "pkg:cargo/sley-schema@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/blake3@1.8.2"
+    },
+    {
+      "from": "pkg:cargo/sley-schema@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-schema@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-scb1@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-ssmc@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-state-root@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-state-root@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-scb1@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-state-root@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-schema@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-store@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-store@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-scb1@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-vm@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-check@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-vm@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-vm@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-ssmc@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/syn@2.0.119",
+      "to": "pkg:cargo/proc-macro2@1.0.107"
+    },
+    {
+      "from": "pkg:cargo/syn@2.0.119",
+      "to": "pkg:cargo/quote@1.0.47"
+    },
+    {
+      "from": "pkg:cargo/syn@2.0.119",
+      "to": "pkg:cargo/unicode-ident@1.0.24"
+    },
+    {
+      "from": "pkg:cargo/tinyvec@1.12.0",
+      "to": "pkg:cargo/tinyvec_macros@0.1.1"
+    },
+    {
+      "from": "pkg:cargo/unicode-normalization@0.1.24",
+      "to": "pkg:cargo/tinyvec@1.12.0"
+    },
+    {
+      "from": "pkg:pypi/sley2-scb1-oracle@0.1.0?workspace=true",
+      "to": "pkg:pypi/blake3@1.0.9"
+    },
+    {
+      "from": "pkg:pypi/sley2-scb1-oracle@0.1.0?workspace=true",
+      "to": "pkg:pypi/unicodedata2@16.0.0"
+    }
+  ],
+  "result": "BLOCKED",
+  "sources": {
+    "cargo_registry": "registry+https://github.com/rust-lang/crates.io-index",
+    "python_registry": "https://pypi.org/simple"
+  },
+  "standards_sbom_deferred": true,
+  "uv_lock_sha256": "cb9621b8ad4b538672784f022632b4ec554d69b8ff1286992231645eca5cf446"
+}

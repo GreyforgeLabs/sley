@@ -3,6 +3,7 @@ name = "sley2-scb1-oracle"
 version = "0.1.0"
 description = "Independent Python conformance oracle for Sley Canonical Binary v1"
 readme = "README.md"
+license = "LicenseRef-Proprietary"
 requires-python = ">=3.12"
 dependencies = [
   "blake3==1.0.9",

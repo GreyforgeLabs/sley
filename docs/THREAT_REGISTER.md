@@ -56,9 +56,9 @@ must not be read as passing evidence until the named work package records them.
 | T49 | debug dump used as canonical input | P0 | sley-canon | `SCB_MAGIC_INVALID` | debug-notation input | `evidence/security/T49/` |
 | T50 | Git metadata used as Sley state | P0 | sley-repo | `REPO_EXTERNAL_METADATA_FORBIDDEN` | Git-independent reconstruction | `evidence/security/T50/` |
 | T51 | ZJX transport tampering | P0 | sley-repo | `PACK_DIGEST_MISMATCH` | decompress/tamper/import | `evidence/security/T51/` |
-| T52 | dependency substitution | P1 | release | `RELEASE_DEPENDENCY_MISMATCH` | lock/SBOM/provenance audit | `evidence/security/T52/` |
+| T52 | dependency substitution | P1 | release | `RELEASE_DEPENDENCY_MISMATCH` | local lock/source/checksum inventory present; standards SBOM and release provenance pending | `evidence/security/T52/` |
 | T53 | release artifact substitution | P1 | release | `RELEASE_ARTIFACT_MISMATCH` | manifest/hash verification | `evidence/security/T53/` |
-| T54 | secret committed in fixtures | P1 | release | `RELEASE_SECRET_FINDING` | secret/privacy scan | `evidence/security/T54/` |
+| T54 | secret committed in fixtures | P1 | release | `RELEASE_SECRET_FINDING` | bounded high-confidence candidate/history scan present; release re-anchor, wider privacy review, and independent disposition pending | `evidence/security/T54/` |
 | T55 | benchmark contamination/cherry-pick | P1 | sley-bench | `BENCH_CONTROL_VIOLATION` | manifest denominator/control audit | `evidence/security/T55/` |
 
 P0/P1 evidence requires independent Vulcan disposition. A green test without a

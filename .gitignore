@@ -7,3 +7,23 @@ __pycache__/
 *.pyc
 *.profraw
 *.tmp
+
+# Secret-bearing local configuration and key material.
+.env
+.env.*
+!.env.example
+.netrc
+.npmrc
+.pypirc
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa
+id_ed25519
+credentials/
+secrets/
+.aws/
+.gnupg/

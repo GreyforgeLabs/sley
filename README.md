@@ -66,6 +66,11 @@ binding, keyed BLAKE3 authentication, caller-owned replay/budget ledger
 judgment, and an authorized reference-adapter wrapper. VM adapter opcodes,
 candidate admission, commit, sessions, live host confinement, policy
 transitions, providers, deployment, and GA remain explicit gaps.
+S20-710 now has a deterministic offline pre-release dependency inventory and a
+bounded high-confidence secret scan. Those local checks do not complete the
+package: operator-approved proprietary root license text, a standards SBOM,
+release provenance, a release-candidate history re-anchor, and final Argus and
+Vulcan dispositions remain mandatory.
 
 ## Authority
 
@@ -90,7 +95,8 @@ work belongs to a separate session and repository worktree.
 current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering/
 execution/reference-adapter/report-envelope/index-snapshot/restricted-query/
 restricted-capsule/mutation-schema/protected-policy-root/capability-token
-surface plus the offline S20-610 raw-baseline evidence contract. Later profiles
+surface plus the offline S20-610 raw-baseline evidence contract and bounded
+S20-710 pre-release audit (`DEFERRED`, never release `PASS`). Later profiles
 are present but intentionally fail closed until their corresponding work
 packages land.
 `make v2` remains the eventual authoritative full gate.
