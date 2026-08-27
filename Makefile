@@ -13,8 +13,10 @@ conformance:
 	python3 scripts/check_scb1_spec.py
 	python3 scripts/check_oracle_independence.py
 	cargo test -p sley-scb1 --locked
+	cargo test -p sley-schema --locked
 	uv run --project oracle/scb1 --frozen python -m unittest discover -s oracle/scb1/tests -v
 	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check --accepted conformance/scb1/v1/accepted.json --rejected conformance/scb1/v1/rejected.json
+	uv run --project oracle/scb1 --frozen python scripts/check_schema_epoch_vector.py
 
 check-changed: quick conformance
 	@python3 scripts/check_changed.py

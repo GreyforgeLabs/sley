@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/sley-id", "crates/sley-scb1"]
+members = ["crates/sley-id", "crates/sley-scb1", "crates/sley-schema"]
 
 [workspace.package]
 version = "2.0.0-alpha.0"

@@ -63,3 +63,15 @@ fixture's declared type. Vulcan also found that `check-changed` reported
 with a wrong-contract regression, and `check-changed` now executes both `quick`
 and `conformance` before emitting PASS. Neither initial claim is retained as
 acceptance evidence.
+
+## 2026-08-27 — S20-140 candidate interface gaps
+
+Merlin's initial green `sley-schema` candidate stored decoder objects but its
+`EpochDecoder` trait could not decode, so it did not prove exact old-decoder
+selection or preserve `SCB_*` failures. Migration validation also accepted
+opaque `plan_id` and equivalence digests without invoking the descriptor-bound
+verifier. Codex rejected those claims, added an actual exact-contract decoder
+interface and uncollapsed SCB error channel, required an externally approved
+plan ID, added a capability-minimal equivalence verifier with reproduced digest
+matching, enforced increasing epoch numbers, and guarded malformed counts
+before allocation. The hardened 15-test candidate then passed Vulcan review.

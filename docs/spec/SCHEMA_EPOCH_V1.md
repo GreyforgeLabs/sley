@@ -58,6 +58,10 @@ Closed tags for v1 are `scb_format_version = 1` and
 required UInt32 fields `1 major`, `2 minor`, and `3 patch`. Epoch 1 requires
 `16.0.0`.
 
+Epoch numbers begin at 1. Epoch 1 has no predecessor; every later epoch has one
+exact predecessor. Every migration descriptor in a record must name that same
+predecessor.
+
 `EpochLimits` is a Record with these required UInt64 fields, whose epoch-1
 values exactly match SCB1:
 
@@ -120,8 +124,9 @@ selects a lower epoch returns `SCHEMA_DOWNGRADE`. Contract lookup is exact
 within the selected epoch and absence returns `SCHEMA_CONTRACT_UNKNOWN`.
 
 Every supported old epoch keeps its exact decoder implementation addressable by
-ID. Import and migration must decode with that preserved decoder. There is no
-retry under another decoder after any failure.
+ID. Its interface accepts an exact contract tag and canonical input bytes and
+returns the original `SCB_*` result. Import and migration must decode with that
+preserved decoder. There is no retry under another decoder after any failure.
 
 ## 6. Migration skeleton
 
@@ -148,7 +153,9 @@ MigrationTransactionDraft {
 ```
 
 The registry must contain both epochs, the new epoch must differ from and name
-the old epoch as predecessor, and the exact migration descriptor must exist.
+the old epoch as predecessor, its epoch number must be greater, and the exact
+migration descriptor must exist. The draft's `plan_id` must equal an externally
+approved plan identifier rather than candidate-supplied authority.
 Old and new root values must differ. A target root slot must be empty; any
 attempt to replace, reuse, or overwrite the old root returns
 `SCHEMA_ROOT_OVERWRITE_FORBIDDEN`. Durable insertion and ref movement remain
@@ -158,6 +165,8 @@ An equivalence verifier receives an approved plan, exact old/new epoch entries,
 and already-decoded canonical state views. It returns an evidence digest or
 `SCHEMA_EQUIVALENCE_FAILED`. It cannot select decoders, mutate state, mutate the
 registry, authorize policy changes, or derive authority from candidate input.
+Its exact `verifier_id` must match the migration descriptor, and the reproduced
+evidence digest must equal the draft before validation succeeds.
 
 ## 7. Stable failures
 

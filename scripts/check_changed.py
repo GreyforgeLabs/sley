@@ -15,7 +15,7 @@ print(
         {
             "phase": "M1",
             "changed_files": changed,
-            "affected_crates": ["sley-id", "sley-scb1", "oracle/scb1"],
+            "affected_crates": ["sley-id", "sley-scb1", "sley-schema", "oracle/scb1"],
             "affected_contracts": [
                 "M0 repository/document baseline",
                 "S20-040 benchmark baseline",
@@ -23,7 +23,7 @@ print(
                 "S20-110 canonical identifiers",
                 "S20-120 Rust SCB1 codec",
                 "S20-130 independent SCB1 oracle",
-                "S20-140 schema epoch and migration specification",
+                "S20-140 schema epoch registry and migration skeleton",
             ],
             "selected_checks": [
                 "scripts/check_m0.py",
@@ -42,7 +42,7 @@ print(
                 "v2",
                 "release-check",
             ],
-            "skip_rationale": "S20-120 and S20-130 establish cross-language SCB1 conformance; later subsystem and product gates remain unavailable.",
+            "skip_rationale": "S20-120 through S20-140 establish SCB1 and schema-epoch conformance; later store, semantic, and product gates remain unavailable.",
             "v2_required": False,
             "cache_use": "none",
             "result": "PASS",

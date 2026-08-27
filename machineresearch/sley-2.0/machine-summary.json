@@ -14,7 +14,6 @@
   "final_commit": null,
   "status": "IN_PROGRESS",
   "publication_authorized": false,
-  "schema_epoch": null,
   "scb1": {
     "status": "S20_100_SPEC_S20_120_CODEC_S20_130_ORACLE_COMPLETE",
     "accepted_vectors": 23,
@@ -28,14 +27,24 @@
   },
   "ssmc1": {"status": "DRAFT"},
   "schema_epoch": {
-    "status": "S20_140_SPEC_FROZEN_IMPLEMENTATION_PENDING",
+    "status": "S20_140_COMPLETE",
     "bootstrap_magic": "SLEYEP01",
     "bootstrap_version": 1,
     "identity_cycle": "EXCLUDED_BY_BOOTSTRAP_PREIMAGE",
     "registry_authority": "STATIC_IMMUTABLE_EXACT_ID",
     "migration_scope": "EVIDENCE_ONLY_UNTIL_S20_160",
     "ariadne_design_review": "PASS",
-    "implementation_complete": false
+    "implementation": "crates/sley-schema",
+    "bootstrap_fixture_sha256": "6c1c4396b99bb57f3d646fe5938f5393e606c8a5323f609d48c0bfaad4e1223a",
+    "bootstrap_record_bytes": 74,
+    "bootstrap_preimage_bytes": 84,
+    "bootstrap_schema_epoch_id": "ae5b235713b46c04f73c1decd0fb0bb57c5557d0fe89dae7ddac4a7dba25564e",
+    "rust_unit_tests": 15,
+    "independent_python_vector": "PASS",
+    "preserved_scb_errors": true,
+    "approved_equivalence_verifier_required": true,
+    "vulcan_review": "PASS",
+    "implementation_complete": true
   },
   "protocol": {"status": "DRAFT"},
   "identifiers": {
@@ -100,11 +109,11 @@
   },
   "open_findings": {"p0": 0, "p1": 0, "p2": 0, "p3": 0, "p4": 0},
   "evidence_gaps": [
-    "S20-140 schema epoch registry and migration skeleton",
+    "S20-150 immutable object store and corruption verification",
     "M2 through M6 implementation and release evidence"
   ],
   "open_risks": [
-    "SCB1 fixture conformance is green, but the production schema registry does not yet exist",
+    "The schema registry is executable, but production SSMC descriptor rows await S20-200",
     "No object store or VM exists",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]

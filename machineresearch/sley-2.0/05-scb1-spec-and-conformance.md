@@ -45,3 +45,25 @@ Rust implementation code.
 and locked Python oracle tests. Both implementations independently construct
 and decode all 23 accepted vectors and reject all 26 negative vectors with the
 same frozen codes.
+
+## Schema epoch registry and migration skeleton
+
+S20-140 is complete. `sley-schema` implements the fixed `SLEYEP01` bootstrap
+preimage, canonical epoch meta-schema, exact `SchemaEpochId`, immutable sorted
+registry, exact contract lookup, separately preserved epoch decoders, original
+`SCB_*` error propagation, downgrade rejection, and evidence-only migration
+validation. Approved plan identity, verifier identity, reproduced equivalence
+evidence, predecessor, increasing epoch number, distinct roots, and empty
+target slot are all mandatory.
+
+The frozen empty epoch-1 vector is 74 record bytes and 84 preimage bytes. Its
+ID is `ae5b235713b46c04f73c1decd0fb0bb57c5557d0fe89dae7ddac4a7dba25564e`;
+fixture SHA-256 is
+`6c1c4396b99bb57f3d646fe5938f5393e606c8a5323f609d48c0bfaad4e1223a`.
+Rust's fixed vector and an independent Python reconstruction agree. Fifteen
+Rust tests and strict Clippy pass. Ariadne's normative review and Vulcan's
+implementation review both returned PASS with no blocking findings.
+
+This package does not claim production SSMC descriptor contents, state-root
+construction, persistence, ref movement, or durable migration. Those remain
+with S20-200, S20-160, and S20-390.
