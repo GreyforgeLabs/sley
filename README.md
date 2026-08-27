@@ -66,6 +66,11 @@ binding, keyed BLAKE3 authentication, caller-owned replay/budget ledger
 judgment, and an authorized reference-adapter wrapper. VM adapter opcodes,
 candidate admission, commit, sessions, live host confinement, policy
 transitions, providers, deployment, and GA remain explicit gaps.
+S20-345 now freezes the missing candidate/value/precondition/capability-summary/
+validation-profile/expiry contracts as proposal-only specifications. It adds
+no builder, decoder, validation, authority, root construction, or commit path;
+its identifier domains/vectors and independent Nabu/Vulcan reviews now pass.
+S20-350 remains a separate unimplemented package.
 S20-710 now has a deterministic offline pre-release dependency inventory and a
 bounded high-confidence secret scan. Those local checks do not complete the
 package: operator-approved proprietary root license text, a standards SBOM,

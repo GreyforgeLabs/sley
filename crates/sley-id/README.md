@@ -19,6 +19,9 @@ it is deliberately distinct from the reserved master `ContextCapsuleId`.
 S20-370 adds `PrincipalId` as opaque host-supplied 32-byte identity data. It has
 no derivation domain and grants no authority by itself; only an accepted policy
 record may associate it with policy data.
+ADR-0017 adds `CapabilitySummaryDigest` and `ValidationProfileId` as
+proposal-binding domains. Neither authenticates capabilities nor proves that
+validation ran; trusted S20-360 judgment remains required.
 
 This crate has no filesystem, network, environment, SCB1 encoding, repository,
 policy, or VM authority.

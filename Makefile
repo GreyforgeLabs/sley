@@ -27,6 +27,7 @@ quick:
 	python3 scripts/check_raw_baseline_runner.py
 	python3 scripts/check_supply_chain_audit.py
 	python3 scripts/check_schema_fuzz_slice.py
+	python3 scripts/check_candidate_contract_freeze.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked

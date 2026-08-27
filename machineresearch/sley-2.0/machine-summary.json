@@ -608,8 +608,8 @@
     "crate": "sley-id",
     "hash": "BLAKE3-256",
     "blake3_version": "1.8.2",
-    "domains": 26,
-    "typed_values": 28,
+    "domains": 28,
+    "typed_values": 30,
     "unit_tests": 7,
     "ariadne_spec_review": "PASS",
     "vulcan_implementation_review": "PASS"
@@ -653,6 +653,18 @@
     "vulcan_schema_review": "PASS_NO_OPEN_P0_P1_P2",
     "vulcan_adapter_binding_review": "PASS_NO_OPEN_P0_P1_P2",
     "vulcan_object_store_symlink_review": "PASS_NO_OPEN_P0_P1_P2"
+  },
+  "candidate_contract_freeze": {
+    "status": "S20_345_CONTRACT_AND_IDENTITY_FREEZE_COMPLETE",
+    "candidate_fields": 13,
+    "entity_kinds_typed": 18,
+    "precondition_variants": 3,
+    "validation_phases": 14,
+    "candidate_construction": false,
+    "executable_mutation": false,
+    "s20_350_unblocked": false,
+    "nabu_review": "PASS_NO_OPEN_P0_P1_P2",
+    "vulcan_review": "PASS_NO_OPEN_P0_P1_P2"
   },
   "succession": {
     "corpus_version": 1,

@@ -1,0 +1,54 @@
+# Mutation Value Codec v1
+
+Status: S20-345 normative contract freeze; generated implementation deferred.
+
+## Exact schema source
+
+The sole value-schema source is the exact byte file
+`docs/spec/SSMC1_EPOCH1_SCHEMA.txt`, whose BLAKE3-256 is
+`044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73`.
+The codec generator must fail unless those bytes match.
+
+The generator must produce closed typed codecs for all eighteen `EntityBody`
+variants, all seventy-five entity-body fields, and every recursively referenced
+manifest record/union/enum/generic. It may reuse the exact SSMC1 structural
+types and SCB1 primitives; it may not use opaque bytes, JSON, type-name strings,
+dynamic reflection, host serialization, labels, or the restricted twelve-body
+runtime model.
+
+## Descriptor-selected values
+
+An entity body is encoded as the exact manifest `EntityBody` union variant
+whose tag equals `target_kind`. A field value is encoded directly as the exact
+manifest type expression selected by the immutable S20-340 descriptor. It has
+no self-declared type tag beyond tags already required by that manifest type.
+
+Generated host types must be equivalent to a closed per-field sum such as
+`Workspace_packages(Set<EntityId>)`, not a generic `(type_name, bytes)` pair.
+Required/optional presence belongs to the owning entity record; an optional
+field replacement encodes the manifest `Option<T>` value, not field absence.
+
+## Canonical rules
+
+- Record fields and union/enum tags use exact manifest tags.
+- `List` preserves order; `Set` and ordered maps use complete canonical element
+  byte order and reject duplicates or alternate order.
+- Integers use SCB1 minimal unsigned/signed forms and exact widths.
+- `F32`/`F64`, `Text`, `ConstValue`, `TypeExpr`, and nested values obey SSMC1
+  canonical and persistability rules without normalization.
+- `EntityId`, `StateRoot`, and fixed digests are exact 32-byte typed values.
+- Unknown kinds/tags/fields, trailing bytes, excess depth/elements/bytes, and a
+  descriptor/value mismatch fail closed before candidate construction.
+- Decode followed by encode must reproduce identical bytes; construction may
+  canonicalize unordered host input only before the candidate exists.
+
+## Completeness gate
+
+Generation must emit a manifest-derived inventory proving 18 entity bodies,
+75 fields, and one exact codec binding for each of S20-340's 179 descriptors.
+Drift checking must regenerate committed artifacts byte-for-byte. S20-350 may
+not land a candidate builder until cross-language or structurally independent
+fixtures cover every entity kind and every field type family.
+
+These codecs represent proposal values only. They perform no graph, type,
+effect, policy, capability, contract, test, root, or commit judgment.

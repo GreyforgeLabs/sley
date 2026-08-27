@@ -1,7 +1,8 @@
 # Mutation and Transaction Model
 
-Status: S20-340 immutable mutation-schema generation implemented; S20-350
-through S20-390 remain normative drafts with no implementation.
+Status: S20-340 immutable mutation-schema generation and S20-345 candidate
+contract/identity freeze complete; S20-350 through S20-390 have no
+implementation.
 
 The refined DAG makes the complete validator depend on protected policy and
 capability work. S20-340 through S20-390 must prove exact preimages, monotonic
@@ -34,3 +35,18 @@ all-entity typed mutation value codecs, bound precondition payloads,
 `Principal`, validation profile, expiry representation, capability-summary
 digest contract, and proposal-versus-authority boundary are frozen. This
 deferral does not block independent S20-370 policy design and implementation.
+
+S20-345 now freezes those proposal contracts in six normative specs and
+ADR-0017. The candidate has thirteen digest-bound fields; operations select
+manifest-generated typed codecs for all eighteen entity kinds; preconditions
+use only absence/exact-entity/exact-container payloads; capability summaries
+are unauthoritative projections; validation profiles require all fourteen
+phases; and expiry uses explicit Unix milliseconds without ambient clock
+access. No builder, decoder, apply path, root construction, validation, session
+authority, capability consumption, transaction, receipt, or CAS exists.
+
+S20-345 also adds identifier-domain types and fixed vectors for
+capability-summary and validation-profile identities. Nabu and Vulcan found no
+open P0, P1, or P2 issue in the freeze. S20-350 remains a separate
+implementation package and is not unblocked by code presence because no
+candidate/value codec exists yet.

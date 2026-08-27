@@ -27,6 +27,7 @@ part of the `sley-id` kernel API.
 | schema epoch | `sley2.schema-epoch.v1` |
 | protected policy root | `sley2.policy-root.v1` |
 | capability token digest | `sley2.capability-token.v1` |
+| capability summary | `sley2.capability-summary.v1` |
 | candidate | `sley2.candidate.v1` |
 | candidate result | `sley2.candidate-result.v1` |
 | typed query | `sley2.query.v1` |
@@ -39,6 +40,7 @@ part of the `sley-id` kernel API.
 | adapter invocation transcript | `sley2.adapter-transcript.v1` |
 | derived semantic index snapshot | `sley2.index-snapshot.v1` |
 | restricted complete-query capsule | `sley2.restricted-query-capsule.v1` |
+| candidate validation profile | `sley2.validation-profile.v1` |
 | deterministic observation | `sley2.observation.v1` |
 | execution report | `sley2.execution-report.v1` |
 | test report | `sley2.test-report.v1` |
@@ -53,6 +55,11 @@ content-addressed identifier and not a new hash domain. It never derives from a
 username, path, label, prompt, model output, repository metadata, or session
 text. Possessing or naming it grants no authority; S20-370 policy data and
 later authenticated S20-380 capability evidence perform exact matching.
+
+`CapabilitySummaryDigest` and `ValidationProfileId` are content-addressed
+proposal bindings introduced by S20-345. Neither proves that capabilities were
+authenticated or validation phases ran. Their owning contracts define exact
+preimages; S20-360 must compare them with trusted recomputation/evidence.
 
 ## Workspace identity
 

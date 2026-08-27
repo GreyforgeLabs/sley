@@ -16,6 +16,7 @@ enum Domain {
     SchemaEpoch,
     PolicyRoot,
     CapabilityToken,
+    CapabilitySummary,
     Candidate,
     CandidateResult,
     Query,
@@ -33,11 +34,12 @@ enum Domain {
     AdapterTranscript,
     IndexSnapshot,
     RestrictedQueryCapsule,
+    ValidationProfile,
 }
 
 impl Domain {
     #[cfg(test)]
-    const ALL: [Self; 26] = [
+    const ALL: [Self; 28] = [
         Self::Workspace,
         Self::Entity,
         Self::Object,
@@ -47,6 +49,7 @@ impl Domain {
         Self::SchemaEpoch,
         Self::PolicyRoot,
         Self::CapabilityToken,
+        Self::CapabilitySummary,
         Self::Candidate,
         Self::CandidateResult,
         Self::Query,
@@ -64,6 +67,7 @@ impl Domain {
         Self::AdapterTranscript,
         Self::IndexSnapshot,
         Self::RestrictedQueryCapsule,
+        Self::ValidationProfile,
     ];
 
     const fn bytes(self) -> &'static [u8] {
@@ -77,6 +81,7 @@ impl Domain {
             Self::SchemaEpoch => b"sley2.schema-epoch.v1",
             Self::PolicyRoot => b"sley2.policy-root.v1",
             Self::CapabilityToken => b"sley2.capability-token.v1",
+            Self::CapabilitySummary => b"sley2.capability-summary.v1",
             Self::Candidate => b"sley2.candidate.v1",
             Self::CandidateResult => b"sley2.candidate-result.v1",
             Self::Query => b"sley2.query.v1",
@@ -94,6 +99,7 @@ impl Domain {
             Self::AdapterTranscript => b"sley2.adapter-transcript.v1",
             Self::IndexSnapshot => b"sley2.index-snapshot.v1",
             Self::RestrictedQueryCapsule => b"sley2.restricted-query-capsule.v1",
+            Self::ValidationProfile => b"sley2.validation-profile.v1",
         }
     }
 }
@@ -201,6 +207,10 @@ fixed_bytes_type!(
     CapabilityTokenDigest
 );
 fixed_bytes_type!(
+    /// Canonical proposal-only capability-summary digest.
+    CapabilitySummaryDigest
+);
+fixed_bytes_type!(
     /// Candidate digest.
     CandidateId
 );
@@ -268,6 +278,10 @@ fixed_bytes_type!(
     /// Restricted complete-query evidence-capsule digest.
     RestrictedQueryCapsuleId
 );
+fixed_bytes_type!(
+    /// Candidate validation-profile digest.
+    ValidationProfileId
+);
 
 impl WorkspaceId {
     /// Derives a workspace identifier from a genesis nonce.
@@ -314,6 +328,7 @@ digest_type!(ReceiptId, Domain::Receipt);
 digest_type!(SchemaEpochId, Domain::SchemaEpoch);
 digest_type!(PolicyRootId, Domain::PolicyRoot);
 digest_type!(CapabilityTokenDigest, Domain::CapabilityToken);
+digest_type!(CapabilitySummaryDigest, Domain::CapabilitySummary);
 digest_type!(CandidateId, Domain::Candidate);
 digest_type!(CandidateResultId, Domain::CandidateResult);
 digest_type!(QueryId, Domain::Query);
@@ -330,6 +345,7 @@ digest_type!(AdapterStateId, Domain::AdapterState);
 digest_type!(AdapterTranscriptId, Domain::AdapterTranscript);
 digest_type!(IndexSnapshotId, Domain::IndexSnapshot);
 digest_type!(RestrictedQueryCapsuleId, Domain::RestrictedQueryCapsule);
+digest_type!(ValidationProfileId, Domain::ValidationProfile);
 
 impl ReferenceAdapterId {
     /// Derives a restricted epoch-1 reference adapter identity for one fixed kind.
@@ -365,7 +381,7 @@ mod tests {
     const ZERO: [u8; ID_LEN] = [0; ID_LEN];
     const ONE: [u8; ID_LEN] = [1; ID_LEN];
     const TEST_PREIMAGE: &[u8] = b"sley-id fixed vector preimage";
-    const FIXED_VECTORS: [(Domain, &str); 26] = [
+    const FIXED_VECTORS: [(Domain, &str); 28] = [
         (
             Domain::Workspace,
             "91280bdf6e8df93eafb445c63cf92f0590981d2d9e735d6b01cc9594e0b92f55",
@@ -401,6 +417,10 @@ mod tests {
         (
             Domain::CapabilityToken,
             "1e6d817a18f26baaff8956001fce3cc9679bf1359c6d74ffa780171ff8610287",
+        ),
+        (
+            Domain::CapabilitySummary,
+            "bad9f879f53483061bd181da955a62cb6c758bbd0381ee93630781a074f5fd19",
         ),
         (
             Domain::Candidate,
@@ -470,6 +490,10 @@ mod tests {
             Domain::RestrictedQueryCapsule,
             "0b8f36348b8af720327e7278ca0a326289dd7495695d994765cf2df71dae97d4",
         ),
+        (
+            Domain::ValidationProfile,
+            "974290a6758c97f547093e707ba18055c3ab73a6a504c3c0514b2a7d4dc7bf11",
+        ),
     ];
 
     fn decode_hex_32(hex: &str) -> [u8; ID_LEN] {
@@ -496,6 +520,7 @@ mod tests {
                 b"sley2.schema-epoch.v1",
                 b"sley2.policy-root.v1",
                 b"sley2.capability-token.v1",
+                b"sley2.capability-summary.v1",
                 b"sley2.candidate.v1",
                 b"sley2.candidate-result.v1",
                 b"sley2.query.v1",
@@ -513,6 +538,7 @@ mod tests {
                 b"sley2.adapter-transcript.v1",
                 b"sley2.index-snapshot.v1",
                 b"sley2.restricted-query-capsule.v1",
+                b"sley2.validation-profile.v1",
             ]
         );
     }
@@ -641,6 +667,7 @@ mod tests {
         assert_eq!(core::mem::size_of::<PolicyRootId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<PrincipalId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<CapabilityTokenDigest>(), ID_LEN);
+        assert_eq!(core::mem::size_of::<CapabilitySummaryDigest>(), ID_LEN);
         assert_eq!(core::mem::size_of::<CandidateId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<CandidateResultId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<QueryId>(), ID_LEN);
@@ -655,6 +682,7 @@ mod tests {
         assert_eq!(core::mem::size_of::<ProtocolHandshakeId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<IndexSnapshotId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<RestrictedQueryCapsuleId>(), ID_LEN);
+        assert_eq!(core::mem::size_of::<ValidationProfileId>(), ID_LEN);
     }
 
     #[test]
