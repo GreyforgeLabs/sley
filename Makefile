@@ -1,4 +1,4 @@
-.PHONY: quick core conformance adversarial fuzz-smoke scb1-persistent-fuzz-smoke v2 release-check check-changed
+.PHONY: quick core conformance adversarial fuzz-smoke scb1-persistent-fuzz-smoke schema-persistent-fuzz-smoke v2 release-check check-changed
 
 quick:
 	python3 scripts/check_m0.py
@@ -70,6 +70,10 @@ fuzz-smoke:
 scb1-persistent-fuzz-smoke:
 	python3 scripts/check_scb1_persistent_fuzz_slice.py
 	python3 scripts/run_scb1_persistent_fuzz.py
+
+schema-persistent-fuzz-smoke:
+	python3 scripts/check_schema_persistent_fuzz_slice.py
+	python3 scripts/run_schema_persistent_fuzz.py
 
 check-changed: quick core conformance adversarial fuzz-smoke
 	@python3 scripts/check_changed.py

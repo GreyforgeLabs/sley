@@ -119,13 +119,15 @@ supported accepted fixtures through 252 trailing-byte and 446 distinct proper-
 prefix mutations with panic containment and deterministic errors, while the 18
 committed rejection vectors retain exact codes. It does not cover the blocked
 `Option<T>`, `ConstValue`, aggregate, candidate, or runtime surfaces. These
-slices do not complete the required cross-surface adversarial suite. The first
-honest persistent slice is now limited to the SCB1 decoder: `make
-scb1-persistent-fuzz-smoke` builds a local libFuzzer target from `fuzz/` with
-installed Clang/nightly runtimes, generates seed corpus bytes from committed
-SCB1 accepted/rejected fixtures, and records runtime evidence under
-`evidence/runtime/`. Manual indefinite fuzzing is available through `python3
-scripts/run_scb1_persistent_fuzz.py --manual`.
+slices do not complete the required cross-surface adversarial suite. Two honest
+persistent slices now cover the SCB1 decoder and direct `SLEYEP01` schema
+bootstrap importer. `make scb1-persistent-fuzz-smoke` and `make
+schema-persistent-fuzz-smoke` build local libFuzzer targets from `fuzz/` with
+installed Clang/nightly runtimes, generate deterministic seed corpus bytes from
+committed conformance fixtures, and record runtime evidence under
+`evidence/runtime/`. Manual indefinite fuzzing is available through
+`scripts/run_scb1_persistent_fuzz.py --manual` and
+`scripts/run_schema_persistent_fuzz.py --manual`.
 
 ## Authority
 

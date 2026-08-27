@@ -10,6 +10,10 @@ publish = false
 name = "scb1_decoder"
 path = "targets/scb1_decoder.rs"
 
+[[bin]]
+name = "schema_bootstrap_decoder"
+path = "targets/schema_bootstrap_decoder.rs"
+
 [dependencies]
 sley-scb1 = { path = "../crates/sley-scb1" }
-
+sley-schema = { path = "../crates/sley-schema" }

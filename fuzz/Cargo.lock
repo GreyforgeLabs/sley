@@ -66,6 +66,7 @@ name = "sley-fuzz"
 version = "0.0.0"
 dependencies = [
  "sley-scb1",
+ "sley-schema",
 ]
 
 [[package]]
@@ -82,6 +83,14 @@ dependencies = [
  "blake3",
  "sley-id",
  "unicode-normalization",
+]
+
+[[package]]
+name = "sley-schema"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "sley-id",
+ "sley-scb1",
 ]
 
 [[package]]

@@ -1,8 +1,8 @@
 # Property, Fuzz, and Adversarial Results
 
-Status: bounded partial S20-700 evidence. This is not a persistent fuzz harness,
-the complete cross-surface suite, or a final finding register. The 55-threat map
-remains `docs/THREAT_REGISTER.md`.
+Status: bounded partial S20-700 evidence with two scoped persistent libFuzzer
+harnesses. This is not the complete cross-surface suite or a final finding
+register. The 55-threat map remains `docs/THREAT_REGISTER.md`.
 
 Current landed slices:
 
@@ -22,6 +22,11 @@ Current landed slices:
   both standalone fixture contracts through a one-byte selector, and asserts
   successful standalone decodes re-encode byte-identically with preserved
   `ObjectId`.
+- Schema bootstrap persistent libFuzzer slice: a separate local `fuzz/` target
+  sends bounded arbitrary bytes to the direct `SLEYEP01` importer and asserts
+  that successful imports re-encode byte-identically with a preserved
+  `SchemaEpochId`. Its corpus is derived deterministically from the committed
+  schema-epoch bootstrap fixture.
 
 The mutation-value slice is selected by:
 
@@ -31,12 +36,13 @@ cargo test -p sley-mutate mutation_value_codec_adversarial --locked
 ```
 
 Vulcan's bounded implementation review and Merlin's independent read-only code
-review found no report-grade issue. Generic `Option<T>`, `ConstValue`, aggregate,
-candidate, runtime, merge, protocol, VM-input, and adapter-response fuzz targets
-remain outside these slices. The SCB1 decoder persistent libFuzzer slice does
-not complete S20-700; persistent harnesses for the remaining required surfaces
-remain absent. Persistent fuzzing and minimized finding retention remain
-mandatory before S20-700 completion.
+review found no report-grade issue in the earlier landed slices. Generic
+`Option<T>`, `ConstValue`, aggregate, candidate, runtime, merge, protocol,
+VM-input, and adapter-response fuzz targets remain outside these slices. The
+SCB1 and schema bootstrap persistent libFuzzer slices do not complete S20-700;
+persistent harnesses for the remaining required surfaces remain absent.
+Persistent fuzzing and minimized finding retention remain mandatory before
+S20-700 completion.
 
 The SCB1 decoder persistent smoke is selected by:
 
@@ -45,6 +51,15 @@ make scb1-persistent-fuzz-smoke
 python3 scripts/run_scb1_persistent_fuzz.py --manual
 ```
 
-The exact post-commit environment, command durations, results, skipped gates,
-and scope limits are recorded in
-`evidence/validation/s20-700-mutation-value-bounded-v1.json`.
+The schema bootstrap persistent smoke is selected by:
+
+```bash
+make schema-persistent-fuzz-smoke
+python3 scripts/run_schema_persistent_fuzz.py --manual
+```
+
+The bounded mutation-value post-commit environment, command durations, results,
+skipped gates, and scope limits are recorded in
+`evidence/validation/s20-700-mutation-value-bounded-v1.json`. Persistent smoke
+evidence is written locally under the ignored `evidence/runtime/` paths named in
+`machine-summary.json`; it is runtime evidence, not canonical repository state.

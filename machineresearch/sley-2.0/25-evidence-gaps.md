@@ -3,9 +3,10 @@
 - M1 is complete for its implemented canonical-state scope. Four bounded
   S20-700 slices now cover schema bootstrap, adapter binding, object-store
   symlink confinement, and the currently supported private mutation-value
-  boundary. One SCB1 decoder persistent libFuzzer slice now exists, but the
-  remaining persistent targets are still absent across schema, SSMC, blocked
-  mutation-family, merge, protocol, VM, and adapter-response surfaces.
+  boundary. SCB1 decoder and direct schema-bootstrap persistent libFuzzer slices
+  now exist, but the remaining persistent targets are still absent across SSMC,
+  type/CFG checking, queries, blocked mutation-family, pack import, merge,
+  protocol, VM, and adapter-response surfaces.
 - S20-350 candidate construction remains blocked by locked generic `Option<T>`
   and `ConstValue` canon decisions; the current crate-private codec and fixture
   foundation does not provide aggregate, precondition, candidate, or runtime
