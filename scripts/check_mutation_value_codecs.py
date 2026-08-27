@@ -25,6 +25,9 @@ MACHINE_SUMMARY = ROOT / "machineresearch/sley-2.0/machine-summary.json"
 ADVERSARIAL_DOSSIER = (
     ROOT / "machineresearch/sley-2.0/14-property-fuzz-and-adversarial-results.md"
 )
+VALIDATION_EVIDENCE = (
+    ROOT / "evidence/validation/s20-700-mutation-value-bounded-v1.json"
+)
 ORACLE_SOURCE = ROOT / "oracle/scb1/src/sley2_scb1_oracle/mutation_value.py"
 ACCEPTED_FIXTURES = ROOT / "conformance/mutation-value/v1/accepted.json"
 REJECTED_FIXTURES = ROOT / "conformance/mutation-value/v1/rejected.json"
@@ -164,6 +167,7 @@ def check_partial_fixtures() -> None:
         M1_GATE_SOURCE,
         MACHINE_SUMMARY,
         ADVERSARIAL_DOSSIER,
+        VALIDATION_EVIDENCE,
         ORACLE_SOURCE,
         ACCEPTED_FIXTURES,
         REJECTED_FIXTURES,
@@ -330,6 +334,7 @@ def check_partial_fixtures() -> None:
         "candidate_construction": False,
         "runtime_mutation": False,
         "full_s20_350_complete": False,
+        "validation_evidence": "evidence/validation/s20-700-mutation-value-bounded-v1.json",
     }
     for key, expected in expected_mutation_profile.items():
         if mutation_profile.get(key) != expected:
@@ -357,6 +362,38 @@ def check_partial_fixtures() -> None:
     ):
         if dossier.count(marker) != 1:
             raise SystemExit(f"partial mutation adversarial dossier drift: {marker}")
+    validation = json.loads(VALIDATION_EVIDENCE.read_text(encoding="utf-8"))
+    expected_validation = {
+        "contract": "s20-700-mutation-value-bounded-validation-v1",
+        "implementation_commit": "f9dcd053fab82b85dcefc73b89397f3c18a7099c",
+        "validation_tier": "TIER_2_SUBSYSTEM_HANDOFF",
+        "duration_method": "/usr/bin/time -f WALL_SECONDS=%e",
+        "result": "PASS_BOUNDED_PARTIAL",
+    }
+    for key, expected in expected_validation.items():
+        if validation.get(key) != expected:
+            raise SystemExit(f"partial mutation validation evidence drift: {key}")
+    if validation.get("deterministic_inputs", {}).get("derived_mutations") != 698:
+        raise SystemExit("partial mutation validation seed inventory drift")
+    commands = {entry["command"]: entry["result"] for entry in validation.get("commands", [])}
+    for command in (
+        "python3 scripts/check_mutation_value_codecs.py",
+        "cargo test -p sley-mutate --locked",
+        "make fuzz-smoke",
+        "make adversarial",
+        "make quick",
+        "make conformance",
+        "cargo clippy --workspace --all-targets --locked -- -D warnings",
+        "make check-changed",
+    ):
+        if not commands.get(command, "").startswith("PASS"):
+            raise SystemExit(f"partial mutation validation command drift: {command}")
+    skipped = {entry["check"] for entry in validation.get("skipped_checks", [])}
+    if skipped != {"make v2", "make release-check", "persistent fuzzing"}:
+        raise SystemExit("partial mutation validation skipped-gate drift")
+    external_actions = validation.get("external_actions", {})
+    if any(external_actions.values()):
+        raise SystemExit("partial mutation validation external-action drift")
     oracle_source = ORACLE_SOURCE.read_text(encoding="utf-8")
     for marker in (
         "def check_mutation_value(",

@@ -30,3 +30,7 @@ review found no report-grade issue. Generic `Option<T>`, `ConstValue`, aggregate
 candidate, runtime, merge, protocol, VM-input, and adapter-response fuzz targets
 remain outside this slice. Persistent fuzzing and minimized finding retention
 remain mandatory before S20-700 completion.
+
+The exact post-commit environment, command durations, results, skipped gates,
+and scope limits are recorded in
+`evidence/validation/s20-700-mutation-value-bounded-v1.json`.

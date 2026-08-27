@@ -1,0 +1,128 @@
+{
+  "contract": "s20-700-mutation-value-bounded-validation-v1",
+  "recorded_at": "2026-08-27T16:52:03-04:00",
+  "repository": "<LOCAL_HOME>/sley2",
+  "branch": "main",
+  "implementation_commit": "f9dcd053fab82b85dcefc73b89397f3c18a7099c",
+  "worktree_clean_before_validation": true,
+  "validation_tier": "TIER_2_SUBSYSTEM_HANDOFF",
+  "duration_method": "/usr/bin/time -f WALL_SECONDS=%e",
+  "affected_subsystems": [
+    "S20-350 private partial mutation-value codecs",
+    "S20-700 bounded adversarial and fuzz-smoke evidence"
+  ],
+  "implementation_paths": [
+    "Makefile",
+    "README.md",
+    "crates/sley-mutate/README.md",
+    "crates/sley-mutate/src/codec.rs",
+    "crates/sley-mutate/src/codec/adversarial_tests.rs",
+    "crates/sley-mutate/src/codec/fixture_tests.rs",
+    "docs/WORK_PACKAGES.md",
+    "evidence/security/T54/secret-scan.json",
+    "machineresearch/sley-2.0/14-property-fuzz-and-adversarial-results.md",
+    "machineresearch/sley-2.0/25-evidence-gaps.md",
+    "machineresearch/sley-2.0/machine-summary.json",
+    "scripts/check_m1_gate.py",
+    "scripts/check_mutation_value_codecs.py"
+  ],
+  "environment": {
+    "kernel": "Linux 7.0.0-30-generic x86_64",
+    "rustc": "1.93.0 (254b59607 2026-01-19)",
+    "rust_host": "x86_64-unknown-linux-gnu",
+    "llvm": "21.1.8",
+    "cargo": "1.93.0 (083ac5135 2025-12-15)",
+    "python": "3.12.3",
+    "uv": "0.9.24"
+  },
+  "deterministic_inputs": {
+    "randomness": false,
+    "accepted_fixture_sha256": "57b1e3845dad4264c379e0f293131b4fc1076abc28fb786f15ff9e6977beca3e",
+    "accepted_seeds": 126,
+    "trailing_mutations": 252,
+    "proper_prefix_mutations": 446,
+    "derived_mutations": 698,
+    "rejected_fixture_sha256": "44a2752f830a057aad3a636c266d64ab9738f5800ed6fbf6404f91c6c1eee756",
+    "exact_rejection_vectors": 18
+  },
+  "commands": [
+    {
+      "command": "python3 scripts/check_mutation_value_codecs.py",
+      "wall_seconds": 0.14,
+      "result": "PASS"
+    },
+    {
+      "command": "cargo test -p sley-mutate --locked",
+      "wall_seconds": 0.19,
+      "result": "PASS_44_TESTS"
+    },
+    {
+      "command": "make fuzz-smoke",
+      "wall_seconds": 0.41,
+      "result": "PASS_IMPLEMENTED_LANDED_SURFACES_ONLY"
+    },
+    {
+      "command": "make adversarial",
+      "wall_seconds": 0.53,
+      "result": "PASS_IMPLEMENTED_LANDED_SURFACES_ONLY"
+    },
+    {
+      "command": "make quick",
+      "wall_seconds": 2.82,
+      "result": "PASS_WITH_S20_710_DEFERRED"
+    },
+    {
+      "command": "make conformance",
+      "wall_seconds": 1.03,
+      "result": "PASS"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+      "wall_seconds": 0.17,
+      "result": "PASS"
+    },
+    {
+      "command": "make check-changed",
+      "wall_seconds": 6.34,
+      "result": "PASS"
+    }
+  ],
+  "reviews": {
+    "vulcan_design_and_implementation": "PASS_NO_REPORT_GRADE_FINDINGS",
+    "merlin_independent_review": "PASS_NO_REPORT_GRADE_FINDINGS",
+    "codex_integration": "PASS"
+  },
+  "skipped_checks": [
+    {
+      "check": "make v2",
+      "reason": "Authoritative full-product gate deferred because S20-350 candidate construction and later M3-M6 prerequisites are incomplete."
+    },
+    {
+      "check": "make release-check",
+      "reason": "Release packaging, approved root license, standards SBOM, provenance, and release authority are absent."
+    },
+    {
+      "check": "persistent fuzzing",
+      "reason": "This slice is deterministic bounded fuzz-smoke evidence only; persistent harnesses and remaining surfaces are still S20-700 work."
+    }
+  ],
+  "scope_limits": {
+    "generic_option_codec": false,
+    "const_value_codec": false,
+    "aggregate_codec": false,
+    "candidate_construction": false,
+    "runtime_mutation": false,
+    "persistent_fuzz_harness": false,
+    "full_s20_700_complete": false
+  },
+  "external_actions": {
+    "network": false,
+    "provider": false,
+    "push": false,
+    "tag": false,
+    "deploy": false,
+    "publish": false,
+    "sley_1_2_tree_touched": false
+  },
+  "result": "PASS_BOUNDED_PARTIAL"
+}

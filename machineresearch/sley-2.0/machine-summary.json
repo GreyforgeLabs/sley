@@ -439,6 +439,7 @@
     "bounded_proper_prefix_mutations": 446,
     "bounded_derived_mutations": 698,
     "exact_rejection_code_vectors": 18,
+    "validation_evidence": "evidence/validation/s20-700-mutation-value-bounded-v1.json",
     "generic_option_canon_resolved": false,
     "const_value_canon_resolved": false,
     "aggregate_codecs": false,
