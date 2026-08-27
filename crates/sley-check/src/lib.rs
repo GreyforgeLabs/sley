@@ -11,6 +11,9 @@ use sley_ssmc::{
     ResultConst, TypeDefForm, TypeDefinition, TypeExpr,
 };
 
+/// Bounded CFG and value-use validation.
+pub mod cfg;
+
 const MAX_DEFINITIONS: usize = 1_000_000;
 const CANONICAL_F32_NAN: u32 = 0x7fc0_0000;
 const CANONICAL_F64_NAN: u64 = 0x7ff8_0000_0000_0000;
@@ -316,14 +319,28 @@ impl TypeEnvironment {
     ///
     /// Returns an argument, substitution, well-formedness, or limit failure.
     pub fn instantiate(&self, value: &TypeExpr, arguments: &[TypeExpr]) -> Result<TypeExpr> {
+        self.instantiate_in_scope(value, arguments, 0)
+    }
+
+    /// Explicitly substitutes arguments that may use a caller parameter scope.
+    ///
+    /// # Errors
+    ///
+    /// Returns an argument, substitution, well-formedness, or limit failure.
+    pub fn instantiate_in_scope(
+        &self,
+        value: &TypeExpr,
+        arguments: &[TypeExpr],
+        parameter_count: u32,
+    ) -> Result<TypeExpr> {
         if arguments.len() > MAX_TYPE_ARGUMENTS {
             return fail(TypeErrorCode::ArgumentLimit);
         }
         for argument in arguments {
-            self.check_closed_type(argument)?;
+            self.check_type(argument, parameter_count)?;
         }
         let instantiated = substitute(value, arguments, 1)?;
-        self.check_closed_type(&instantiated)?;
+        self.check_type(&instantiated, parameter_count)?;
         Ok(instantiated)
     }
 

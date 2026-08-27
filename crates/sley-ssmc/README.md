@@ -1,6 +1,6 @@
 # sley-ssmc
 
-Structural SSMC1 data model for the frozen S20-200/S20-210 type surface.
+Structural SSMC1 data model for the frozen S20-200 through S20-220 surface.
 
 The crate represents all 20 epoch-1 type tags, type definitions, member
 identities, function-reference types and values, and persistable constant

@@ -80,6 +80,13 @@ definition cycles, trait requirements, substitution, and constant/type
 agreement only; they do not claim CFG, effect, contract, lowering, or runtime
 judgment.
 
+S20-220 freezes numeric codes 22000 through 22020 for the exact `GRAPH_*` and
+`CFG_*` failures listed in `CFG_VALIDATION_V1.md`. They cover graph inventory,
+reachability, dominance, value uses, target arguments, switch payloads, traps,
+and bounded CFG work only; they preserve earlier `SSMC_*` and `TYPE_*` failures
+and do not claim opcode semantics, effects, contracts, lowering, or runtime
+judgment.
+
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum
 (`NEVER`, `AFTER_REQUERY`, `AFTER_CAPABILITY`, `AFTER_LIMIT_CHANGE`,

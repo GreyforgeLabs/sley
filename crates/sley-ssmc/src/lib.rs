@@ -426,6 +426,563 @@ pub struct ConstValue {
     pub data: ConstData,
 }
 
+/// Function or block parameter role.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ParameterRole {
+    /// Ordered function parameter.
+    Function,
+    /// Ordered block parameter.
+    Block,
+}
+
+impl ParameterRole {
+    /// Returns the exact frozen role tag.
+    #[must_use]
+    pub const fn tag(self) -> u32 {
+        match self {
+            Self::Function => 1,
+            Self::Block => 2,
+        }
+    }
+}
+
+/// Declared block reachability policy.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Reachability {
+    /// Must be reachable from the entry block.
+    Required,
+    /// Must not be reachable from the entry block.
+    ExplicitlyUnreachable,
+}
+
+impl Reachability {
+    /// Returns the exact frozen reachability tag.
+    #[must_use]
+    pub const fn tag(self) -> u32 {
+        match self {
+            Self::Required => 1,
+            Self::ExplicitlyUnreachable => 2,
+        }
+    }
+}
+
+/// Operation-result value identity.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct OperationResultRef {
+    /// Defining operation.
+    pub operation: EntityId,
+    /// Zero-based result index.
+    pub result_index: u32,
+}
+
+/// Closed SSMC1 value reference.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ValueRef {
+    /// Parameter identity.
+    Parameter(EntityId),
+    /// Operation result.
+    OperationResult(OperationResultRef),
+}
+
+impl ValueRef {
+    /// Returns the exact frozen value-reference tag.
+    #[must_use]
+    pub const fn tag(self) -> u32 {
+        match self {
+            Self::Parameter(_) => 1,
+            Self::OperationResult(_) => 2,
+        }
+    }
+}
+
+/// Named-variant immediate.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct VariantImmediate {
+    /// Exact variant definition.
+    pub definition: EntityId,
+    /// Exact case identity.
+    pub member_id: MemberId,
+}
+
+/// Closed operation immediate.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Immediate {
+    /// No immediate.
+    None,
+    /// Entity identity.
+    Entity(EntityId),
+    /// Zero-based index.
+    Index(u32),
+    /// Stable field identity.
+    Field(MemberId),
+    /// Named variant and case.
+    Variant(VariantImmediate),
+    /// Stable observation identity.
+    Observation([u8; 32]),
+    /// Function identity plus explicit type arguments.
+    Function(FunctionRefValue),
+}
+
+impl Immediate {
+    /// Returns the exact frozen immediate tag.
+    #[must_use]
+    pub const fn tag(&self) -> u32 {
+        match self {
+            Self::None => 1,
+            Self::Entity(_) => 2,
+            Self::Index(_) => 3,
+            Self::Field(_) => 4,
+            Self::Variant(_) => 5,
+            Self::Observation(_) => 6,
+            Self::Function(_) => 7,
+        }
+    }
+}
+
+/// Closed SSMC1 epoch-1 opcode.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Opcode {
+    /// Constant reference.
+    ConstantRef,
+    /// Tuple construction.
+    TupleNew,
+    /// Tuple projection.
+    TupleGet,
+    /// Record construction.
+    RecordNew,
+    /// Record projection.
+    RecordGet,
+    /// Variant construction.
+    VariantNew,
+    /// Variant projection with explicit absence.
+    VariantGet,
+    /// Vector construction.
+    VectorNew,
+    /// Vector length.
+    VectorLen,
+    /// Vector access.
+    VectorGet,
+    /// Persistent vector update.
+    VectorSet,
+    /// Ordered-map construction.
+    MapNew,
+    /// Ordered-map access.
+    MapGet,
+    /// Ordered-map membership.
+    MapContains,
+    /// Persistent ordered-map insertion.
+    MapInsert,
+    /// Persistent ordered-map removal.
+    MapRemove,
+    /// Checked integer addition.
+    IntAddChecked,
+    /// Checked integer subtraction.
+    IntSubChecked,
+    /// Checked integer multiplication.
+    IntMulChecked,
+    /// Checked integer division.
+    IntDivChecked,
+    /// Checked integer remainder.
+    IntRemChecked,
+    /// Checked signed negation.
+    IntNegChecked,
+    /// Checked left shift.
+    IntShlChecked,
+    /// Checked right shift.
+    IntShrChecked,
+    /// Floating addition.
+    FloatAdd,
+    /// Floating subtraction.
+    FloatSub,
+    /// Floating multiplication.
+    FloatMul,
+    /// Floating division.
+    FloatDiv,
+    /// Floating negation.
+    FloatNeg,
+    /// Explicit fused multiply-add.
+    FloatFma,
+    /// Equality.
+    Equal,
+    /// Inequality.
+    NotEqual,
+    /// Less than.
+    LessThan,
+    /// Less than or equal.
+    LessEqual,
+    /// Greater than.
+    GreaterThan,
+    /// Greater than or equal.
+    GreaterEqual,
+    /// Boolean not.
+    BoolNot,
+    /// Boolean and.
+    BoolAnd,
+    /// Boolean or.
+    BoolOr,
+    /// Direct typed function call.
+    CallDirect,
+    /// Option some.
+    OptionSome,
+    /// Option none.
+    OptionNone,
+    /// Result success.
+    ResultOk,
+    /// Result failure.
+    ResultErr,
+    /// Contract assertion.
+    ContractAssert,
+    /// Test observation.
+    TestObserve,
+    /// Typed effect request.
+    EffectRequest,
+    /// Typed adapter invocation.
+    AdapterInvoke,
+    /// Capability narrowing.
+    CapabilityNarrow,
+    /// Local-cell construction.
+    CellNew,
+    /// Local-cell read.
+    CellGet,
+    /// Local-cell write.
+    CellSet,
+    /// Defined value hash.
+    ValueHash,
+    /// Immutable global read.
+    GlobalGet,
+    /// Function-reference construction.
+    FunctionRef,
+}
+
+impl Opcode {
+    /// Returns the exact frozen opcode tag.
+    #[must_use]
+    pub const fn tag(self) -> u32 {
+        match self {
+            Self::ConstantRef => 1,
+            Self::TupleNew => 16,
+            Self::TupleGet => 17,
+            Self::RecordNew => 18,
+            Self::RecordGet => 19,
+            Self::VariantNew => 20,
+            Self::VariantGet => 21,
+            Self::VectorNew => 32,
+            Self::VectorLen => 33,
+            Self::VectorGet => 34,
+            Self::VectorSet => 35,
+            Self::MapNew => 36,
+            Self::MapGet => 37,
+            Self::MapContains => 38,
+            Self::MapInsert => 39,
+            Self::MapRemove => 40,
+            Self::IntAddChecked => 64,
+            Self::IntSubChecked => 65,
+            Self::IntMulChecked => 66,
+            Self::IntDivChecked => 67,
+            Self::IntRemChecked => 68,
+            Self::IntNegChecked => 69,
+            Self::IntShlChecked => 70,
+            Self::IntShrChecked => 71,
+            Self::FloatAdd => 80,
+            Self::FloatSub => 81,
+            Self::FloatMul => 82,
+            Self::FloatDiv => 83,
+            Self::FloatNeg => 84,
+            Self::FloatFma => 85,
+            Self::Equal => 96,
+            Self::NotEqual => 97,
+            Self::LessThan => 98,
+            Self::LessEqual => 99,
+            Self::GreaterThan => 100,
+            Self::GreaterEqual => 101,
+            Self::BoolNot => 102,
+            Self::BoolAnd => 103,
+            Self::BoolOr => 104,
+            Self::CallDirect => 112,
+            Self::OptionSome => 128,
+            Self::OptionNone => 129,
+            Self::ResultOk => 130,
+            Self::ResultErr => 131,
+            Self::ContractAssert => 144,
+            Self::TestObserve => 145,
+            Self::EffectRequest => 160,
+            Self::AdapterInvoke => 161,
+            Self::CapabilityNarrow => 162,
+            Self::CellNew => 176,
+            Self::CellGet => 177,
+            Self::CellSet => 178,
+            Self::ValueHash => 192,
+            Self::GlobalGet => 193,
+            Self::FunctionRef => 194,
+        }
+    }
+}
+
+/// One SSMC1 operation entity.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Operation {
+    /// Stable operation identity.
+    pub entity_id: EntityId,
+    /// Owning block.
+    pub block: EntityId,
+    /// Zero-based position in the block.
+    pub ordinal: u32,
+    /// Frozen closed opcode.
+    pub opcode: Opcode,
+    /// Ordered input values.
+    pub operands: Vec<ValueRef>,
+    /// Ordered declared result types.
+    pub result_types: Vec<TypeExpr>,
+    /// Frozen opcode immediate.
+    pub immediate: Immediate,
+}
+
+/// Ordinary CFG target edge.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TargetEdge {
+    /// Target block.
+    pub target: EntityId,
+    /// Ordered target arguments.
+    pub arguments: Vec<ValueRef>,
+}
+
+/// Built-in Option/Result switch case.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum BuiltinCase {
+    /// Option none.
+    None,
+    /// Option some.
+    Some,
+    /// Result success.
+    Ok,
+    /// Result failure.
+    Err,
+}
+
+impl BuiltinCase {
+    /// Returns the exact frozen built-in case tag.
+    #[must_use]
+    pub const fn tag(self) -> u32 {
+        match self {
+            Self::None => 1,
+            Self::Some => 2,
+            Self::Ok => 3,
+            Self::Err => 4,
+        }
+    }
+}
+
+/// Named or built-in switch case key.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum CaseKey {
+    /// Named variant member.
+    Member(MemberId),
+    /// Option/Result built-in case.
+    Builtin(BuiltinCase),
+}
+
+impl CaseKey {
+    /// Returns the exact frozen case-key union tag.
+    #[must_use]
+    pub const fn tag(self) -> u32 {
+        match self {
+            Self::Member(_) => 1,
+            Self::Builtin(_) => 2,
+        }
+    }
+}
+
+/// One switch-edge argument.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SwitchArgument {
+    /// Ordinary source-block value.
+    Value(ValueRef),
+    /// Selected case payload.
+    CasePayload,
+}
+
+impl SwitchArgument {
+    /// Returns the exact frozen switch-argument tag.
+    #[must_use]
+    pub const fn tag(self) -> u32 {
+        match self {
+            Self::Value(_) => 1,
+            Self::CasePayload => 2,
+        }
+    }
+}
+
+/// Variant-switch target edge.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SwitchEdge {
+    /// Target block.
+    pub target: EntityId,
+    /// Ordinary values or selected payload.
+    pub arguments: Vec<SwitchArgument>,
+}
+
+/// One exhaustive variant-switch case.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SwitchCase {
+    /// Named or built-in case key.
+    pub case_key: CaseKey,
+    /// Case target edge.
+    pub edge: SwitchEdge,
+}
+
+/// Closed trap code.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum TrapCode {
+    /// Statically unreachable path.
+    Unreachable,
+    /// Declared resource exhaustion.
+    ResourceExhausted,
+    /// Adapter violated its typed contract.
+    AdapterContractViolation,
+    /// Validated internal invariant failed.
+    InternalInvariant,
+}
+
+impl TrapCode {
+    /// Returns the exact frozen trap tag.
+    #[must_use]
+    pub const fn tag(self) -> u32 {
+        match self {
+            Self::Unreachable => 1,
+            Self::ResourceExhausted => 2,
+            Self::AdapterContractViolation => 3,
+            Self::InternalInvariant => 4,
+        }
+    }
+}
+
+/// Return terminator.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ReturnTerminator {
+    /// Returned value.
+    pub value: ValueRef,
+}
+
+/// Unconditional branch terminator.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct BranchTerminator {
+    /// Only target edge.
+    pub edge: TargetEdge,
+}
+
+/// Conditional branch terminator.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CondBranchTerminator {
+    /// Boolean condition.
+    pub condition: ValueRef,
+    /// True edge.
+    pub if_true: TargetEdge,
+    /// False edge.
+    pub if_false: TargetEdge,
+}
+
+/// Exhaustive variant switch terminator.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct VariantSwitchTerminator {
+    /// Selected variant value.
+    pub value: ValueRef,
+    /// Strictly canonical ordered cases.
+    pub cases: Vec<SwitchCase>,
+}
+
+/// Explicit unrecoverable trap terminator.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct TrapTerminator {
+    /// Closed trap code.
+    pub code: TrapCode,
+    /// Optional persistable value.
+    pub payload: Option<ValueRef>,
+}
+
+/// Closed SSMC1 terminator.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Terminator {
+    /// Function return.
+    Return(ReturnTerminator),
+    /// Unconditional branch.
+    Branch(BranchTerminator),
+    /// Conditional branch.
+    CondBranch(CondBranchTerminator),
+    /// Exhaustive closed-variant switch.
+    VariantSwitch(VariantSwitchTerminator),
+    /// Explicit trap.
+    Trap(TrapTerminator),
+}
+
+impl Terminator {
+    /// Returns the exact frozen terminator tag.
+    #[must_use]
+    pub const fn tag(&self) -> u32 {
+        match self {
+            Self::Return(_) => 1,
+            Self::Branch(_) => 2,
+            Self::CondBranch(_) => 3,
+            Self::VariantSwitch(_) => 4,
+            Self::Trap(_) => 5,
+        }
+    }
+}
+
+/// One parameter entity.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Parameter {
+    /// Stable parameter identity.
+    pub entity_id: EntityId,
+    /// Function or block owner.
+    pub owner: EntityId,
+    /// Function or block role.
+    pub role: ParameterRole,
+    /// Zero-based owner-list position.
+    pub ordinal: u32,
+    /// Exact value type.
+    pub value_type: TypeExpr,
+}
+
+/// One block entity.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Block {
+    /// Stable block identity.
+    pub entity_id: EntityId,
+    /// Owning function.
+    pub function: EntityId,
+    /// Ordered block parameters.
+    pub parameters: Vec<EntityId>,
+    /// Ordered operations.
+    pub operations: Vec<EntityId>,
+    /// Exactly one terminator.
+    pub terminator: Terminator,
+    /// Exact reachability policy.
+    pub reachability: Reachability,
+}
+
+/// Function graph fields required by S20-220.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FunctionGraph {
+    /// Stable function identity.
+    pub entity_id: EntityId,
+    /// Ordered declaration parameters.
+    pub type_parameters: Vec<TypeParameterDef>,
+    /// Ordered function parameters.
+    pub parameters: Vec<EntityId>,
+    /// Exact result type.
+    pub result_type: TypeExpr,
+    /// Raw-ID-sorted effect identities.
+    pub effects: Vec<EntityId>,
+    /// Entry block.
+    pub entry_block: EntityId,
+    /// Ordered function blocks.
+    pub blocks: Vec<EntityId>,
+    /// Raw-ID-sorted contract identities.
+    pub contracts: Vec<EntityId>,
+    /// Function visibility.
+    pub visibility: Visibility,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -525,5 +1082,114 @@ mod tests {
         };
         assert_eq!(ResultConst::Ok(Box::new(value.clone())).tag(), 1);
         assert_eq!(ResultConst::Err(Box::new(value)).tag(), 2);
+    }
+
+    #[test]
+    fn cfg_enum_tags_do_not_depend_on_rust_layout() {
+        let id = EntityId::from_bytes([1; 32]);
+        assert_eq!(ParameterRole::Function.tag(), 1);
+        assert_eq!(ParameterRole::Block.tag(), 2);
+        assert_eq!(Reachability::Required.tag(), 1);
+        assert_eq!(Reachability::ExplicitlyUnreachable.tag(), 2);
+        assert_eq!(ValueRef::Parameter(id).tag(), 1);
+        assert_eq!(
+            ValueRef::OperationResult(OperationResultRef {
+                operation: id,
+                result_index: 0,
+            })
+            .tag(),
+            2
+        );
+        assert_eq!(BuiltinCase::None.tag(), 1);
+        assert_eq!(BuiltinCase::Err.tag(), 4);
+        assert_eq!(CaseKey::Member(MemberId::from_bytes([2; 32])).tag(), 1);
+        assert_eq!(CaseKey::Builtin(BuiltinCase::Ok).tag(), 2);
+        assert_eq!(SwitchArgument::Value(ValueRef::Parameter(id)).tag(), 1);
+        assert_eq!(SwitchArgument::CasePayload.tag(), 2);
+        assert_eq!(TrapCode::Unreachable.tag(), 1);
+        assert_eq!(TrapCode::InternalInvariant.tag(), 4);
+        assert_eq!(
+            Terminator::Return(ReturnTerminator {
+                value: ValueRef::Parameter(id),
+            })
+            .tag(),
+            1
+        );
+        assert_eq!(
+            Terminator::Trap(TrapTerminator {
+                code: TrapCode::Unreachable,
+                payload: None,
+            })
+            .tag(),
+            5
+        );
+    }
+
+    #[test]
+    fn all_opcode_tags_are_exact_and_unique() {
+        let opcodes = [
+            Opcode::ConstantRef,
+            Opcode::TupleNew,
+            Opcode::TupleGet,
+            Opcode::RecordNew,
+            Opcode::RecordGet,
+            Opcode::VariantNew,
+            Opcode::VariantGet,
+            Opcode::VectorNew,
+            Opcode::VectorLen,
+            Opcode::VectorGet,
+            Opcode::VectorSet,
+            Opcode::MapNew,
+            Opcode::MapGet,
+            Opcode::MapContains,
+            Opcode::MapInsert,
+            Opcode::MapRemove,
+            Opcode::IntAddChecked,
+            Opcode::IntSubChecked,
+            Opcode::IntMulChecked,
+            Opcode::IntDivChecked,
+            Opcode::IntRemChecked,
+            Opcode::IntNegChecked,
+            Opcode::IntShlChecked,
+            Opcode::IntShrChecked,
+            Opcode::FloatAdd,
+            Opcode::FloatSub,
+            Opcode::FloatMul,
+            Opcode::FloatDiv,
+            Opcode::FloatNeg,
+            Opcode::FloatFma,
+            Opcode::Equal,
+            Opcode::NotEqual,
+            Opcode::LessThan,
+            Opcode::LessEqual,
+            Opcode::GreaterThan,
+            Opcode::GreaterEqual,
+            Opcode::BoolNot,
+            Opcode::BoolAnd,
+            Opcode::BoolOr,
+            Opcode::CallDirect,
+            Opcode::OptionSome,
+            Opcode::OptionNone,
+            Opcode::ResultOk,
+            Opcode::ResultErr,
+            Opcode::ContractAssert,
+            Opcode::TestObserve,
+            Opcode::EffectRequest,
+            Opcode::AdapterInvoke,
+            Opcode::CapabilityNarrow,
+            Opcode::CellNew,
+            Opcode::CellGet,
+            Opcode::CellSet,
+            Opcode::ValueHash,
+            Opcode::GlobalGet,
+            Opcode::FunctionRef,
+        ];
+        let expected = [
+            1, 16, 17, 18, 19, 20, 21, 32, 33, 34, 35, 36, 37, 38, 39, 40, 64, 65, 66, 67, 68, 69,
+            70, 71, 80, 81, 82, 83, 84, 85, 96, 97, 98, 99, 100, 101, 102, 103, 104, 112, 128, 129,
+            130, 131, 144, 145, 160, 161, 162, 176, 177, 178, 192, 193, 194,
+        ];
+        assert_eq!(opcodes.map(Opcode::tag), expected);
+        assert!(expected.windows(2).all(|pair| pair[0] < pair[1]));
     }
 }
