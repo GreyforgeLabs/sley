@@ -31,9 +31,11 @@ bytes and a root/profile-bound cache key. The other 52 opcode signatures,
 generics, and adapters remain fail-closed gaps. S20-270 now executes that
 restricted bytecode deterministically with exact Boolean semantics, all five
 terminators, bounded fuel/value/output/cancellation behavior, and a canonical
-observation digest. Full opcode, adapter, live-cancellation, and persistent
-report semantics remain explicit gaps. S20-280 minimal reference adapters are
-next. Every next package must follow `docs/WORK_PACKAGES.md`.
+observation digest. S20-280 now adds eight restricted deterministic,
+request-owned reference adapter fixtures with exact identity, state, replay,
+limit, atomicity, and transcript rules. VM adapter opcodes, live host access,
+protected capabilities, live cancellation, and persistent report semantics
+remain explicit gaps. Every next package must follow `docs/WORK_PACKAGES.md`.
 
 ## Authority
 
@@ -56,6 +58,6 @@ work belongs to a separate session and repository worktree.
 
 `make quick` and `make check-changed` validate the implemented M0/M1 and
 current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering/
-execution surface. Later profiles are present but intentionally fail closed
+execution/reference-adapter surface. Later profiles are present but intentionally fail closed
 until their corresponding work packages land.
 `make v2` remains the eventual authoritative full gate.

@@ -30,8 +30,8 @@ must not be read as passing evidence until the named work package records them.
 | T23 | capability replay | P0 | sley-policy | `CAP_REPLAY` | nonce/root/expiry replay | `evidence/security/T23/` |
 | T24 | capability scope confusion | P0 | sley-policy | `CAP_SCOPE_MISMATCH` | workspace/effect/resource matrix | `evidence/security/T24/` |
 | T25 | adapter impersonation | P0 | sley-adapter | `ADAPTER_IDENTITY_MISMATCH` | adapter ABI/identity swap | `evidence/security/T25/` |
-| T26 | adapter response injection | P0 | sley-adapter | `ADAPTER_RESPONSE_INVALID` | framed response fuzz | `evidence/security/T26/` |
-| T27 | path traversal | P0 | sley-adapter | `ADAPTER_PATH_ESCAPE` | traversal corpus | `evidence/security/T27/` |
+| T26 | adapter response injection | P0 | sley-adapter | `ADAPTER_TYPE_MISMATCH` | typed replay outcome injection | `evidence/security/T26/` |
+| T27 | path traversal | P0 | sley-adapter | `ADAPTER_PATH_INVALID` | traversal/separator/Unicode corpus | `evidence/security/T27/` |
 | T28 | symlink escape | P0 | sley-adapter | `ADAPTER_SYMLINK_ESCAPE` | confined-root symlink matrix | `evidence/security/T28/` |
 | T29 | environment leakage | P0 | sley-vm | `VM_AMBIENT_STATE_FORBIDDEN` | clean/poisoned env equivalence | `evidence/security/T29/` |
 | T30 | output flooding | P1 | sley-vm | `VM_OUTPUT_LIMIT` | exact output ceiling | `evidence/security/T30/` |

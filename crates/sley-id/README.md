@@ -9,6 +9,9 @@ ADR-0007 adds a dedicated `ValueHash` domain; it is not an alias for semantic
 fingerprints or immutable-object identities.
 ADR-0008 adds a distinct derived `BytecodeCacheKey` domain that carries no
 canonical-state authority.
+ADR-0009 adds separate `ReferenceAdapterId`, `AdapterStateId`, and
+`AdapterTranscriptId` domains for restricted adapter selection and derived
+fixture/transcript evidence; none grants policy or capability authority.
 
 This crate has no filesystem, network, environment, SCB1 encoding, repository,
 policy, or VM authority.

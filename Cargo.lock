@@ -141,6 +141,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
 
 [[package]]
+name = "sley-adapter"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "blake3",
+ "sley-check",
+ "sley-id",
+ "sley-ssmc",
+]
+
+[[package]]
 name = "sley-check"
 version = "2.0.0-alpha.0"
 dependencies = [

@@ -131,6 +131,14 @@ deterministic input/fuel/value/output/cancellation limits, traps, invariant
 failures, and the observation digest. They do not claim the other 52 opcodes,
 adapters/effects, live cancellation, or persistent S20-290 reports.
 
+S20-280 freezes numeric codes 28000 through 28011 for the exact `ADAPTER_*`
+failures listed in `REFERENCE_ADAPTER_PROFILE_V1.md`. They cover only the
+restricted request-owned fixture profile: identity/ABI/effect/type boundaries,
+canonical state and virtual paths, replay order, resource limits,
+cancellation, and atomic in-memory mutation. Exact earlier `TYPE_*` and
+`FINGERPRINT_*` failures are preserved. These codes do not claim VM adapter
+opcode execution, protected capability judgment, or confined live host access.
+
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum
 (`NEVER`, `AFTER_REQUERY`, `AFTER_CAPABILITY`, `AFTER_LIMIT_CHANGE`,

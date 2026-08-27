@@ -1,6 +1,7 @@
 [workspace]
 resolver = "3"
 members = [
+    "crates/sley-adapter",
     "crates/sley-check",
     "crates/sley-id",
     "crates/sley-repo",

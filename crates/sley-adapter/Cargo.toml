@@ -1,0 +1,16 @@
+[package]
+name = "sley-adapter"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Sley 2 restricted deterministic reference adapter fixtures."
+
+[dependencies]
+blake3 = "=1.8.2"
+sley-check = { path = "../sley-check" }
+sley-id = { path = "../sley-id" }
+sley-ssmc = { path = "../sley-ssmc" }
+
+[lints]
+workspace = true
