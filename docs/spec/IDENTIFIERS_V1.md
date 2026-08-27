@@ -32,6 +32,7 @@ part of the `sley-id` kernel API.
 | typed query | `sley2.query.v1` |
 | context capsule | `sley2.context-capsule.v1` |
 | semantic fingerprint | `sley2.semantic-fingerprint.v1` |
+| canonical value hash | `sley2.value-hash.v1` |
 | deterministic observation | `sley2.observation.v1` |
 | execution report | `sley2.execution-report.v1` |
 | test report | `sley2.test-report.v1` |

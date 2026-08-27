@@ -21,6 +21,7 @@ enum Domain {
     Query,
     ContextCapsule,
     SemanticFingerprint,
+    ValueHash,
     Observation,
     ExecutionReport,
     TestReport,
@@ -30,7 +31,7 @@ enum Domain {
 
 impl Domain {
     #[cfg(test)]
-    const ALL: [Self; 19] = [
+    const ALL: [Self; 20] = [
         Self::Workspace,
         Self::Entity,
         Self::Object,
@@ -45,6 +46,7 @@ impl Domain {
         Self::Query,
         Self::ContextCapsule,
         Self::SemanticFingerprint,
+        Self::ValueHash,
         Self::Observation,
         Self::ExecutionReport,
         Self::TestReport,
@@ -68,6 +70,7 @@ impl Domain {
             Self::Query => b"sley2.query.v1",
             Self::ContextCapsule => b"sley2.context-capsule.v1",
             Self::SemanticFingerprint => b"sley2.semantic-fingerprint.v1",
+            Self::ValueHash => b"sley2.value-hash.v1",
             Self::Observation => b"sley2.observation.v1",
             Self::ExecutionReport => b"sley2.execution-report.v1",
             Self::TestReport => b"sley2.test-report.v1",
@@ -196,6 +199,10 @@ fixed_bytes_type!(
     SemanticFingerprint
 );
 fixed_bytes_type!(
+    /// Canonical SSMC value hash.
+    ValueHash
+);
+fixed_bytes_type!(
     /// Deterministic observation digest.
     ObservationId
 );
@@ -266,6 +273,7 @@ digest_type!(CandidateResultId, Domain::CandidateResult);
 digest_type!(QueryId, Domain::Query);
 digest_type!(ContextCapsuleId, Domain::ContextCapsule);
 digest_type!(SemanticFingerprint, Domain::SemanticFingerprint);
+digest_type!(ValueHash, Domain::ValueHash);
 digest_type!(ObservationId, Domain::Observation);
 digest_type!(ExecutionReportId, Domain::ExecutionReport);
 digest_type!(TestReportId, Domain::TestReport);
@@ -324,6 +332,7 @@ mod tests {
                 b"sley2.query.v1",
                 b"sley2.context-capsule.v1",
                 b"sley2.semantic-fingerprint.v1",
+                b"sley2.value-hash.v1",
                 b"sley2.observation.v1",
                 b"sley2.execution-report.v1",
                 b"sley2.test-report.v1",
@@ -391,6 +400,10 @@ mod tests {
             (
                 Domain::SemanticFingerprint,
                 "ff23c3392e7971031f17ec96dcaee0abcec3f7b1d22b4ab5a282582ae8fcc9c2",
+            ),
+            (
+                Domain::ValueHash,
+                "76b74346b1c2321cce99039843d3f42a39ab0bc60a8fd2f01484af60134a3e15",
             ),
             (
                 Domain::Observation,
@@ -540,6 +553,7 @@ mod tests {
         assert_eq!(core::mem::size_of::<QueryId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<ContextCapsuleId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<SemanticFingerprint>(), ID_LEN);
+        assert_eq!(core::mem::size_of::<ValueHash>(), ID_LEN);
         assert_eq!(core::mem::size_of::<ObservationId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<ExecutionReportId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<TestReportId>(), ID_LEN);

@@ -144,6 +144,33 @@
     "vulcan_review": "PASS",
     "implementation_complete": true
   },
+  "fingerprint_impact_profile": {
+    "status": "S20_250_RESTRICTED_EPOCH1_COMPLETE",
+    "full_ga_complete": false,
+    "contract": "docs/spec/FINGERPRINT_IMPACT_PROFILE_V1.md",
+    "fingerprint_implementation": "crates/sley-ssmc/src/fingerprint.rs",
+    "impact_implementation": "crates/sley-query",
+    "fingerprint_entity_kinds": [4, 5],
+    "impact_entity_kinds": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    "stable_error_codes": 13,
+    "fingerprint_unit_tests": 4,
+    "impact_unit_tests": 4,
+    "workspace_total_unit_tests": 185,
+    "deterministic_rebuild_seeds": 128,
+    "semantic_fingerprint_domain": "sley2.semantic-fingerprint.v1",
+    "value_hash_domain": "sley2.value-hash.v1",
+    "function_local_identity_normalization": true,
+    "direct_reverse_transitive_impact": true,
+    "preappend_resource_accounting": true,
+    "unmodeled_entity_kinds": [1, 2, 3, 16, 17, 18],
+    "full_ga_gap": "SIX_ENTITY_BODIES_AND_COMPLETE_ROOT_EXTRACTION_REQUIRED",
+    "nabu_architecture_review": "PASS_RESTRICTED_FAIL_CLOSED_PROFILE",
+    "ariadne_initial_review": "FAIL_2_P0_2_P1_1_P2",
+    "ariadne_final_review": "PASS",
+    "vulcan_initial_review": "FAIL_P2_RESOURCE_ACCOUNTING",
+    "vulcan_final_review": "PASS",
+    "implementation_complete": true
+  },
   "schema_epoch": {
     "status": "S20_140_COMPLETE",
     "bootstrap_magic": "SLEYEP01",
@@ -281,8 +308,8 @@
     "crate": "sley-id",
     "hash": "BLAKE3-256",
     "blake3_version": "1.8.2",
-    "domains": 19,
-    "typed_values": 21,
+    "domains": 20,
+    "typed_values": 22,
     "unit_tests": 7,
     "ariadne_spec_review": "PASS",
     "vulcan_implementation_review": "PASS"
@@ -346,6 +373,7 @@
     "The S20-170 pack profile is root/object-only; refs, transactions, compression, signatures, and clone equivalence await S20-540 or a new profile",
     "The S20-180 exclusive GC guard is a local witness; S20-390 and S20-500 must integrate all accepted-state mutation with the same ownership boundary",
     "S20-240 is a restricted epoch-1 profile; full-GA TypeDef invariants, effect/capability/resource contracts, effectful tests, adapter replay/configuration, observations, and policy-final selection require a later schema epoch",
+    "S20-250 is a restricted epoch-1 profile; Workspace, Package, Namespace, EntryPoint, PolicyBinding, and DependencyBinding bodies plus complete-root impact extraction remain required before S20-300/S20-510 or GA",
     "No VM exists",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]

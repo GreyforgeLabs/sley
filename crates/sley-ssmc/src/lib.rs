@@ -3,6 +3,8 @@
 
 use sley_id::EntityId;
 
+pub mod fingerprint;
+
 /// Exact epoch-1 structural type depth.
 pub const MAX_TYPE_DEPTH: usize = 64;
 /// Maximum explicit type arguments.

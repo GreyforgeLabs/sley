@@ -4,6 +4,7 @@ members = [
     "crates/sley-check",
     "crates/sley-id",
     "crates/sley-repo",
+    "crates/sley-query",
     "crates/sley-scb1",
     "crates/sley-schema",
     "crates/sley-ssmc",
