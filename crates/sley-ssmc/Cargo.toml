@@ -1,0 +1,13 @@
+[package]
+name = "sley-ssmc"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Sley 2 SSMC1 structural type and constant model."
+
+[dependencies]
+sley-id = { path = "../sley-id" }
+
+[lints]
+workspace = true

@@ -17,8 +17,9 @@ typed identifiers, an independent oracle, schema epochs, the immutable object
 store, deterministic state roots, and uncompressed root/object repository
 packs. S20-180 and the scoped M1 core/adversarial/fuzz-smoke profiles now pass.
 M2 is in progress: S20-200 freezes the SSMC1 entity/opcode schema and S20-210
-is next. No SSMC checker or runtime exists yet. Every next package must follow
-`docs/WORK_PACKAGES.md`.
+implements the deterministic core type system. S20-220 CFG/value-use
+validation is next. No complete semantic checker or runtime exists yet. Every
+next package must follow `docs/WORK_PACKAGES.md`.
 
 ## Authority
 
@@ -39,7 +40,7 @@ work belongs to a separate session and repository worktree.
 
 ## Validation
 
-`make quick` and `make check-changed` validate the implemented M0/M1 surface.
-Later profiles are present but intentionally fail closed until their
-corresponding work packages land. `make v2` remains the eventual authoritative
-full gate.
+`make quick` and `make check-changed` validate the implemented M0/M1 and
+current M2 type-system surface. Later profiles are present but intentionally
+fail closed until their corresponding work packages land. `make v2` remains
+the eventual authoritative full gate.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Emit an honest M0 change-aware validation report."""
+"""Emit an honest change-aware validation report."""
 
 from __future__ import annotations
 
@@ -19,6 +19,8 @@ print(
                 "sley-id",
                 "sley-scb1",
                 "sley-schema",
+                "sley-ssmc",
+                "sley-check",
                 "sley-state-root",
                 "sley-store",
                 "sley-repo",
@@ -36,6 +38,8 @@ print(
                 "S20-160 deterministic state roots",
                 "S20-170 repository packs and clean reconstruction",
                 "S20-180 explicit retention and guarded garbage collection",
+                "S20-200 SSMC1 entity and opcode schema",
+                "S20-210 deterministic core type system",
             ],
             "selected_checks": [
                 "scripts/check_m0.py",
@@ -46,6 +50,7 @@ print(
                 "scripts/check_state_root_spec.py",
                 "scripts/check_repository_pack_spec.py",
                 "scripts/check_gc_spec.py",
+                "scripts/check_type_system.py",
                 "cargo fmt --check",
                 "cargo check --workspace --locked",
                 "cargo test --workspace --locked",
@@ -58,7 +63,7 @@ print(
                 "v2",
                 "release-check",
             ],
-            "skip_rationale": "M1 canonical-state implementation and scoped exit profiles pass; the M2 executable semantic kernel, clone-equivalent profiles, and later product/release gates remain unavailable.",
+            "skip_rationale": "M1 canonical-state implementation and scoped exit profiles pass; S20-200/S20-210 are implemented, while the remaining M2 CFG/effect/contract/VM surface, clone-equivalent profiles, and later product/release gates remain unavailable.",
             "v2_required": False,
             "cache_use": "none",
             "result": "PASS",

@@ -74,6 +74,12 @@ failures listed in `SSMC1.md`. Those codes cover structural schema judgment
 only and never substitute for later `TYPE_*`, `CFG_*`, `EFFECT_*`,
 `CONTRACT_*`, or `VM_*` results.
 
+S20-210 freezes numeric codes 21000 through 21020 for the exact `TYPE_*`
+failures listed in `TYPE_SYSTEM_V1.md`. They cover type well-formedness,
+definition cycles, trait requirements, substitution, and constant/type
+agreement only; they do not claim CFG, effect, contract, lowering, or runtime
+judgment.
+
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum
 (`NEVER`, `AFTER_REQUERY`, `AFTER_CAPABILITY`, `AFTER_LIMIT_CHANGE`,

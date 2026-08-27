@@ -9,6 +9,7 @@ quick:
 	python3 scripts/check_state_root_spec.py
 	python3 scripts/check_repository_pack_spec.py
 	python3 scripts/check_gc_spec.py
+	python3 scripts/check_type_system.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked

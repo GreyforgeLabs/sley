@@ -1,10 +1,12 @@
 [workspace]
 resolver = "3"
 members = [
+    "crates/sley-check",
     "crates/sley-id",
     "crates/sley-repo",
     "crates/sley-scb1",
     "crates/sley-schema",
+    "crates/sley-ssmc",
     "crates/sley-state-root",
     "crates/sley-store",
 ]
