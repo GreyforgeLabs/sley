@@ -8,7 +8,7 @@ environment can be preserved. No performance or superiority claim exists yet.
 
 Corpus v1 contains one representation-neutral task for each of the 15 mandatory
 classes. Its task manifest SHA-256 is
-`263e441c04377ee93a7841d64f4b1f9d9cd5889c013abdfe83a34fc506d7cfee`.
+`7370b6ccb8ccd3f58fa2a90e316edf4bc5a1319b41a55253a2ee14bb5d73988d`.
 The required arms, 17 run-freeze controls, 25 metrics, fairness rules, failure
 retention, and succession thresholds are frozen in `bench/benchmark-plan.json`.
 

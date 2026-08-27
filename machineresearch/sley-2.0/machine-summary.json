@@ -22,7 +22,7 @@
   "adversarial": {"status": "NOT_IMPLEMENTED"},
   "succession": {
     "corpus_version": 1,
-    "corpus_sha256": "263e441c04377ee93a7841d64f4b1f9d9cd5889c013abdfe83a34fc506d7cfee",
+    "corpus_sha256": "7370b6ccb8ccd3f58fa2a90e316edf4bc5a1319b41a55253a2ee14bb5d73988d",
     "design_status": "FROZEN",
     "tasks": 15,
     "run_freeze_controls": 17,
