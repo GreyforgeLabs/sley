@@ -26,10 +26,6 @@ if summary.get("publication_authorized") is not False:
 for forbidden in ROOT.rglob("*.sley"):
     missing.append(f"forbidden Sley source: {forbidden.relative_to(ROOT)}")
 
-workspace = (ROOT / "Cargo.toml").read_text()
-if "members = []" not in workspace:
-    missing.append("M0 Cargo workspace must remain implementation-empty")
-
 threats = (ROOT / "docs/THREAT_REGISTER.md").read_text()
 for number in range(1, 56):
     threat_id = f"T{number:02d}"
@@ -42,9 +38,9 @@ if missing:
 
 print(json.dumps({
     "result": "PASS",
-    "phase": "M0",
+    "baseline": "M0",
     "required_files": len(REQUIRED),
-    "semantic_crates": 0,
+    "semantic_crates": len(list((ROOT / "crates").glob("*/Cargo.toml"))),
     "sley_source_files": 0,
     "publication_authorized": False,
 }, sort_keys=True))

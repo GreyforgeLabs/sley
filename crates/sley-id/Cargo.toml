@@ -1,0 +1,13 @@
+[package]
+name = "sley-id"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Sley 2 canonical domain-separated identifiers."
+
+[dependencies]
+blake3 = "=1.8.2"
+
+[lints]
+workspace = true

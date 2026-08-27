@@ -13,8 +13,9 @@ for Sley 1.x.
 ## Current phase
 
 Phase M0 is complete. The S20-040 neutral succession-benchmark design and
-corpus v1 are frozen. No semantic object or runtime implementation is present
-yet; the next implementation package must follow `docs/WORK_PACKAGES.md`.
+corpus v1 and the S20-100 SCB1 specification are frozen. M1 has begun with the
+S20-110 `sley-id` crate; no canonical object codec, store, or runtime exists
+yet. Every next package must follow `docs/WORK_PACKAGES.md`.
 
 ## Authority
 

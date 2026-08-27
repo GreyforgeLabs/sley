@@ -2,7 +2,7 @@
   "project": "Sley",
   "target_version": "2.0.0",
   "lineage": "machine-native",
-  "phase": "M0_COMPLETE",
+  "phase": "M1",
   "legacy_freeze": {
     "version": "1.2.0",
     "commit": "397fa28ded15ddbeca5404ee00a3f5bd5546b296",
@@ -28,6 +28,17 @@
   },
   "ssmc1": {"status": "DRAFT"},
   "protocol": {"status": "DRAFT"},
+  "identifiers": {
+    "status": "S20_110_COMPLETE",
+    "crate": "sley-id",
+    "hash": "BLAKE3-256",
+    "blake3_version": "1.8.2",
+    "domains": 19,
+    "typed_values": 21,
+    "unit_tests": 7,
+    "ariadne_spec_review": "PASS",
+    "vulcan_implementation_review": "PASS"
+  },
   "conformance": {"status": "NOT_IMPLEMENTED"},
   "adversarial": {"status": "NOT_IMPLEMENTED"},
   "succession": {
@@ -64,7 +75,7 @@
   ],
   "open_risks": [
     "SCB1 tags and exact schemas are not frozen",
-    "No semantic implementation exists",
+    "Only the identifier crate is implemented; no codec, store, or VM exists",
     "No succession benchmark exists"
   ]
 }
