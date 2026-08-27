@@ -90,6 +90,7 @@ work belongs to a separate session and repository worktree.
 current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering/
 execution/reference-adapter/report-envelope/index-snapshot/restricted-query/
 restricted-capsule/mutation-schema/protected-policy-root/capability-token
-surface. Later profiles are present but intentionally fail closed until their
-corresponding work packages land.
+surface plus the offline S20-610 raw-baseline evidence contract. Later profiles
+are present but intentionally fail closed until their corresponding work
+packages land.
 `make v2` remains the eventual authoritative full gate.
