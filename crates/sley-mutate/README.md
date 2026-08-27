@@ -16,7 +16,9 @@ and their recursive manifest dependencies, including canonical function-effect
 sets. A private non-Option CFG slice closes `MemberId`, value/function
 references, immediates, edges, switch cases, trap codes, and the return, branch,
 conditional-branch, and variant-switch terminator records while preserving
-semantic list order for later validation. `TrapTerminator` and the enclosing
+semantic list order for later validation. Dependency-closed private helpers also
+cover `TypeParameterDef`, `RecordField`, `BuiltinFailureValue`, `ContractSource`,
+`ContractBinding`, and `ResourceLimits`. `TrapTerminator` and the enclosing
 `Terminator` union remain open because the frozen SCB1 and SSMC manifest
 `Option<T>` tags conflict. It is not publicly descriptor-selectable, and the
 other recursive value families remain open. The crate cannot construct

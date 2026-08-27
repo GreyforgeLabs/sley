@@ -12,11 +12,12 @@ use sley_scb1::{
     encode_record, encode_sint64, encode_text, encode_union, encode_uvar,
 };
 use sley_ssmc::{
-    BranchTerminator, BuiltinCase, BuiltinFailureKind, CaseKey, CondBranchTerminator, ContractKind,
-    EffectKind, FunctionRefValue, FunctionType, Immediate, IntegerWidth, MemberId, NamedType,
-    OperationResultRef, ParameterRole, Reachability, ReturnTerminator, SwitchArgument, SwitchCase,
-    SwitchEdge, TargetEdge, TrapCode, TypeExpr, ValueRef, VariantImmediate,
-    VariantSwitchTerminator, Visibility,
+    BranchTerminator, BuiltinCase, BuiltinFailureKind, BuiltinFailureValue, CaseKey,
+    CondBranchTerminator, ContractBinding, ContractKind, ContractSource, EffectKind,
+    FunctionRefValue, FunctionType, Immediate, IntegerWidth, MemberId, NamedType,
+    OperationResultRef, ParameterRole, Reachability, RecordField, ResourceLimits, ReturnTerminator,
+    SwitchArgument, SwitchCase, SwitchEdge, TargetEdge, TrapCode, TypeExpr, TypeParameterDef,
+    ValueRef, VariantImmediate, VariantSwitchTerminator, Visibility,
 };
 
 use crate::value::{EntityIdSet, EntryExposure};
@@ -1485,6 +1486,218 @@ impl MutationValueCodec for VariantSwitchTerminator {
     }
 }
 
+impl MutationValueCodec for TypeParameterDef {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[(1, encode_at_depth(&self.ordinal, depth + 1)?)])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut ordinal = None;
+        decode_record_fields(cursor, &[1], |tag, payload| {
+            match tag {
+                1 => ordinal = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            ordinal: ordinal.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
+impl MutationValueCodec for RecordField {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[
+            (1, encode_at_depth(&self.member_id, depth + 1)?),
+            (2, encode_at_depth(&self.value_type, depth + 1)?),
+            (3, encode_at_depth(&self.visibility, depth + 1)?),
+        ])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut member_id = None;
+        let mut value_type = None;
+        let mut visibility = None;
+        decode_record_fields(cursor, &[1, 2, 3], |tag, payload| {
+            match tag {
+                1 => member_id = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                2 => value_type = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                3 => visibility = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            member_id: member_id.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            value_type: value_type.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            visibility: visibility.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
+impl MutationValueCodec for BuiltinFailureValue {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[
+            (1, encode_at_depth(&self.kind, depth + 1)?),
+            (2, encode_at_depth(&self.code, depth + 1)?),
+        ])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut kind = None;
+        let mut code = None;
+        decode_record_fields(cursor, &[1, 2], |tag, payload| {
+            match tag {
+                1 => kind = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                2 => code = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            kind: kind.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            code: code.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
+impl MutationValueCodec for ContractSource {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        match self {
+            Self::Parameter(value) | Self::Global(value) => {
+                encode_union(self.tag(), &encode_at_depth(value, depth + 1)?)
+            }
+            Self::Result | Self::Error => encode_union(self.tag(), &[]),
+        }
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let (tag, payload) = cursor.read_union()?;
+        match tag {
+            1 => Ok(Self::Parameter(decode_nested_exact(
+                payload,
+                depth + 1,
+                budget,
+            )?)),
+            2 if payload.is_empty() => Ok(Self::Result),
+            3 if payload.is_empty() => Ok(Self::Error),
+            4 => Ok(Self::Global(decode_nested_exact(
+                payload,
+                depth + 1,
+                budget,
+            )?)),
+            _ => Err(ScbError::new(ScbErrorCode::UnionInvalid)),
+        }
+    }
+}
+
+impl MutationValueCodec for ContractBinding {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[
+            (1, encode_at_depth(&self.predicate_parameter, depth + 1)?),
+            (2, encode_at_depth(&self.source, depth + 1)?),
+        ])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut predicate_parameter = None;
+        let mut source = None;
+        decode_record_fields(cursor, &[1, 2], |tag, payload| {
+            match tag {
+                1 => predicate_parameter = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                2 => source = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            predicate_parameter: predicate_parameter
+                .ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            source: source.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
+impl MutationValueCodec for ResourceLimits {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[
+            (1, encode_at_depth(&self.fuel, depth + 1)?),
+            (2, encode_at_depth(&self.memory_bytes, depth + 1)?),
+            (3, encode_at_depth(&self.output_bytes, depth + 1)?),
+            (4, encode_at_depth(&self.effect_count, depth + 1)?),
+            (5, encode_at_depth(&self.call_depth, depth + 1)?),
+            (6, encode_at_depth(&self.wall_timeout_millis, depth + 1)?),
+        ])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut fuel = None;
+        let mut memory_bytes = None;
+        let mut output_bytes = None;
+        let mut effect_count = None;
+        let mut call_depth = None;
+        let mut wall_timeout_millis = None;
+        decode_record_fields(cursor, &[1, 2, 3, 4, 5, 6], |tag, payload| {
+            match tag {
+                1 => fuel = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                2 => memory_bytes = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                3 => output_bytes = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                4 => effect_count = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                5 => call_depth = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                6 => wall_timeout_millis = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            fuel: fuel.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            memory_bytes: memory_bytes.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            output_bytes: output_bytes.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            effect_count: effect_count.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            call_depth: call_depth.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            wall_timeout_millis: wall_timeout_millis
+                .ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -2189,6 +2402,90 @@ mod tests {
         assert_eq!(
             decode_exact::<VariantSwitchTerminator>(&encoded).unwrap(),
             value
+        );
+    }
+
+    #[test]
+    fn independent_manifest_helpers_round_trip_exact_records_and_unions() {
+        assert_round_trip(&TypeParameterDef { ordinal: u32::MAX });
+        assert_round_trip(&RecordField {
+            member_id: member(31),
+            value_type: TypeExpr::Named(NamedType {
+                definition: id(32),
+                arguments: vec![TypeExpr::UInt(IntegerWidth::from_bits(128))],
+            }),
+            visibility: Visibility::Exported,
+        });
+        assert_round_trip(&BuiltinFailureValue {
+            kind: BuiltinFailureKind::Capability,
+            code: u16::MAX,
+        });
+
+        let sources = [
+            ContractSource::Parameter(id(33)),
+            ContractSource::Result,
+            ContractSource::Error,
+            ContractSource::Global(id(34)),
+        ];
+        for (index, source) in sources.iter().enumerate() {
+            assert_eq!(source.tag(), u32::try_from(index + 1).unwrap());
+            assert_round_trip(source);
+        }
+        assert_round_trip(&ContractBinding {
+            predicate_parameter: u32::MAX,
+            source: ContractSource::Global(id(35)),
+        });
+        assert_round_trip(&ResourceLimits {
+            fuel: 0,
+            memory_bytes: 1,
+            output_bytes: 127,
+            effect_count: 128,
+            call_depth: u64::MAX - 1,
+            wall_timeout_millis: u64::MAX,
+        });
+    }
+
+    #[test]
+    fn independent_manifest_helpers_reject_payload_and_record_failures() {
+        for tag in [2, 3] {
+            assert_eq!(
+                decode_exact::<ContractSource>(&encode_union(tag, &[0]).unwrap())
+                    .unwrap_err()
+                    .code(),
+                ScbErrorCode::UnionInvalid
+            );
+        }
+        assert_eq!(
+            decode_exact::<ContractSource>(&encode_union(5, &[]).unwrap())
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::UnionInvalid
+        );
+        assert_eq!(
+            decode_exact::<ResourceLimits>(
+                &encode_record(&[
+                    (1, encode_exact(&0_u64).unwrap()),
+                    (2, encode_exact(&0_u64).unwrap()),
+                    (3, encode_exact(&0_u64).unwrap()),
+                    (4, encode_exact(&0_u64).unwrap()),
+                    (5, encode_exact(&0_u64).unwrap()),
+                ])
+                .unwrap()
+            )
+            .unwrap_err()
+            .code(),
+            ScbErrorCode::FieldMissing
+        );
+
+        let mut trailing_kind = encode_exact(&BuiltinFailureKind::Arithmetic).unwrap();
+        trailing_kind.push(0);
+        assert_eq!(
+            decode_exact::<BuiltinFailureValue>(
+                &encode_record(&[(1, trailing_kind), (2, encode_exact(&0_u16).unwrap())]).unwrap()
+            )
+            .unwrap_err()
+            .code(),
+            ScbErrorCode::TrailingBytes
         );
     }
 }

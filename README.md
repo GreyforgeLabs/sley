@@ -65,13 +65,15 @@ later private codec work, including lossless strict 128-bit integer primitives;
 it selects no schema or mutation type. A crate-private mutation layer now closes
 primitive values, IDs/roots, direct enums, ordered lists/options, canonical
 entity-ID sets, and the complete twenty-variant recursive `TypeExpr` family
-with depth and allocation budgets. A further private slice closes `MemberId`,
-value/function references, immediates, CFG edges/cases, trap codes, and the four
-non-Option terminator records. `TrapTerminator` and the enclosing `Terminator`
-union remain unimplemented pending locked-canon resolution of the conflicting
-SCB1 and manifest `Option<T>` tags. `ConstValue`, complete CFG/body/field
-codecs, contract/test families, preconditions, candidate records, and candidate
-construction remain deferred. S20-370 now
+with depth and allocation budgets. Further private slices close `MemberId`,
+value/function references, immediates, CFG edges/cases, trap codes, the four
+non-Option terminator records, and the dependency-closed `TypeParameterDef`,
+`RecordField`, `BuiltinFailureValue`, `ContractSource`, `ContractBinding`, and
+`ResourceLimits` manifest helpers. `TrapTerminator` and the enclosing
+`Terminator` union remain unimplemented pending locked-canon resolution of the
+conflicting SCB1 and manifest `Option<T>` tags. `ConstValue`, complete
+CFG/body/field codecs, contract/test families, preconditions, candidate records,
+and candidate construction remain deferred. S20-370 now
 adds a separately registry-authorized protected policy root with exact opaque
 principals, principal-specific grants, protected entity bindings, and mandatory
 test/contract finalization. It has no authenticated policy-transition,
