@@ -487,7 +487,7 @@
     "resource_ceiling_fields": 6,
     "stable_error_codes": 19,
     "policy_unit_tests": 19,
-    "workspace_total_unit_tests": 290,
+    "workspace_total_unit_tests": 347,
     "deterministic_rebuild_iterations": 128,
     "fixed_policy_root": "7a933b888107588fd4cb942581e531f632a52dd15bb342145337b5ceac2907bf",
     "principal_identity": "OPAQUE_HOST_SUPPLIED_FIXED32_NO_AUTHORITY",
@@ -505,6 +505,42 @@
     "vulcan_initial_review": "FAIL_P2_TRANSITION_MODE_ERROR_UNREACHABLE",
     "vulcan_final_review": "PASS_NO_OPEN_P0_P1_P2_P3_P4",
     "implementation_complete": true
+  },
+  "capability_token_profile": {
+    "status": "S20_380_COMPLETE_NARROW_LOCAL_PROFILE",
+    "contract": "docs/spec/CAPABILITY_TOKEN_V1.md",
+    "implementation": [
+      "crates/sley-policy",
+      "crates/sley-adapter"
+    ],
+    "token_fields": 16,
+    "budget_fields": 6,
+    "stable_error_codes": 20,
+    "policy_capability_unit_tests": 6,
+    "authorized_adapter_unit_tests": 6,
+    "policy_total_unit_tests": 25,
+    "adapter_total_unit_tests": 20,
+    "workspace_total_rust_unit_tests": 347,
+    "token_digest": "fd9248cd3f1e46ed013e97c985c8e9e45eb58277b0d8dd126f5cbfeb1698d616",
+    "authenticator": "7c4c590e61b186cd399b7cfcb3abc6481c0dc77b542fd50f6f7f3c4aebcec7ac",
+    "stored_token_blake3": "f7a00e1e9eb35d6b66445c47c8426d5792078b9a9de9b165d7b7c697d3c92acb",
+    "host_secret_serialized": false,
+    "host_time_ambient": false,
+    "replay_and_budget_ledger": true,
+    "authorized_reference_adapter_wrapper": true,
+    "precharge_failure_atomic": true,
+    "postcharge_fixture_failure_atomic": true,
+    "t22_forgery_covered": true,
+    "t23_replay_expiry_budget_covered": true,
+    "t24_binding_confusion_covered": true,
+    "policy_transition_authority": false,
+    "vm_integration": false,
+    "live_host_confinement": false,
+    "candidate_or_commit_authority": false,
+    "full_ga_complete": false,
+    "implementation_complete": true,
+    "vulcan_review": "PASS_NO_OPEN_P0_P1_P2",
+    "s20_700_binding_review": "PASS_NO_OPEN_P0_P1_P2"
   },
   "schema_epoch": {
     "status": "S20_140_COMPLETE",
@@ -1013,7 +1049,7 @@
     "S20-330 is deliberately unimplemented until negotiated session, verified workspace/root, and epoch authority exist; claimed roots and capsule IDs are forbidden substitutes",
     "S20-340 is immutable descriptor codegen only; executable operations, fully bound candidate/preimage construction, validation, policy/capability authority, commit, receipts, M3/M4, and GA remain blocked",
     "S20-350 has a crate-private partial value-codec foundation with 11 body codecs and independent fixtures for 65 of 75 fields; locked generic Option<T> and ConstValue canon decisions still block the remaining recursive families, aggregate codecs, preconditions, candidate records, and construction",
-    "S20-370 protects policy, oracle roots, and named entity bindings with principal-specific immutable grant data, but policy transition authentication, capability tokens, live scope/expiry/replay/budget enforcement, candidate integration, commit, and production-epoch assembly remain blocked",
+    "S20-370 protects policy, oracle roots, and named entity bindings; S20-380 adds narrow local authenticated tokens plus exact scope/expiry/replay/budget enforcement for the in-memory reference wrapper, but policy-transition authentication, candidate/VM integration, live-host confinement, commit, and production-epoch assembly remain blocked",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]
 }

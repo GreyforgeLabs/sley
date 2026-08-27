@@ -1,7 +1,8 @@
 # Policy and Capability Model
 
-Status: S20-370 protected policy-root implementation complete; S20-380
-authenticated capability-token and live enforcement work remains a draft.
+Status: S20-370 protected policy-root and S20-380 narrow local authenticated
+capability-token enforcement implementations complete. VM-integrated and live
+host enforcement remain later work.
 
 ADR-0005 separates judged candidates from policy, epoch, kernel, and oracle
 changes. S20-370 and S20-380 own protected roots, authenticated tokens, scope,
@@ -20,9 +21,18 @@ entity binding. A separate policy-final plan requires every policy test and
 contract to be present in the S20-240 validated inventories and every required
 test to be selected.
 
-This evidence does not authenticate the upstream report or candidate; S20-360
+S20-380 now issues and strictly imports canonical 16-field local capability
+tokens, authenticates exact policy/root/principal/workspace/effect/scope/adapter
+bindings with a host-supplied keyed BLAKE3 secret, and rechecks explicit host
+time. Its caller-owned ledger rejects replay and cumulative budget exhaustion.
+The authorized S20-280 wrapper conservatively reserves the complete caller
+limit envelope before fixture execution; pre-charge failures mutate nothing,
+while post-charge fixture failures retain the charge and preserve fixture
+atomicity.
+
+This evidence does not authenticate an upstream candidate or report; S20-360
 must do that in the monotonic pipeline. No API authenticates policy
-transitions, issues tokens, reads time, enforces live scope/budgets, applies
-mutations, commits, writes receipts, or advances refs. S20-380 and S20-390 own
-those remaining boundaries, and the current registered epoch remains a
-contract-specific conformance epoch pending production-epoch assembly.
+transitions, applies mutations, commits, writes receipts, advances refs,
+executes VM adapter opcodes, or confines live host resources. S20-390 and later
+runtime packages own those boundaries, and the current registered epoch remains
+a contract-specific conformance epoch pending production-epoch assembly.

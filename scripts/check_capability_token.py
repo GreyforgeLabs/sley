@@ -70,6 +70,9 @@ for token in [
     "authorized_adapter_resource_dimensions_fail_closed_before_charge",
     "authorized_adapter_request_binding_confusion_fails_before_charge",
     "capability_budget_reserves_the_maximum_canonical_path",
+    "authorized_adapter_success_charges_once_then_mutates_fixture",
+    "authorized_adapter_failure_before_charge_mutates_neither_ledger_nor_fixture",
+    "authorized_adapter_failure_after_charge_consumes_ledger_without_fixture_mutation",
     "conformance-only fixture API",
 ]:
     if token not in adapter:
@@ -107,10 +110,51 @@ if (
     != "PASS_NO_OPEN_P0_P1_P2"
 ):
     problems.append("S20-700 adapter-binding review disposition is absent")
+summary_profile = summary.get("capability_token_profile", {})
+expected_summary = {
+    "status": "S20_380_COMPLETE_NARROW_LOCAL_PROFILE",
+    "contract": "docs/spec/CAPABILITY_TOKEN_V1.md",
+    "implementation": ["crates/sley-policy", "crates/sley-adapter"],
+    "token_fields": 16,
+    "budget_fields": 6,
+    "stable_error_codes": 20,
+    "policy_capability_unit_tests": 6,
+    "authorized_adapter_unit_tests": 6,
+    "policy_total_unit_tests": 25,
+    "adapter_total_unit_tests": 20,
+    "workspace_total_rust_unit_tests": 347,
+    "token_digest": "fd9248cd3f1e46ed013e97c985c8e9e45eb58277b0d8dd126f5cbfeb1698d616",
+    "authenticator": "7c4c590e61b186cd399b7cfcb3abc6481c0dc77b542fd50f6f7f3c4aebcec7ac",
+    "stored_token_blake3": "f7a00e1e9eb35d6b66445c47c8426d5792078b9a9de9b165d7b7c697d3c92acb",
+    "host_secret_serialized": False,
+    "host_time_ambient": False,
+    "replay_and_budget_ledger": True,
+    "authorized_reference_adapter_wrapper": True,
+    "precharge_failure_atomic": True,
+    "postcharge_fixture_failure_atomic": True,
+    "t22_forgery_covered": True,
+    "t23_replay_expiry_budget_covered": True,
+    "t24_binding_confusion_covered": True,
+    "policy_transition_authority": False,
+    "vm_integration": False,
+    "live_host_confinement": False,
+    "candidate_or_commit_authority": False,
+    "full_ga_complete": False,
+    "implementation_complete": True,
+    "vulcan_review": "PASS_NO_OPEN_P0_P1_P2",
+    "s20_700_binding_review": "PASS_NO_OPEN_P0_P1_P2",
+}
+summary_registered = True
+for field, expected in expected_summary.items():
+    if summary_profile.get(field) != expected:
+        summary_registered = False
+        problems.append(f"capability machine summary mismatch: {field}")
 if policy.count("38_0") < 20:
     problems.append("fewer than twenty frozen capability numeric codes")
-if adapter.count("#[test]") < 20:
-    problems.append("fewer than twenty reference-adapter tests after binding hardening")
+if policy.count("#[test]") != 25:
+    problems.append("policy test inventory differs from the registered twenty-five")
+if adapter.count("#[test]") != 20:
+    problems.append("adapter test inventory differs from the registered twenty")
 
 result = {
     "contract": "s20-380-capability-token-v1",
@@ -126,6 +170,7 @@ result = {
     "candidate_or_commit_authority": False,
     "vulcan_review": "PASS_NO_OPEN_P0_P1_P2",
     "s20_700_binding_review": "PASS_NO_OPEN_P0_P1_P2",
+    "machine_summary_registered": summary_registered,
     "problems": problems,
     "result": "PASS" if not problems else "FAIL",
 }
