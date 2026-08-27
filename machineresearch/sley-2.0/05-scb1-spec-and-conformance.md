@@ -14,7 +14,7 @@ Fixture evidence:
 - accepted fixture SHA-256
   `c6b7097b4f03d82c0181b473c3f3d90e028fe53c0ec8ff640c715954b5151e93`;
 - rejected fixture SHA-256
-  `5aca7c6086908cf764834da0808a4821fdbf2da30cede5062ff9813df6573780`;
+  `525c6ec13b9f15d52237da94bf89221e0f22cbfb8a2fc6cffe410e22891dd055`;
 - one complete stored envelope whose BLAKE3/ObjectId was generated with Rust
   `blake3` 1.8.2 and whose preimage, digest, and stored bytes are frozen;
 - Ariadne review: PASS after the envelope/digest and all envelope-level

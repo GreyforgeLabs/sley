@@ -21,7 +21,7 @@
     "rejected_vectors": 26,
     "rejection_codes": 22,
     "accepted_fixture_sha256": "c6b7097b4f03d82c0181b473c3f3d90e028fe53c0ec8ff640c715954b5151e93",
-    "rejected_fixture_sha256": "5aca7c6086908cf764834da0808a4821fdbf2da30cede5062ff9813df6573780",
+    "rejected_fixture_sha256": "525c6ec13b9f15d52237da94bf89221e0f22cbfb8a2fc6cffe410e22891dd055",
     "ariadne_review": "PASS",
     "codec_implemented": false,
     "independent_oracle_implemented": false
