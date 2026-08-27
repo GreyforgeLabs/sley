@@ -2,6 +2,7 @@
 
 quick:
 	python3 scripts/check_m0.py
+	python3 scripts/check_benchmark_baseline.py
 	cargo metadata --no-deps --format-version 1 >/dev/null
 
 check-changed: quick

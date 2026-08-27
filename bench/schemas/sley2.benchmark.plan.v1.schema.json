@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sley.invalid/schemas/sley2.benchmark.plan.v1.schema.json",
+  "title": "Sley 2 benchmark plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract", "status", "corpus_version", "task_manifest", "not_program_input", "arms", "run_freeze_required_fields", "metrics", "fairness_invariants", "failure_retention", "thresholds", "mutation_rule"],
+  "properties": {
+    "contract": {"const": "sley2-benchmark-plan-v1"},
+    "status": {"const": "FROZEN_DESIGN"},
+    "corpus_version": {"const": 1},
+    "task_manifest": {"const": "corpus/v1/tasks.json"},
+    "not_program_input": {"const": true},
+    "arms": {"type": "array", "minItems": 4},
+    "run_freeze_required_fields": {"type": "array", "minItems": 10, "items": {"type": "string"}},
+    "metrics": {"type": "array", "minItems": 20, "items": {"type": "string"}},
+    "fairness_invariants": {"type": "array", "minItems": 10, "items": {"type": "string"}},
+    "failure_retention": {"type": "object"},
+    "thresholds": {"type": "object"},
+    "mutation_rule": {"type": "string", "minLength": 1}
+  }
+}

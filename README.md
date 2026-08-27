@@ -12,10 +12,9 @@ for Sley 1.x.
 
 ## Current phase
 
-Phase M0: constitutional and architectural baseline. No semantic object or
-runtime implementation is present yet. The first implementation work package
-may begin only after this baseline, the legacy freeze, and the required reviews
-are committed.
+Phase M0 is complete. The S20-040 neutral succession-benchmark design and
+corpus v1 are frozen. No semantic object or runtime implementation is present
+yet; the next implementation package must follow `docs/WORK_PACKAGES.md`.
 
 ## Authority
 
