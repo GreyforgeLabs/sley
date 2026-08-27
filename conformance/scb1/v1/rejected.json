@@ -1,0 +1,31 @@
+{
+  "contract": "sley2-scb1-rejected-v1",
+  "vectors": [
+    {"id": "envelope-magic-invalid", "declared_type": "FixtureEmptyObject", "input_hex": "004c45595343423101010000000000000000000000000000000000000000000000000000000000000001010054e2e3255c0694baff1510195306855357ed60260675c8840a0f8df706c9586b", "expected_code": "SCB_MAGIC_INVALID"},
+    {"id": "envelope-version-unsupported", "declared_type": "FixtureEmptyObject", "input_hex": "534c45595343423102010000000000000000000000000000000000000000000000000000000000000001010054e2e3255c0694baff1510195306855357ed60260675c8840a0f8df706c9586b", "expected_code": "SCB_VERSION_UNSUPPORTED"},
+    {"id": "envelope-contract-unknown", "declared_type": "FixtureEmptyObject", "input_hex": "534c45595343423101030000000000000000000000000000000000000000000000000000000000000001010054e2e3255c0694baff1510195306855357ed60260675c8840a0f8df706c9586b", "expected_code": "SCB_CONTRACT_UNKNOWN"},
+    {"id": "envelope-epoch-mismatch", "declared_type": "FixtureEmptyObject", "input_hex": "534c45595343423101010000000000000000000000000000000000000000000000000000000000000002010054e2e3255c0694baff1510195306855357ed60260675c8840a0f8df706c9586b", "expected_code": "SCB_EPOCH_MISMATCH"},
+    {"id": "envelope-digest-mismatch", "declared_type": "FixtureEmptyObject", "input_hex": "534c45595343423101010000000000000000000000000000000000000000000000000000000000000001010054e2e3255c0694baff1510195306855357ed60260675c8840a0f8df706c9586a", "expected_code": "SCB_DIGEST_MISMATCH"},
+    {"id": "record-required-field-missing", "declared_type": "FixtureRequiredBool", "input_hex": "534c45595343423101020000000000000000000000000000000000000000000000000000000000000001010001bb602430e822d6d3187df7782d8d10dc7326a539045949fb7177a5a9e088a5", "expected_code": "SCB_FIELD_MISSING"},
+    {"id": "record-unknown-field", "declared_type": "FixtureEmptyObject", "input_hex": "534c455953434231010100000000000000000000000000000000000000000000000000000000000000010401010101360bcb39f6694137bbd4b99c43246cff92e02296f0b0afb9f3eeb459ff54059c", "expected_code": "SCB_FIELD_UNKNOWN"},
+    {"id": "uvar-nonminimal-zero", "declared_type": "UInt64", "input_hex": "8000", "expected_code": "SCB_VARINT_NON_MINIMAL"},
+    {"id": "uvar-nonminimal-one", "declared_type": "UInt64", "input_hex": "8100", "expected_code": "SCB_VARINT_NON_MINIMAL"},
+    {"id": "uint8-overflow", "declared_type": "UInt8", "input_hex": "8002", "expected_code": "SCB_INTEGER_OVERFLOW"},
+    {"id": "bool-two", "declared_type": "Bool", "input_hex": "02", "expected_code": "SCB_BOOL_INVALID"},
+    {"id": "text-overlong-nul", "declared_type": "Text", "input_hex": "02c080", "expected_code": "SCB_UTF8_INVALID"},
+    {"id": "text-surrogate", "declared_type": "Text", "input_hex": "03eda080", "expected_code": "SCB_UTF8_INVALID"},
+    {"id": "label-not-nfc", "declared_type": "NormalizedLabel", "input_hex": "0365cc81", "expected_code": "SCB_LABEL_NOT_NFC"},
+    {"id": "f32-alternate-nan", "declared_type": "F32", "input_hex": "7fc00001", "expected_code": "SCB_FLOAT_NON_CANONICAL"},
+    {"id": "f32-negative-zero", "declared_type": "F32", "input_hex": "80000000", "expected_code": "SCB_FLOAT_NON_CANONICAL"},
+    {"id": "f64-negative-zero", "declared_type": "F64", "input_hex": "8000000000000000", "expected_code": "SCB_FLOAT_NON_CANONICAL"},
+    {"id": "list-count-truncated", "declared_type": "List<UInt64>", "input_hex": "020101", "expected_code": "SCB_LENGTH_OVERFLOW"},
+    {"id": "record-duplicate-field", "declared_type": "FixtureRecord", "input_hex": "02010100010100", "expected_code": "SCB_FIELD_DUPLICATE"},
+    {"id": "record-field-order", "declared_type": "FixtureRecord", "input_hex": "02020100010100", "expected_code": "SCB_FIELD_ORDER"},
+    {"id": "option-invalid-tag", "declared_type": "Option<UInt64>", "input_hex": "0200", "expected_code": "SCB_UNION_INVALID"},
+    {"id": "map-key-order", "declared_type": "Map<UInt8,UInt8>", "input_hex": "02010201140101010a", "expected_code": "SCB_MAP_ORDER"},
+    {"id": "map-duplicate-key", "declared_type": "Map<UInt8,UInt8>", "input_hex": "020101010a01010114", "expected_code": "SCB_MAP_DUPLICATE"},
+    {"id": "value-trailing-byte", "declared_type": "Bool", "input_hex": "0100", "expected_code": "SCB_TRAILING_BYTES"},
+    {"id": "unknown-extension", "declared_type": "FixtureExtensibleRecord", "input_hex": "01010100", "expected_code": "SCB_EXTENSION_UNKNOWN"},
+    {"id": "resource-nesting-65", "declared_type": "NestedListFixture", "input_hex": "", "generator": "nested_empty_list_depth_65", "expected_code": "SCB_RESOURCE_LIMIT"}
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "contract": "sley2-scb1-accepted-v1",
+  "vectors": [
+    {"id": "uvar-zero", "kind": "uvar", "value": 0, "expected_hex": "00"},
+    {"id": "uvar-one", "kind": "uvar", "value": 1, "expected_hex": "01"},
+    {"id": "uvar-127", "kind": "uvar", "value": 127, "expected_hex": "7f"},
+    {"id": "uvar-128", "kind": "uvar", "value": 128, "expected_hex": "8001"},
+    {"id": "uvar-300", "kind": "uvar", "value": 300, "expected_hex": "ac02"},
+    {"id": "sint-negative-one", "kind": "sint64", "value": -1, "expected_hex": "01"},
+    {"id": "sint-one", "kind": "sint64", "value": 1, "expected_hex": "02"},
+    {"id": "sint-negative-two", "kind": "sint64", "value": -2, "expected_hex": "03"},
+    {"id": "bool-false", "kind": "bool", "value": false, "expected_hex": "00"},
+    {"id": "bool-true", "kind": "bool", "value": true, "expected_hex": "01"},
+    {"id": "bytes-abc", "kind": "bytes_utf8_fixture", "value": "abc", "expected_hex": "03616263"},
+    {"id": "text-precomposed-e-acute", "kind": "text", "value": "é", "expected_hex": "02c3a9"},
+    {"id": "label-precomposed-e-acute", "kind": "normalized_label", "value": "é", "expected_hex": "02c3a9"},
+    {"id": "f32-positive-zero", "kind": "raw_hex", "value": "00000000", "expected_hex": "00000000"},
+    {"id": "f32-canonical-nan", "kind": "raw_hex", "value": "7fc00000", "expected_hex": "7fc00000"},
+    {"id": "f64-canonical-nan", "kind": "raw_hex", "value": "7ff8000000000000", "expected_hex": "7ff8000000000000"},
+    {"id": "list-uvar", "kind": "list_uvar", "value": [1, 128], "expected_hex": "020101028001"},
+    {"id": "record-bool-uvar", "kind": "record_bool_uvar", "value": {"1": true, "3": 300}, "expected_hex": "020101010302ac02"},
+    {"id": "map-uvar-text", "kind": "map_uvar_text", "value": [[1, "a"], [2, "é"]], "expected_hex": "02010102016101020302c3a9"},
+    {"id": "option-none", "kind": "option_uvar", "value": null, "expected_hex": "0000"},
+    {"id": "option-some-300", "kind": "option_uvar", "value": 300, "expected_hex": "0102ac02"},
+    {"id": "union-seven-true", "kind": "union_bool", "tag": 7, "value": true, "expected_hex": "070101"},
+    {
+      "id": "standalone-empty-object",
+      "kind": "standalone_fixture_object",
+      "contract_domain": "sley2.object.v1",
+      "schema_epoch_id": "0000000000000000000000000000000000000000000000000000000000000001",
+      "contract_tag": 1,
+      "payload_hex": "00",
+      "preimage_hex": "534c455953434231010100000000000000000000000000000000000000000000000000000000000000010100",
+      "expected_digest_hex": "54e2e3255c0694baff1510195306855357ed60260675c8840a0f8df706c9586b",
+      "expected_object_id": "54e2e3255c0694baff1510195306855357ed60260675c8840a0f8df706c9586b",
+      "expected_hex": "534c45595343423101010000000000000000000000000000000000000000000000000000000000000001010054e2e3255c0694baff1510195306855357ed60260675c8840a0f8df706c9586b"
+    }
+  ]
+}

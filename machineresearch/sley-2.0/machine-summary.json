@@ -15,7 +15,17 @@
   "status": "IN_PROGRESS",
   "publication_authorized": false,
   "schema_epoch": null,
-  "scb1": {"status": "DRAFT"},
+  "scb1": {
+    "status": "S20_100_SPEC_COMPLETE",
+    "accepted_vectors": 23,
+    "rejected_vectors": 26,
+    "rejection_codes": 22,
+    "accepted_fixture_sha256": "c6b7097b4f03d82c0181b473c3f3d90e028fe53c0ec8ff640c715954b5151e93",
+    "rejected_fixture_sha256": "5aca7c6086908cf764834da0808a4821fdbf2da30cede5062ff9813df6573780",
+    "ariadne_review": "PASS",
+    "codec_implemented": false,
+    "independent_oracle_implemented": false
+  },
   "ssmc1": {"status": "DRAFT"},
   "protocol": {"status": "DRAFT"},
   "conformance": {"status": "NOT_IMPLEMENTED"},
