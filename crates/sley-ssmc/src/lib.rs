@@ -306,6 +306,220 @@ pub struct AdapterImport {
     pub effects: Vec<EntityId>,
 }
 
+/// Closed epoch-1 contract kind.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ContractKind {
+    /// Function precondition.
+    Precondition,
+    /// Function postcondition.
+    Postcondition,
+    /// Type invariant; unsupported by the restricted epoch-1 profile.
+    Invariant,
+    /// Effect bound; unsupported by the restricted epoch-1 profile.
+    EffectBound,
+    /// Capability bound; unsupported by the restricted epoch-1 profile.
+    CapabilityBound,
+    /// Function result predicate.
+    ResultPredicate,
+    /// Resource ceiling; unsupported by the restricted epoch-1 profile.
+    ResourceCeiling,
+}
+
+impl ContractKind {
+    /// Returns the exact frozen SSMC1 contract-kind tag.
+    #[must_use]
+    pub const fn tag(self) -> u32 {
+        match self {
+            Self::Precondition => 1,
+            Self::Postcondition => 2,
+            Self::Invariant => 3,
+            Self::EffectBound => 4,
+            Self::CapabilityBound => 5,
+            Self::ResultPredicate => 6,
+            Self::ResourceCeiling => 7,
+        }
+    }
+}
+
+/// Closed source for one predicate parameter.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ContractSource {
+    /// Target function parameter.
+    Parameter(EntityId),
+    /// Complete target function result.
+    Result,
+    /// Error arm of an explicit Result target type.
+    Error,
+    /// Immutable global value.
+    Global(EntityId),
+}
+
+impl ContractSource {
+    /// Returns the exact frozen SSMC1 contract-source tag.
+    #[must_use]
+    pub const fn tag(self) -> u32 {
+        match self {
+            Self::Parameter(_) => 1,
+            Self::Result => 2,
+            Self::Error => 3,
+            Self::Global(_) => 4,
+        }
+    }
+}
+
+/// One ordered predicate-parameter binding.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ContractBinding {
+    /// Zero-based predicate parameter ordinal.
+    pub predicate_parameter: u32,
+    /// Exact semantic source.
+    pub source: ContractSource,
+}
+
+/// Exact execution/test resource ceilings.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ResourceLimits {
+    /// VM fuel.
+    pub fuel: u64,
+    /// Memory bytes.
+    pub memory_bytes: u64,
+    /// Output bytes.
+    pub output_bytes: u64,
+    /// Effect operation count.
+    pub effect_count: u64,
+    /// Call depth.
+    pub call_depth: u64,
+    /// Wall-time ceiling in milliseconds.
+    pub wall_timeout_millis: u64,
+}
+
+/// One canonical contract semantic body.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContractDefinition {
+    /// Stable contract identity.
+    pub entity_id: EntityId,
+    /// Exact target entity.
+    pub target: EntityId,
+    /// Closed contract kind.
+    pub contract_kind: ContractKind,
+    /// Predicate function identity.
+    pub predicate: EntityId,
+    /// Ordered predicate bindings.
+    pub bindings: Vec<ContractBinding>,
+    /// Optional resource ceilings.
+    pub resource_limits: Option<ResourceLimits>,
+}
+
+/// One canonical Constant entity body.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ConstantDefinition {
+    /// Stable constant identity.
+    pub entity_id: EntityId,
+    /// Exact persistable value.
+    pub value: ConstValue,
+}
+
+/// One immutable `GlobalValue` entity body.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct GlobalValueDefinition {
+    /// Stable global identity.
+    pub entity_id: EntityId,
+    /// Exact value type.
+    pub value_type: TypeExpr,
+    /// Initializer Constant identity.
+    pub initializer: EntityId,
+    /// Global visibility.
+    pub visibility: Visibility,
+}
+
+/// One structurally frozen adapter replay binding.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ReplayBinding {
+    /// Adapter import identity.
+    pub adapter_import: EntityId,
+    /// Ordered request constants.
+    pub request: Vec<ConstValue>,
+    /// Frozen response arm.
+    pub response: ResultConst,
+}
+
+/// One structurally frozen deterministic-adapter configuration.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AdapterConfig {
+    /// Adapter import identity.
+    pub adapter_import: EntityId,
+    /// Opaque canonical configuration candidate.
+    pub configuration: ConstValue,
+}
+
+/// Closed test effect environment.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum EffectEnvironment {
+    /// Ordered replay bindings.
+    Replay(Vec<ReplayBinding>),
+    /// Ordered deterministic adapter configurations.
+    DeterministicAdapters(Vec<AdapterConfig>),
+}
+
+impl EffectEnvironment {
+    /// Returns the exact frozen SSMC1 environment tag.
+    #[must_use]
+    pub const fn tag(&self) -> u32 {
+        match self {
+            Self::Replay(_) => 1,
+            Self::DeterministicAdapters(_) => 2,
+        }
+    }
+}
+
+/// Closed expected test outcome.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ExpectedOutcome {
+    /// Exact persistable value.
+    Value(ConstValue),
+    /// Closed failure code candidate.
+    FailureCode(u32),
+}
+
+impl ExpectedOutcome {
+    /// Returns the exact frozen SSMC1 outcome tag.
+    #[must_use]
+    pub const fn tag(&self) -> u32 {
+        match self {
+            Self::Value(_) => 1,
+            Self::FailureCode(_) => 2,
+        }
+    }
+}
+
+/// One structurally frozen expected observation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ExpectedObservation {
+    /// Stable observation identity.
+    pub observation_id: [u8; 32],
+    /// Exact expected value.
+    pub value: ConstValue,
+}
+
+/// One canonical test-case semantic body.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TestCaseDefinition {
+    /// Stable test identity.
+    pub entity_id: EntityId,
+    /// Exact target entity.
+    pub target: EntityId,
+    /// Ordered input constants.
+    pub inputs: Vec<ConstValue>,
+    /// Explicit effect environment.
+    pub effect_environment: EffectEnvironment,
+    /// Expected outcome.
+    pub expected: ExpectedOutcome,
+    /// Ordered expected observations.
+    pub observations: Vec<ExpectedObservation>,
+    /// Exact required resource limits.
+    pub resource_limits: ResourceLimits,
+}
+
 /// One declaration parameter.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct TypeParameterDef {
@@ -1170,6 +1384,29 @@ mod tests {
             .map(EffectKind::tag),
             [1, 2, 3, 4, 5, 6, 7, 8]
         );
+        assert_eq!(
+            [
+                ContractKind::Precondition,
+                ContractKind::Postcondition,
+                ContractKind::Invariant,
+                ContractKind::EffectBound,
+                ContractKind::CapabilityBound,
+                ContractKind::ResultPredicate,
+                ContractKind::ResourceCeiling,
+            ]
+            .map(ContractKind::tag),
+            [1, 2, 3, 4, 5, 6, 7]
+        );
+        assert_eq!(
+            ContractSource::Parameter(EntityId::from_bytes([1; 32])).tag(),
+            1
+        );
+        assert_eq!(ContractSource::Result.tag(), 2);
+        assert_eq!(ContractSource::Error.tag(), 3);
+        assert_eq!(
+            ContractSource::Global(EntityId::from_bytes([2; 32])).tag(),
+            4
+        );
         assert_eq!(ConstData::Unit.tag(), 1);
         assert_eq!(
             ConstData::BuiltinFailure(BuiltinFailureValue {
@@ -1185,6 +1422,20 @@ mod tests {
         };
         assert_eq!(ResultConst::Ok(Box::new(value.clone())).tag(), 1);
         assert_eq!(ResultConst::Err(Box::new(value)).tag(), 2);
+        assert_eq!(EffectEnvironment::Replay(Vec::new()).tag(), 1);
+        assert_eq!(
+            EffectEnvironment::DeterministicAdapters(Vec::new()).tag(),
+            2
+        );
+        assert_eq!(
+            ExpectedOutcome::Value(ConstValue {
+                value_type: TypeExpr::Unit,
+                data: ConstData::Unit,
+            })
+            .tag(),
+            1
+        );
+        assert_eq!(ExpectedOutcome::FailureCode(1).tag(), 2);
     }
 
     #[test]

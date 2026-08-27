@@ -12,6 +12,7 @@ quick:
 	python3 scripts/check_type_system.py
 	python3 scripts/check_cfg.py
 	python3 scripts/check_effect_system.py
+	python3 scripts/check_contract_test_profile.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked

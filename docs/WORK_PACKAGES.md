@@ -26,7 +26,7 @@ subsystem and release boundaries described below.
 | S20-210 | 200 | Merlin | `sley-ssmc`,`sley-check` | type contracts | implicit/host-dependent typing | core type positive/negative corpus deterministic | type unit/property | M2 blocker |
 | S20-220 | 200,210 | Merlin | `sley-ssmc`,`sley-check` | graph/CFG result | nontermination/use error | dominance, edges, uses, reachability reject malformed graphs | CFG corpus + fuzz-smoke | M2 blocker |
 | S20-230 | 210,220 | Merlin | `sley-ssmc`,`sley-check` | effect closure | hidden ambient authority | exact declared effect closure and scope | effect corpus/property | M2/M3 blocker |
-| S20-240 | 210,220 | Merlin | `sley-ssmc`,`sley-check` | contract/test entity | prose or weak oracle | canonical predicates/tests select deterministically | contract/test corpus | M2 blocker |
+| S20-240 | 210,220,230 | Merlin | `sley-ssmc`,`sley-check` | restricted epoch-1 contract/test profile | prose or weak oracle | pure function predicates/tests validate; ambiguous kinds/environments fail closed; provisional selection is deterministic and policy-incomplete | restricted contract/test corpus | M2 blocker; full GA requires later schema epoch |
 | S20-250 | 200,230 | Merlin | `sley-ssmc`,`sley-query` | fingerprint/impact | label/layout sensitivity | equivalent semantics share fingerprint and exact impact edges | fingerprint property | M3/M4 input |
 | S20-260 | 210,220 | Merlin | `sley-vm` | derived bytecode | lowering changes meaning | validated SSMC lowers deterministically with exact cache key | lowering conformance | M2 blocker |
 | S20-270 | 260 | Merlin | `sley-vm` | execution report core | host/FP nondeterminism | repeated runs match value and observation digest | VM corpus/property | M2 blocker |

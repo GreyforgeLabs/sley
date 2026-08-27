@@ -28,6 +28,7 @@ and ambiguity are failures, never success.
 - `STALE_*`, `TXN_*`, `REF_*`, `RECOVERY_*`: transaction and durability.
 - `POLICY_*`, `CAP_*`, `ADAPTER_*`: authority boundary.
 - `QUERY_*`, `SESSION_*`, `PROTOCOL_*`: bounded interface and negotiation.
+- `TEST_PLAN_*`: canonical test-entity validation and provisional selection.
 - `VM_*`, `TEST_*`: execution, cancellation, determinism, and oracle.
 - `PACK_*`, `GC_*`, `MERGE_*`: repository operations.
 
@@ -95,6 +96,15 @@ cardinality, static capability scope constants, contract-identity boundaries,
 and bounded closure work only. Earlier type/CFG failures are preserved; these
 codes do not claim protected-policy, runtime-token, adapter-execution,
 contract-predicate, lowering, or VM judgment.
+
+S20-240 freezes numeric codes 24000 through 24017 for the exact `CONTRACT_*`,
+`TEST_PLAN_*`, and `CONTRACT_TEST_PLAN_*` failures listed in
+`CONTRACT_TEST_PROFILE_V1.md`. They cover the restricted epoch-1 pure-function
+contract/test profile and policy-incomplete deterministic selection only.
+Unsupported invariants, effect/capability/resource bounds, effectful tests,
+adapter replay/configuration, and observations fail closed. Runtime `TEST_*`,
+protected-policy finality, predicate/test execution, resource evidence, and
+reports remain later namespaces/packages.
 
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum

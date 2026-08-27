@@ -13,6 +13,8 @@ use sley_ssmc::{
 
 /// Bounded CFG and value-use validation.
 pub mod cfg;
+/// Restricted epoch-1 contract/test entity validation and planning.
+pub mod contracts;
 /// Deterministic static effect closure and scope validation.
 pub mod effects;
 
@@ -234,6 +236,12 @@ impl TypeEnvironment {
             environment.check_definition_map_keys(definition)?;
         }
         Ok(environment)
+    }
+
+    /// Iterates exact definition identities in raw-ID order.
+    #[must_use]
+    pub fn definition_ids(&self) -> impl ExactSizeIterator<Item = EntityId> + '_ {
+        self.definitions.keys().copied()
     }
 
     /// Returns the exact definition or `TYPE_DEFINITION_UNKNOWN`.

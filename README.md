@@ -19,9 +19,11 @@ packs. S20-180 and the scoped M1 core/adversarial/fuzz-smoke profiles now pass.
 M2 is in progress: S20-200 freezes the SSMC1 entity/opcode schema and S20-210
 implements the deterministic core type system. S20-220 now provides bounded,
 deterministic CFG and value-use validation, and S20-230 adds exact least-fixed-
-point effect closure with static scope typing. S20-240 contract/test judgment is
-next. No complete semantic checker or runtime exists yet. Every next package
-must follow `docs/WORK_PACKAGES.md`.
+point effect closure with static scope typing. S20-240 now enforces a restricted
+epoch-1 contract/test profile and deterministic policy-incomplete test planning;
+its full-GA schema gaps remain explicit. S20-250 semantic fingerprints and
+impact relationships are next. No complete semantic checker or runtime exists
+yet. Every next package must follow `docs/WORK_PACKAGES.md`.
 
 ## Authority
 
@@ -43,6 +45,6 @@ work belongs to a separate session and repository worktree.
 ## Validation
 
 `make quick` and `make check-changed` validate the implemented M0/M1 and
-current M2 type-system/CFG/effect surface. Later profiles are present but
+current M2 type-system/CFG/effect/restricted-contract surface. Later profiles are present but
 intentionally fail closed until their corresponding work packages land.
 `make v2` remains the eventual authoritative full gate.

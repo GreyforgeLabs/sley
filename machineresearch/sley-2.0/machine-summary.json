@@ -112,6 +112,38 @@
     "vulcan_final_review": "PASS",
     "implementation_complete": true
   },
+  "contract_test_profile": {
+    "status": "S20_240_RESTRICTED_EPOCH1_COMPLETE",
+    "full_ga_complete": false,
+    "contract": "docs/spec/CONTRACT_TEST_PROFILE_V1.md",
+    "model": "crates/sley-ssmc",
+    "checker": "crates/sley-check/src/contracts.rs",
+    "contract_kinds_frozen": 7,
+    "contract_kinds_supported": 3,
+    "stable_error_codes": 18,
+    "contract_test_unit_tests": 11,
+    "sley_check_total_unit_tests": 75,
+    "sley_ssmc_total_unit_tests": 6,
+    "unresolved_selection_fuzz_seeds": 128,
+    "predicate_profile": "PURE_NON_GENERIC_FUNCTIONS_ONLY",
+    "test_effect_environment": "REPLAY_EMPTY_ONLY",
+    "observations": "REJECTED_EPOCH_1",
+    "failure_codes": "TRAP_CODES_1_THROUGH_4_ONLY",
+    "selection_finality": "POLICY_INCOMPLETE",
+    "unsupported_contract_kinds": [
+      "Invariant",
+      "EffectBound",
+      "CapabilityBound",
+      "ResourceCeiling"
+    ],
+    "full_ga_gap": "LATER_SCHEMA_EPOCH_REQUIRED",
+    "ariadne_initial_review": "FAIL_UNDERSPECIFIED_SCHEMA",
+    "nabu_architecture": "PASS_RESTRICTED_FAIL_CLOSED_PROFILE_B",
+    "ariadne_profile_initial_review": "FAIL_P1_TEST_NAMESPACE",
+    "ariadne_profile_final_review": "PASS",
+    "vulcan_review": "PASS",
+    "implementation_complete": true
+  },
   "schema_epoch": {
     "status": "S20_140_COMPLETE",
     "bootstrap_magic": "SLEYEP01",
@@ -313,6 +345,7 @@
     "The StateRoot row remains a conformance epoch until complete production-epoch assembly",
     "The S20-170 pack profile is root/object-only; refs, transactions, compression, signatures, and clone equivalence await S20-540 or a new profile",
     "The S20-180 exclusive GC guard is a local witness; S20-390 and S20-500 must integrate all accepted-state mutation with the same ownership boundary",
+    "S20-240 is a restricted epoch-1 profile; full-GA TypeDef invariants, effect/capability/resource contracts, effectful tests, adapter replay/configuration, observations, and policy-final selection require a later schema epoch",
     "No VM exists",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]
