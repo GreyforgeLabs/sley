@@ -20,7 +20,7 @@ use sley_ssmc::{
     ValueRef, VariantImmediate, VariantSwitchTerminator, Visibility,
 };
 
-use crate::value::{EntityIdSet, EntryExposure};
+use crate::value::{EntityIdSet, EntryExposure, OperationBody};
 
 type Result<T> = core::result::Result<T, ScbError>;
 
@@ -1698,6 +1698,54 @@ impl MutationValueCodec for ResourceLimits {
     }
 }
 
+impl MutationValueCodec for OperationBody {
+    fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+        check_container_depth(depth)?;
+        encode_record(&[
+            (1, encode_at_depth(&self.block, depth + 1)?),
+            (2, encode_at_depth(&self.ordinal, depth + 1)?),
+            (3, encode_at_depth(&self.opcode, depth + 1)?),
+            (4, encode_at_depth(&self.operands, depth + 1)?),
+            (5, encode_at_depth(&self.result_types, depth + 1)?),
+            (6, encode_at_depth(&self.immediate, depth + 1)?),
+        ])
+    }
+
+    fn decode_value(
+        cursor: &mut ScbValueCursor<'_>,
+        depth: usize,
+        budget: &mut DecodeBudget,
+    ) -> Result<Self> {
+        check_container_depth(depth)?;
+        let mut block = None;
+        let mut ordinal = None;
+        let mut opcode = None;
+        let mut operands = None;
+        let mut result_types = None;
+        let mut immediate = None;
+        decode_record_fields(cursor, &[1, 2, 3, 4, 5, 6], |tag, payload| {
+            match tag {
+                1 => block = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                2 => ordinal = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                3 => opcode = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                4 => operands = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                5 => result_types = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                6 => immediate = Some(decode_nested_exact(payload, depth + 1, budget)?),
+                _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+            }
+            Ok(())
+        })?;
+        Ok(Self {
+            block: block.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            ordinal: ordinal.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            opcode: opcode.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            operands: operands.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            result_types: result_types.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+            immediate: immediate.ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -2487,5 +2535,93 @@ mod tests {
             .code(),
             ScbErrorCode::TrailingBytes
         );
+    }
+
+    fn operation_body_fixture() -> OperationBody {
+        OperationBody {
+            block: id(40),
+            ordinal: u32::MAX,
+            opcode: 55,
+            operands: vec![
+                ValueRef::Parameter(id(41)),
+                ValueRef::OperationResult(OperationResultRef {
+                    operation: id(42),
+                    result_index: 3,
+                }),
+            ],
+            result_types: vec![
+                TypeExpr::Bool,
+                TypeExpr::Named(NamedType {
+                    definition: id(43),
+                    arguments: vec![TypeExpr::UInt(IntegerWidth::from_bits(64))],
+                }),
+            ],
+            immediate: Immediate::Function(FunctionRefValue {
+                function: id(44),
+                type_arguments: vec![TypeExpr::Text],
+            }),
+        }
+    }
+
+    fn operation_body_fields(value: &OperationBody) -> Vec<(u32, Vec<u8>)> {
+        vec![
+            (1, encode_exact(&value.block).unwrap()),
+            (2, encode_exact(&value.ordinal).unwrap()),
+            (3, encode_exact(&value.opcode).unwrap()),
+            (4, encode_exact(&value.operands).unwrap()),
+            (5, encode_exact(&value.result_types).unwrap()),
+            (6, encode_exact(&value.immediate).unwrap()),
+        ]
+    }
+
+    #[test]
+    fn operation_body_round_trips_the_exact_six_field_record() {
+        let value = operation_body_fixture();
+        let expected = encode_record(&operation_body_fields(&value)).unwrap();
+        assert_eq!(encode_exact(&value).unwrap(), expected);
+        assert_eq!(decode_exact::<OperationBody>(&expected).unwrap(), value);
+    }
+
+    #[test]
+    fn operation_body_rejects_record_shape_and_nested_trailing_failures() {
+        let value = operation_body_fixture();
+
+        let mut missing = operation_body_fields(&value);
+        missing.pop();
+        assert_eq!(
+            decode_exact::<OperationBody>(&encode_record(&missing).unwrap())
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::FieldMissing
+        );
+
+        let mut unknown = operation_body_fields(&value);
+        unknown.push((7, encode_exact(&0_u32).unwrap()));
+        assert_eq!(
+            decode_exact::<OperationBody>(&encode_record(&unknown).unwrap())
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::FieldUnknown
+        );
+
+        let mut unordered = operation_body_fields(&value);
+        unordered.swap(2, 3);
+        assert_eq!(
+            decode_exact::<OperationBody>(&raw_record(&unordered))
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::FieldOrder
+        );
+
+        for field_index in [3, 4, 5] {
+            let mut trailing = operation_body_fields(&value);
+            trailing[field_index].1.push(0);
+            assert_eq!(
+                decode_exact::<OperationBody>(&encode_record(&trailing).unwrap())
+                    .unwrap_err()
+                    .code(),
+                ScbErrorCode::TrailingBytes
+            );
+        }
     }
 }

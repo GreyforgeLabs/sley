@@ -18,7 +18,9 @@ references, immediates, edges, switch cases, trap codes, and the return, branch,
 conditional-branch, and variant-switch terminator records while preserving
 semantic list order for later validation. Dependency-closed private helpers also
 cover `TypeParameterDef`, `RecordField`, `BuiltinFailureValue`, `ContractSource`,
-`ContractBinding`, and `ResourceLimits`. `TrapTerminator` and the enclosing
+`ContractBinding`, and `ResourceLimits`. The first private body slice closes the
+exact six-field `OperationBody` record while leaving all body/field aggregate
+selection private and unimplemented. `TrapTerminator` and the enclosing
 `Terminator` union remain open because the frozen SCB1 and SSMC manifest
 `Option<T>` tags conflict. It is not publicly descriptor-selectable, and the
 other recursive value families remain open. The crate cannot construct

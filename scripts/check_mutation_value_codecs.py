@@ -203,9 +203,12 @@ def main() -> int:
         "impl MutationValueCodec for ContractSource",
         "impl MutationValueCodec for ContractBinding",
         "impl MutationValueCodec for ResourceLimits",
+        "impl MutationValueCodec for OperationBody",
         "cfg_variant_switch_preserves_noncanonical_duplicate_case_list_order",
         "independent_manifest_helpers_round_trip_exact_records_and_unions",
         "independent_manifest_helpers_reject_payload_and_record_failures",
+        "operation_body_round_trips_the_exact_six_field_record",
+        "operation_body_rejects_record_shape_and_nested_trailing_failures",
         "None => encode_union(0, &[])",
         "Some(value) => encode_union(1, &encode_at_depth(value, depth + 1)?)",
         "ScbErrorCode::MapDuplicate",
@@ -268,6 +271,9 @@ def main() -> int:
         "pub fn decode_candidate",
         "impl MutationValueCodec for TrapTerminator",
         "impl MutationValueCodec for Terminator",
+        "impl MutationValueCodec for EntityBodyValue",
+        "impl MutationValueCodec for FieldValue",
+        "impl MutationValueCodec for ProposalValue",
     ]:
         if marker in codec_source:
             raise SystemExit(f"premature public codec/candidate surface: {marker}")
