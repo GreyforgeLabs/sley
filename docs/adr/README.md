@@ -18,3 +18,4 @@ Current records:
 - ADR-0010: restricted derived execution/test report envelopes
 - ADR-0011: restricted derived index snapshot domain and admission
 - ADR-0012: restricted modeled-snapshot query authority and hard-limit policy
+- ADR-0013: restricted complete-query capsule identity and non-authority

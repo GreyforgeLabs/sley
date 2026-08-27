@@ -1,9 +1,11 @@
 #![forbid(unsafe_code)]
 #![doc = include_str!("../README.md")]
 
+mod capsule;
 mod query;
 mod snapshot;
 
+pub use capsule::*;
 pub use query::*;
 pub use snapshot::*;
 

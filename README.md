@@ -45,8 +45,12 @@ root-provenance proof, query authority, or full S20-300/M3 completion. S20-310
 now adds four restricted typed queries over opaque freshly derived
 snapshots, with exact QueryId/response records and hard failure when limits
 would omit facts. It does not claim the nineteen root-backed query classes,
-truncation/continuation, capsules, SMP1, full S20-310, or M3 completion. Every
-next package must follow `docs/WORK_PACKAGES.md`.
+truncation/continuation, capsules, SMP1, full S20-310, or M3 completion. S20-320
+now adds a separately identified restricted evidence capsule for those complete
+responses, with exact raw-ID dictionaries and direct-edge tables but fixed
+no-omission, no-truncation, and no-continuation status. It is not the master
+context capsule and adds no workspace/root/session authority. Every next
+package must follow `docs/WORK_PACKAGES.md`.
 
 ## Authority
 
@@ -69,7 +73,8 @@ work belongs to a separate session and repository worktree.
 
 `make quick` and `make check-changed` validate the implemented M0/M1 and
 current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering/
-execution/reference-adapter/report-envelope/index-snapshot/restricted-query surface. Later
+execution/reference-adapter/report-envelope/index-snapshot/restricted-query/
+restricted-capsule surface. Later
 profiles are present but intentionally fail closed until their corresponding
 work packages land.
 `make v2` remains the eventual authoritative full gate.

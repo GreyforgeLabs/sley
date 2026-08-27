@@ -14,6 +14,8 @@ ADR-0009 adds separate `ReferenceAdapterId`, `AdapterStateId`, and
 fixture/transcript evidence; none grants policy or capability authority.
 ADR-0011 adds `IndexSnapshotId` for restricted derived cache-record integrity;
 it does not authenticate root provenance or grant query authority.
+ADR-0013 adds `RestrictedQueryCapsuleId` for complete restricted-query evidence;
+it is deliberately distinct from the reserved master `ContextCapsuleId`.
 
 This crate has no filesystem, network, environment, SCB1 encoding, repository,
 policy, or VM authority.

@@ -38,6 +38,7 @@ part of the `sley-id` kernel API.
 | adapter fixture state | `sley2.adapter-state.v1` |
 | adapter invocation transcript | `sley2.adapter-transcript.v1` |
 | derived semantic index snapshot | `sley2.index-snapshot.v1` |
+| restricted complete-query capsule | `sley2.restricted-query-capsule.v1` |
 | deterministic observation | `sley2.observation.v1` |
 | execution report | `sley2.execution-report.v1` |
 | test report | `sley2.test-report.v1` |

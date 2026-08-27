@@ -34,6 +34,8 @@ and ambiguity are failures, never success.
   derived relationships.
 - `INDEX_SNAPSHOT_*`: restricted derived-index record construction and
   bounded candidate inspection.
+- `RESTRICTED_CAPSULE_*`: derived complete-query evidence projection and
+  resource/invariant checks.
 - `VM_LOWER_*`: validated deterministic derived-bytecode lowering.
 - `TEST_PLAN_*`: canonical test-entity validation and provisional selection.
 - `VM_*`, `TEST_*`: execution, cancellation, determinism, and oracle.
@@ -168,6 +170,15 @@ traversal and response ceilings, and explicit failure when an applied limit
 would omit a required fact. They return no partial payload and do not implement
 the nineteen root-backed query classes, truncation, continuation, capsules,
 SMP1, full S20-310, the M3 blocker, or GA.
+
+S20-320 restricted freezes numeric codes 32000 through 32007 for the exact
+`RESTRICTED_CAPSULE_*` failures listed in
+`RESTRICTED_QUERY_CAPSULE_PROFILE_V1.md`. They cover derived dictionaries,
+direct-edge indexes, source-response binding, fixed complete/nontruncated/
+noncontinuable status, and bounded record construction only. They do not
+implement the master context capsule, use `ContextCapsuleId`, establish
+workspace/root/session provenance, authorize continuation/import, or unblock
+S20-330, S20-400, S20-620, M3, M5, or GA.
 
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum

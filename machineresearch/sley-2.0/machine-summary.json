@@ -350,6 +350,39 @@
     "vulcan_review": "PASS_NO_OPEN_P0_P1_P2_P3_P4",
     "implementation_complete": true
   },
+  "restricted_query_capsule_profile": {
+    "status": "S20_320_RESTRICTED_EPOCH1_COMPLETE",
+    "full_s20_320_complete": false,
+    "m3_exit_complete": false,
+    "m5_exit_complete": false,
+    "downstream_unblocked": false,
+    "contract": "docs/spec/RESTRICTED_QUERY_CAPSULE_PROFILE_V1.md",
+    "implementation": "crates/sley-query/src/capsule.rs",
+    "stable_error_codes": 8,
+    "capsule_unit_tests": 8,
+    "sley_query_total_unit_tests": 34,
+    "workspace_total_unit_tests": 263,
+    "deterministic_repeat_iterations": 128,
+    "capsule_magic": "SLEYRQC1",
+    "capsule_domain": "sley2.restricted-query-capsule.v1",
+    "fixed_capsule_ids": [
+      "848ab1672e28ad4f37ca91b161df731806cf4e09387442abe5212e86dd45ec98",
+      "0c02024d4b2ee25e3c03e592e6708be50e80b6ed62384d87aab10d17e17eeedc",
+      "513a63aa1311a6619946609c7c6ed30ea0da56661c58aebecd82bc16817695db",
+      "c0d151f4a4a3f8f74e3323990a03f38e9c0521879d63b73a224c4e67aba53748"
+    ],
+    "complete_only": true,
+    "truncation": false,
+    "continuation": false,
+    "uses_master_context_capsule_id": false,
+    "workspace_root_session_provenance": false,
+    "full_ga_gap": "FULL_ROOT_BACKED_QUERY_ENGINE_VERIFIED_WORKSPACE_ROOT_SESSION_FULL_FACTS_LAWFUL_OMISSION_CONTINUATION_MASTER_CONTEXT_CAPSULE_AND_SMP1_REQUIRED",
+    "nabu_architecture_review": "REVISE_TO_DISTINCT_RESTRICTED_EVIDENCE_ENVELOPE",
+    "ariadne_initial_review": "FAIL_P1_SIZE_FEASIBILITY_P2_RESULT_KIND_WORDING",
+    "ariadne_final_review": "PASS",
+    "vulcan_review": "PASS_NO_OPEN_P0_P1_P2_P3_P4",
+    "implementation_complete": true
+  },
   "schema_epoch": {
     "status": "S20_140_COMPLETE",
     "bootstrap_magic": "SLEYEP01",
@@ -487,8 +520,8 @@
     "crate": "sley-id",
     "hash": "BLAKE3-256",
     "blake3_version": "1.8.2",
-    "domains": 25,
-    "typed_values": 27,
+    "domains": 26,
+    "typed_values": 28,
     "unit_tests": 7,
     "ariadne_spec_review": "PASS",
     "vulcan_implementation_review": "PASS"
@@ -558,6 +591,7 @@
     "S20-290 emits derived in-memory envelopes only; canonical report bodies, persistence, policy/resource finality, TestCase pass, and the M2 exit remain blocked",
     "S20-300 is a restricted modeled-request conformance cache only; six entity bodies, strict root/object extraction, complete-root indexes, useful safe reuse, and root-backed S20-310 remain blocked",
     "S20-310 exposes only four modeled-snapshot queries with hard no-partial limits; nineteen root-backed query classes, truncation/continuation, capsules, SMP1, full M3, and GA remain blocked",
+    "S20-320 is only a complete restricted-query evidence envelope with a distinct ID; master context capsules, verified workspace/root/session facts, lawful omission/continuation, downstream S20-330/S20-400/S20-620, M3, M5, and GA remain blocked",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]
 }

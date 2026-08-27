@@ -32,11 +32,12 @@ enum Domain {
     AdapterState,
     AdapterTranscript,
     IndexSnapshot,
+    RestrictedQueryCapsule,
 }
 
 impl Domain {
     #[cfg(test)]
-    const ALL: [Self; 25] = [
+    const ALL: [Self; 26] = [
         Self::Workspace,
         Self::Entity,
         Self::Object,
@@ -62,6 +63,7 @@ impl Domain {
         Self::AdapterState,
         Self::AdapterTranscript,
         Self::IndexSnapshot,
+        Self::RestrictedQueryCapsule,
     ];
 
     const fn bytes(self) -> &'static [u8] {
@@ -91,6 +93,7 @@ impl Domain {
             Self::AdapterState => b"sley2.adapter-state.v1",
             Self::AdapterTranscript => b"sley2.adapter-transcript.v1",
             Self::IndexSnapshot => b"sley2.index-snapshot.v1",
+            Self::RestrictedQueryCapsule => b"sley2.restricted-query-capsule.v1",
         }
     }
 }
@@ -257,6 +260,10 @@ fixed_bytes_type!(
     /// Restricted derived semantic-index snapshot digest.
     IndexSnapshotId
 );
+fixed_bytes_type!(
+    /// Restricted complete-query evidence-capsule digest.
+    RestrictedQueryCapsuleId
+);
 
 impl WorkspaceId {
     /// Derives a workspace identifier from a genesis nonce.
@@ -318,6 +325,7 @@ digest_type!(ProtocolHandshakeId, Domain::ProtocolHandshake);
 digest_type!(AdapterStateId, Domain::AdapterState);
 digest_type!(AdapterTranscriptId, Domain::AdapterTranscript);
 digest_type!(IndexSnapshotId, Domain::IndexSnapshot);
+digest_type!(RestrictedQueryCapsuleId, Domain::RestrictedQueryCapsule);
 
 impl ReferenceAdapterId {
     /// Derives a restricted epoch-1 reference adapter identity for one fixed kind.
@@ -353,7 +361,7 @@ mod tests {
     const ZERO: [u8; ID_LEN] = [0; ID_LEN];
     const ONE: [u8; ID_LEN] = [1; ID_LEN];
     const TEST_PREIMAGE: &[u8] = b"sley-id fixed vector preimage";
-    const FIXED_VECTORS: [(Domain, &str); 25] = [
+    const FIXED_VECTORS: [(Domain, &str); 26] = [
         (
             Domain::Workspace,
             "91280bdf6e8df93eafb445c63cf92f0590981d2d9e735d6b01cc9594e0b92f55",
@@ -454,6 +462,10 @@ mod tests {
             Domain::IndexSnapshot,
             "44e82950bf96033050506de5e461d0a37043677a073b07047c7fd4c46ef3a929",
         ),
+        (
+            Domain::RestrictedQueryCapsule,
+            "0b8f36348b8af720327e7278ca0a326289dd7495695d994765cf2df71dae97d4",
+        ),
     ];
 
     fn decode_hex_32(hex: &str) -> [u8; ID_LEN] {
@@ -496,6 +508,7 @@ mod tests {
                 b"sley2.adapter-state.v1",
                 b"sley2.adapter-transcript.v1",
                 b"sley2.index-snapshot.v1",
+                b"sley2.restricted-query-capsule.v1",
             ]
         );
     }
@@ -636,6 +649,7 @@ mod tests {
         assert_eq!(core::mem::size_of::<RepositoryPackId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<ProtocolHandshakeId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<IndexSnapshotId>(), ID_LEN);
+        assert_eq!(core::mem::size_of::<RestrictedQueryCapsuleId>(), ID_LEN);
     }
 
     #[test]
