@@ -9,6 +9,10 @@ closed primitive mutation classes. Its closed host values cover all eighteen
 entity bodies and seventy-five fields without runtime type-name selection, and
 all 179 immutable descriptors bind to exact closed value discriminants. The
 admission surface performs type selection only; there is no binary value codec.
-It cannot construct candidates, mutate an entity or repository, evaluate
-preconditions, establish root/session/workspace authority, validate policy or
-capabilities, or commit transactions. Those are later work packages.
+A crate-private staged codec foundation handles primitive leaves, IDs/roots,
+direct enums, ordered lists/options, and canonical entity-ID sets under exact
+SCB depth and allocation limits. It is not publicly descriptor-selectable and
+does not close recursive manifest families. The crate cannot construct
+candidates, mutate an entity or repository, evaluate preconditions, establish
+root/session/workspace authority, validate policy or capabilities, or commit
+transactions. Those are later work packages.

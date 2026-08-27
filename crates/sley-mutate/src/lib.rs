@@ -132,6 +132,8 @@ pub struct MutationOperationDescriptor {
 
 include!("generated.rs");
 
+mod codec;
+
 pub mod value;
 
 /// Returns a frozen entity descriptor by its exact SSMC1 tag.

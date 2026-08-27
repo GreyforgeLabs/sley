@@ -9,6 +9,7 @@ description = "Generated immutable Sley 2 mutation schema descriptors."
 [dependencies]
 sley-id = { path = "../sley-id" }
 sley-schema = { path = "../sley-schema" }
+sley-scb1 = { path = "../sley-scb1" }
 sley-ssmc = { path = "../sley-ssmc" }
 
 [dev-dependencies]

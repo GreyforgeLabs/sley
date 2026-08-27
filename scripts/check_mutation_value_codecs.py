@@ -13,6 +13,8 @@ MANIFEST = ROOT / "docs/spec/SSMC1_EPOCH1_SCHEMA.txt"
 GENERATED = ROOT / "crates/sley-mutate/src/value_generated.rs"
 VALUE_SOURCE = ROOT / "crates/sley-mutate/src/value.rs"
 DESCRIPTORS = ROOT / "crates/sley-mutate/src/generated.rs"
+CODEC_SOURCE = ROOT / "crates/sley-mutate/src/codec.rs"
+LIB_SOURCE = ROOT / "crates/sley-mutate/src/lib.rs"
 
 ENTITY_RE = re.compile(r"^entity ([0-9]+) ([A-Za-z][A-Za-z0-9]*) ([A-Za-z][A-Za-z0-9]*)$")
 RECORD_RE = re.compile(r"^record ([A-Za-z][A-Za-z0-9]*)\((.*)\)$")
@@ -60,6 +62,8 @@ def main() -> int:
     generated = GENERATED.read_text(encoding="utf-8")
     value_source = VALUE_SOURCE.read_text(encoding="utf-8")
     descriptors = DESCRIPTORS.read_text(encoding="utf-8")
+    codec_source = CODEC_SOURCE.read_text(encoding="utf-8")
+    lib_source = LIB_SOURCE.read_text(encoding="utf-8")
     records = {
         match[1]: body_fields(match[2])
         for line in manifest.splitlines()
@@ -158,6 +162,29 @@ def main() -> int:
     for marker in forbidden:
         if marker in combined:
             raise SystemExit(f"forbidden dynamic or premature codec surface: {marker}")
+
+    if lib_source.count("\nmod codec;\n") != 1 or "pub mod codec" in lib_source:
+        raise SystemExit("mutation value codec foundation must remain crate-private")
+    codec_markers = [
+        "trait MutationValueCodec",
+        "MAX_NESTING_DEPTH",
+        "MAX_TOTAL_ALLOCATION",
+        "fn check_container_depth(",
+        "impl MutationValueCodec for EntityIdSet",
+        "ScbErrorCode::MapDuplicate",
+        "ScbErrorCode::MapOrder",
+    ]
+    for marker in codec_markers:
+        if marker not in codec_source:
+            raise SystemExit(f"private mutation codec foundation drift: {marker}")
+    for marker in [
+        "pub fn encode_proposal",
+        "pub fn decode_proposal",
+        "pub fn encode_candidate",
+        "pub fn decode_candidate",
+    ]:
+        if marker in codec_source:
+            raise SystemExit(f"premature public codec/candidate surface: {marker}")
     return 0
 
 

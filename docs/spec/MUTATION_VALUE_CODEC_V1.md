@@ -2,7 +2,8 @@
 
 Status: S20-345 normative contract freeze; S20-350a closed host model and
 S20-350b typed descriptor bindings implemented; S20-350c low-level SCB cursor
-foundation implemented; complete binary codecs deferred.
+foundation and S20-350d private leaf/collection codec implemented; complete
+binary codecs deferred.
 
 ## Exact schema source
 
@@ -45,6 +46,13 @@ S20-350c exposes the already-frozen strict SCB primitive decoder through a
 schema-neutral bounded cursor. It adds no SSMC, descriptor, mutation, or
 candidate selection. Recursive mutation value codecs remain private future
 work until every manifest type family closes.
+
+S20-350d adds a crate-private staged mutation codec for primitive leaves,
+identities, direct body enums, lists, options, and canonical entity-ID sets.
+Decode owns a cumulative allocation budget, distinguishes the structural depth
+boundary from the allowed leaf boundary, rejects inner trailing bytes, and
+rejects unordered or duplicate set encodings. The module is intentionally not
+publicly descriptor-selectable while recursive manifest families remain open.
 
 ## Canonical rules
 
