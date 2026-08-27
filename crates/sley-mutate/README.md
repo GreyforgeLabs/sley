@@ -19,11 +19,16 @@ conditional-branch, and variant-switch terminator records while preserving
 semantic list order for later validation. Dependency-closed private helpers also
 cover `TypeParameterDef`, `RecordField`, `BuiltinFailureValue`, `ContractSource`,
 `ContractBinding`, and `ResourceLimits`. The first private body slice closes the
-exact six-field `OperationBody` record while leaving all body/field aggregate
-selection private and unimplemented. `TrapTerminator` and the enclosing
-`Terminator` union remain open because the frozen SCB1 and SSMC manifest
-`Option<T>` tags conflict. It is not publicly descriptor-selectable, and the
-other recursive value families remain open. The crate cannot construct
+exact six-field `OperationBody` record. A second private slice closes ten
+dependency-complete body records: `WorkspaceBody`, `PackageBody`, `FunctionBody`,
+`ParameterBody`, `GlobalValueBody`, `EffectDefBody`, `AdapterImportBody`,
+`EntryPointBody`, `PolicyBindingBody`, and `DependencyBindingBody`. Bodies
+requiring generic `Option<T>`, `Terminator`, or `ConstValue` remain excluded. All
+body/field aggregate selection stays private and unimplemented. `TrapTerminator`
+and the enclosing `Terminator` union remain open because the frozen SCB1 and
+SSMC manifest `Option<T>` tags conflict. It is not publicly
+descriptor-selectable, and the other recursive value families remain open. The
+crate cannot construct
 candidates, mutate an entity or repository, evaluate preconditions, establish
 root/session/workspace authority, validate policy or capabilities, or commit
 transactions. Those are later work packages.

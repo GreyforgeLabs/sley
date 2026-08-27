@@ -217,6 +217,43 @@ def main() -> int:
     for marker in codec_markers:
         if marker not in codec_source:
             raise SystemExit(f"private mutation codec foundation drift: {marker}")
+    required_body_codecs = [
+        "WorkspaceBody",
+        "PackageBody",
+        "FunctionBody",
+        "ParameterBody",
+        "GlobalValueBody",
+        "EffectDefBody",
+        "AdapterImportBody",
+        "EntryPointBody",
+        "PolicyBindingBody",
+        "DependencyBindingBody",
+    ]
+    for body in required_body_codecs:
+        marker = rf"impl_required_record_codec!\(\s*{body},"
+        if len(re.findall(marker, codec_source)) != 1:
+            raise SystemExit(f"dependency-closed private body codec drift: {body}")
+    for body in [
+        "NamespaceBody",
+        "TypeDefBody",
+        "BlockBody",
+        "ConstantBody",
+        "CapabilityRequirementBody",
+        "ContractBody",
+        "TestCaseBody",
+    ]:
+        marker = rf"(?:impl MutationValueCodec for {body}|impl_required_record_codec!\(\s*{body},)"
+        if re.search(marker, codec_source) is not None:
+            raise SystemExit(f"premature blocked private body codec: {body}")
+    for marker in [
+        "workspace_and_package_bodies_use_exact_manifest_fields",
+        "function_parameter_and_global_bodies_use_exact_manifest_fields",
+        "effect_and_adapter_bodies_use_exact_manifest_fields",
+        "entry_policy_and_dependency_bodies_use_exact_manifest_fields",
+        "dependency_closed_body_records_reject_nested_trailing_bytes",
+    ]:
+        if marker not in codec_source:
+            raise SystemExit(f"dependency-closed private body fixture drift: {marker}")
     type_expr_decode_arms = [
         (1, "Unit"),
         (2, "Bool"),

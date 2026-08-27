@@ -20,7 +20,11 @@ use sley_ssmc::{
     ValueRef, VariantImmediate, VariantSwitchTerminator, Visibility,
 };
 
-use crate::value::{EntityIdSet, EntryExposure, OperationBody};
+use crate::value::{
+    AdapterImportBody, DependencyBindingBody, EffectDefBody, EntityIdSet, EntryExposure,
+    EntryPointBody, FunctionBody, GlobalValueBody, OperationBody, PackageBody, ParameterBody,
+    PolicyBindingBody, WorkspaceBody,
+};
 
 type Result<T> = core::result::Result<T, ScbError>;
 
@@ -203,6 +207,41 @@ macro_rules! impl_uint_codec {
                 _budget: &mut DecodeBudget,
             ) -> Result<Self> {
                 $decode(cursor)
+            }
+        }
+    };
+}
+
+macro_rules! impl_required_record_codec {
+    ($type:ident, $($tag:literal => $field:ident),+ $(,)?) => {
+        impl MutationValueCodec for $type {
+            fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
+                check_container_depth(depth)?;
+                encode_record(&[
+                    $(($tag, encode_at_depth(&self.$field, depth + 1)?),)+
+                ])
+            }
+
+            fn decode_value(
+                cursor: &mut ScbValueCursor<'_>,
+                depth: usize,
+                budget: &mut DecodeBudget,
+            ) -> Result<Self> {
+                check_container_depth(depth)?;
+                $(let mut $field = None;)+
+                decode_record_fields(cursor, &[$($tag),+], |tag, payload| {
+                    match tag {
+                        $($tag => {
+                            $field = Some(decode_nested_exact(payload, depth + 1, budget)?)
+                        },)+
+                        _ => return Err(ScbError::new(ScbErrorCode::FieldUnknown)),
+                    }
+                    Ok(())
+                })?;
+                Ok(Self {
+                    $($field: $field
+                        .ok_or_else(|| ScbError::new(ScbErrorCode::FieldMissing))?,)+
+                })
             }
         }
     };
@@ -1698,6 +1737,85 @@ impl MutationValueCodec for ResourceLimits {
     }
 }
 
+impl_required_record_codec!(
+    WorkspaceBody,
+    1 => packages,
+    2 => root_namespace,
+    3 => capability_requirements,
+    4 => contracts,
+    5 => tests,
+);
+
+impl_required_record_codec!(
+    PackageBody,
+    1 => workspace,
+    2 => root_namespace,
+    3 => dependencies,
+    4 => exports,
+);
+
+impl_required_record_codec!(
+    FunctionBody,
+    1 => type_parameters,
+    2 => parameters,
+    3 => result_type,
+    4 => effects,
+    5 => entry_block,
+    6 => blocks,
+    7 => contracts,
+    8 => visibility,
+);
+
+impl_required_record_codec!(
+    ParameterBody,
+    1 => owner,
+    2 => role,
+    3 => ordinal,
+    4 => value_type,
+);
+
+impl_required_record_codec!(
+    GlobalValueBody,
+    1 => value_type,
+    2 => initializer,
+    3 => visibility,
+);
+
+impl_required_record_codec!(
+    EffectDefBody,
+    1 => effect_kind,
+    2 => scope_type,
+    3 => request_type,
+    4 => response_type,
+    5 => failure_type,
+    6 => visibility,
+);
+
+impl_required_record_codec!(
+    AdapterImportBody,
+    1 => adapter_id,
+    2 => abi_version,
+    3 => request_type,
+    4 => response_type,
+    5 => failure_type,
+    6 => effects,
+);
+
+impl_required_record_codec!(EntryPointBody, 1 => function, 2 => exposure,);
+
+impl_required_record_codec!(
+    PolicyBindingBody,
+    1 => subject,
+    2 => requirements,
+);
+
+impl_required_record_codec!(
+    DependencyBindingBody,
+    1 => dependency_root,
+    2 => external_package,
+    3 => local_namespace,
+);
+
 impl MutationValueCodec for OperationBody {
     fn encode_value(&self, depth: usize) -> Result<Vec<u8>> {
         check_container_depth(depth)?;
@@ -2618,6 +2736,231 @@ mod tests {
             trailing[field_index].1.push(0);
             assert_eq!(
                 decode_exact::<OperationBody>(&encode_record(&trailing).unwrap())
+                    .unwrap_err()
+                    .code(),
+                ScbErrorCode::TrailingBytes
+            );
+        }
+    }
+
+    fn entity_set(bytes: &[u8]) -> EntityIdSet {
+        EntityIdSet::from_unsorted(bytes.iter().copied().map(id).collect()).unwrap()
+    }
+
+    fn assert_exact_manifest_record<T>(value: &T, fields: &[(u32, Vec<u8>)])
+    where
+        T: MutationValueCodec + Eq + core::fmt::Debug,
+    {
+        let expected = encode_record(fields).unwrap();
+        assert_eq!(encode_exact(value).unwrap(), expected);
+        assert_eq!(&decode_exact::<T>(&expected).unwrap(), value);
+    }
+
+    #[test]
+    fn workspace_and_package_bodies_use_exact_manifest_fields() {
+        let workspace = WorkspaceBody {
+            packages: entity_set(&[1]),
+            root_namespace: id(2),
+            capability_requirements: entity_set(&[3]),
+            contracts: entity_set(&[4]),
+            tests: entity_set(&[5]),
+        };
+        assert_exact_manifest_record(
+            &workspace,
+            &[
+                (1, encode_exact(&workspace.packages).unwrap()),
+                (2, encode_exact(&workspace.root_namespace).unwrap()),
+                (3, encode_exact(&workspace.capability_requirements).unwrap()),
+                (4, encode_exact(&workspace.contracts).unwrap()),
+                (5, encode_exact(&workspace.tests).unwrap()),
+            ],
+        );
+
+        let package = PackageBody {
+            workspace: id(6),
+            root_namespace: id(7),
+            dependencies: entity_set(&[8]),
+            exports: entity_set(&[9]),
+        };
+        assert_exact_manifest_record(
+            &package,
+            &[
+                (1, encode_exact(&package.workspace).unwrap()),
+                (2, encode_exact(&package.root_namespace).unwrap()),
+                (3, encode_exact(&package.dependencies).unwrap()),
+                (4, encode_exact(&package.exports).unwrap()),
+            ],
+        );
+    }
+
+    #[test]
+    fn function_parameter_and_global_bodies_use_exact_manifest_fields() {
+        let function = FunctionBody {
+            type_parameters: vec![TypeParameterDef { ordinal: 1 }],
+            parameters: vec![id(10), id(11)],
+            result_type: TypeExpr::Bool,
+            effects: entity_set(&[12]),
+            entry_block: id(13),
+            blocks: vec![id(15), id(14)],
+            contracts: entity_set(&[16]),
+            visibility: Visibility::Workspace,
+        };
+        assert_exact_manifest_record(
+            &function,
+            &[
+                (1, encode_exact(&function.type_parameters).unwrap()),
+                (2, encode_exact(&function.parameters).unwrap()),
+                (3, encode_exact(&function.result_type).unwrap()),
+                (4, encode_exact(&function.effects).unwrap()),
+                (5, encode_exact(&function.entry_block).unwrap()),
+                (6, encode_exact(&function.blocks).unwrap()),
+                (7, encode_exact(&function.contracts).unwrap()),
+                (8, encode_exact(&function.visibility).unwrap()),
+            ],
+        );
+
+        let parameter = ParameterBody {
+            owner: id(17),
+            role: ParameterRole::Block,
+            ordinal: u32::MAX,
+            value_type: TypeExpr::TypeParameter(2),
+        };
+        assert_exact_manifest_record(
+            &parameter,
+            &[
+                (1, encode_exact(&parameter.owner).unwrap()),
+                (2, encode_exact(&parameter.role).unwrap()),
+                (3, encode_exact(&parameter.ordinal).unwrap()),
+                (4, encode_exact(&parameter.value_type).unwrap()),
+            ],
+        );
+
+        let global = GlobalValueBody {
+            value_type: TypeExpr::Text,
+            initializer: id(18),
+            visibility: Visibility::Exported,
+        };
+        assert_exact_manifest_record(
+            &global,
+            &[
+                (1, encode_exact(&global.value_type).unwrap()),
+                (2, encode_exact(&global.initializer).unwrap()),
+                (3, encode_exact(&global.visibility).unwrap()),
+            ],
+        );
+    }
+
+    #[test]
+    fn effect_and_adapter_bodies_use_exact_manifest_fields() {
+        let effect = EffectDefBody {
+            effect_kind: EffectKind::AdapterCall,
+            scope_type: TypeExpr::Bytes,
+            request_type: TypeExpr::Text,
+            response_type: TypeExpr::Bool,
+            failure_type: TypeExpr::BuiltinFailure(BuiltinFailureKind::Capability),
+            visibility: Visibility::Package,
+        };
+        assert_exact_manifest_record(
+            &effect,
+            &[
+                (1, encode_exact(&effect.effect_kind).unwrap()),
+                (2, encode_exact(&effect.scope_type).unwrap()),
+                (3, encode_exact(&effect.request_type).unwrap()),
+                (4, encode_exact(&effect.response_type).unwrap()),
+                (5, encode_exact(&effect.failure_type).unwrap()),
+                (6, encode_exact(&effect.visibility).unwrap()),
+            ],
+        );
+
+        let adapter = AdapterImportBody {
+            adapter_id: [19; 32],
+            abi_version: u32::MAX,
+            request_type: TypeExpr::Bytes,
+            response_type: TypeExpr::Text,
+            failure_type: TypeExpr::BuiltinFailure(BuiltinFailureKind::ContractViolation),
+            effects: entity_set(&[20, 21]),
+        };
+        assert_exact_manifest_record(
+            &adapter,
+            &[
+                (1, encode_exact(&adapter.adapter_id).unwrap()),
+                (2, encode_exact(&adapter.abi_version).unwrap()),
+                (3, encode_exact(&adapter.request_type).unwrap()),
+                (4, encode_exact(&adapter.response_type).unwrap()),
+                (5, encode_exact(&adapter.failure_type).unwrap()),
+                (6, encode_exact(&adapter.effects).unwrap()),
+            ],
+        );
+    }
+
+    #[test]
+    fn entry_policy_and_dependency_bodies_use_exact_manifest_fields() {
+        let entry_point = EntryPointBody {
+            function: id(22),
+            exposure: EntryExposure::Protocol,
+        };
+        assert_exact_manifest_record(
+            &entry_point,
+            &[
+                (1, encode_exact(&entry_point.function).unwrap()),
+                (2, encode_exact(&entry_point.exposure).unwrap()),
+            ],
+        );
+
+        let policy = PolicyBindingBody {
+            subject: id(23),
+            requirements: entity_set(&[24, 25]),
+        };
+        assert_exact_manifest_record(
+            &policy,
+            &[
+                (1, encode_exact(&policy.subject).unwrap()),
+                (2, encode_exact(&policy.requirements).unwrap()),
+            ],
+        );
+
+        let dependency = DependencyBindingBody {
+            dependency_root: StateRoot::from_bytes([26; 32]),
+            external_package: id(27),
+            local_namespace: id(28),
+        };
+        assert_exact_manifest_record(
+            &dependency,
+            &[
+                (1, encode_exact(&dependency.dependency_root).unwrap()),
+                (2, encode_exact(&dependency.external_package).unwrap()),
+                (3, encode_exact(&dependency.local_namespace).unwrap()),
+            ],
+        );
+    }
+
+    #[test]
+    fn dependency_closed_body_records_reject_nested_trailing_bytes() {
+        let function = FunctionBody {
+            type_parameters: vec![TypeParameterDef { ordinal: 0 }],
+            parameters: vec![id(1)],
+            result_type: TypeExpr::Bool,
+            effects: entity_set(&[2]),
+            entry_block: id(3),
+            blocks: vec![id(4)],
+            contracts: entity_set(&[5]),
+            visibility: Visibility::Private,
+        };
+        let fields = [
+            (1, encode_exact(&function.type_parameters).unwrap()),
+            (2, encode_exact(&function.parameters).unwrap()),
+            (3, encode_exact(&function.result_type).unwrap()),
+            (4, encode_exact(&function.effects).unwrap()),
+            (5, encode_exact(&function.entry_block).unwrap()),
+            (6, encode_exact(&function.blocks).unwrap()),
+            (7, encode_exact(&function.contracts).unwrap()),
+            (8, encode_exact(&function.visibility).unwrap()),
+        ];
+        for field_index in 0..fields.len() {
+            let mut trailing = fields.clone();
+            trailing[field_index].1.push(0);
+            assert_eq!(
+                decode_exact::<FunctionBody>(&encode_record(&trailing).unwrap())
                     .unwrap_err()
                     .code(),
                 ScbErrorCode::TrailingBytes

@@ -70,10 +70,13 @@ value/function references, immediates, CFG edges/cases, trap codes, the four
 non-Option terminator records, and the dependency-closed `TypeParameterDef`,
 `RecordField`, `BuiltinFailureValue`, `ContractSource`, `ContractBinding`, and
 `ResourceLimits` manifest helpers. A bounded body slice also closes the exact
-six-field `OperationBody` record without exposing a body or field aggregate
-codec. `TrapTerminator` and the enclosing `Terminator` union remain
-unimplemented pending locked-canon resolution of the conflicting SCB1 and
-manifest `Option<T>` tags. `ConstValue`, complete CFG/body/field codecs,
+six-field `OperationBody` record. A second dependency-closed body slice covers
+`WorkspaceBody`, `PackageBody`, `FunctionBody`, `ParameterBody`,
+`GlobalValueBody`, `EffectDefBody`, `AdapterImportBody`, `EntryPointBody`,
+`PolicyBindingBody`, and `DependencyBindingBody`, still without exposing a body
+or field aggregate codec. `TrapTerminator` and the enclosing `Terminator` union
+remain unimplemented pending locked-canon resolution of the conflicting SCB1
+and manifest `Option<T>` tags. `ConstValue`, complete CFG/body/field codecs,
 contract/test families, preconditions, candidate records, and candidate
 construction remain deferred. S20-370 now
 adds a separately registry-authorized protected policy root with exact opaque
