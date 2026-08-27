@@ -13,3 +13,4 @@ Current records:
 - ADR-0005: protected policy and judged-candidate isolation
 - ADR-0006: M0 validation and fail-closed incomplete gates
 - ADR-0007: dedicated SSMC canonical value-hash domain
+- ADR-0008: dedicated derived VM bytecode cache-key domain

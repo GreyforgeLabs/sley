@@ -28,7 +28,9 @@ and ambiguity are failures, never success.
 - `STALE_*`, `TXN_*`, `REF_*`, `RECOVERY_*`: transaction and durability.
 - `POLICY_*`, `CAP_*`, `ADAPTER_*`: authority boundary.
 - `QUERY_*`, `SESSION_*`, `PROTOCOL_*`: bounded interface and negotiation.
-- `FINGERPRINT_*`, `VALUE_HASH_*`, `IMPACT_*`: semantic projection and derived relationships.
+- `FINGERPRINT_*`, `VALUE_HASH_*`, `IMPACT_*`: semantic projection and
+  derived relationships.
+- `VM_LOWER_*`: validated deterministic derived-bytecode lowering.
 - `TEST_PLAN_*`: canonical test-entity validation and provisional selection.
 - `VM_*`, `TEST_*`: execution, cancellation, determinism, and oracle.
 - `PACK_*`, `GC_*`, `MERGE_*`: repository operations.
@@ -114,6 +116,13 @@ TypeDef/Function projection, canonical value hashing, and exact impact edges
 for modeled SSMC1 kinds 4 through 15. They do not claim a complete-root index;
 kinds 1 through 3 and 16 through 18 remain unsupported until their semantic
 bodies enter the Rust model.
+
+S20-260 freezes numeric codes 26000 through 26006 for the exact `VM_LOWER_*`
+failures listed in `VM_LOWERING_PROFILE_V1.md`. They cover only the restricted
+epoch-1 O0 lowering profile for all five terminators and the three validated
+Boolean opcodes, exact cache-profile binding, local rewrite invariants, and
+resource ceilings. They do not claim semantic judgment for the other 52
+opcodes, generic specialization, adapters, bytecode decoding, or execution.
 
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum

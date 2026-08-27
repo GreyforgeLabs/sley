@@ -33,6 +33,7 @@ part of the `sley-id` kernel API.
 | context capsule | `sley2.context-capsule.v1` |
 | semantic fingerprint | `sley2.semantic-fingerprint.v1` |
 | canonical value hash | `sley2.value-hash.v1` |
+| VM bytecode cache key | `sley2.vm-bytecode-cache-key.v1` |
 | deterministic observation | `sley2.observation.v1` |
 | execution report | `sley2.execution-report.v1` |
 | test report | `sley2.test-report.v1` |

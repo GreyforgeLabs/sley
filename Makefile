@@ -14,6 +14,7 @@ quick:
 	python3 scripts/check_effect_system.py
 	python3 scripts/check_contract_test_profile.py
 	python3 scripts/check_fingerprint_impact_profile.py
+	python3 scripts/check_vm_lowering_profile.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked

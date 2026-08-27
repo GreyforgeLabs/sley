@@ -221,6 +221,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "sley-vm"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "sley-check",
+ "sley-id",
+ "sley-ssmc",
+]
+
+[[package]]
 name = "syn"
 version = "2.0.119"
 source = "registry+https://github.com/rust-lang/crates.io-index"

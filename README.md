@@ -25,8 +25,11 @@ its full-GA schema gaps remain explicit. S20-250 now adds deterministic
 TypeDef/Function semantic fingerprints, a domain-separated canonical value
 hash, and exact impact relationships for the twelve modeled semantic-core
 kinds. Its six unmodeled entity bodies remain an explicit full-GA blocker.
-S20-260 deterministic VM lowering is next. No complete semantic checker or
-runtime exists yet. Every next package must follow `docs/WORK_PACKAGES.md`.
+S20-260 now provides a restricted deterministic O0 lowering profile for all
+five terminators and the three validated Boolean opcodes, with exact derived
+bytes and a root/profile-bound cache key. The other 52 opcode signatures,
+generics, adapters, and execution remain fail-closed gaps. S20-270 deterministic
+VM execution is next. Every next package must follow `docs/WORK_PACKAGES.md`.
 
 ## Authority
 
@@ -48,7 +51,7 @@ work belongs to a separate session and repository worktree.
 ## Validation
 
 `make quick` and `make check-changed` validate the implemented M0/M1 and
-current M2 type-system/CFG/effect/restricted-contract/fingerprint surface.
-Later profiles are present but intentionally fail closed until their
+current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering
+surface. Later profiles are present but intentionally fail closed until their
 corresponding work packages land.
 `make v2` remains the eventual authoritative full gate.

@@ -171,6 +171,35 @@
     "vulcan_final_review": "PASS",
     "implementation_complete": true
   },
+  "vm_lowering_profile": {
+    "status": "S20_260_RESTRICTED_EPOCH1_COMPLETE",
+    "full_ga_complete": false,
+    "contract": "docs/spec/VM_LOWERING_PROFILE_V1.md",
+    "implementation": "crates/sley-vm",
+    "lowering_profile": "O0-restricted-v1",
+    "supported_terminators": 5,
+    "supported_opcodes": [102, 103, 104],
+    "stable_error_codes": 7,
+    "vm_unit_tests": 11,
+    "workspace_total_unit_tests": 196,
+    "deterministic_rebuild_iterations": 128,
+    "bytecode_magic": "SLEYBC01",
+    "cache_preimage_magic": "SLEYBCK1",
+    "cache_preimage_bytes": 224,
+    "bytecode_cache_key_domain": "sley2.vm-bytecode-cache-key.v1",
+    "cache_binds_state_root": true,
+    "cache_binds_epoch_descriptors": true,
+    "dense_register_lowering": true,
+    "preallocation_resource_preflight": true,
+    "execution_implemented": false,
+    "unsupported_opcodes": 52,
+    "full_ga_gap": "COMPLETE_OPCODE_SIGNATURE_JUDGMENT_GENERICS_ADAPTER_ABIS_EXECUTION_FLAGS_AND_ROOT_MODULE_LOWERING_REQUIRED",
+    "nabu_architecture_review": "PASS_RESTRICTED_FAIL_CLOSED_PROFILE",
+    "ariadne_initial_review": "FAIL_P1_ENCODING_2_P2_LIMIT_ORDER",
+    "ariadne_final_review": "PASS",
+    "vulcan_review": "PASS",
+    "implementation_complete": true
+  },
   "schema_epoch": {
     "status": "S20_140_COMPLETE",
     "bootstrap_magic": "SLEYEP01",
@@ -308,8 +337,8 @@
     "crate": "sley-id",
     "hash": "BLAKE3-256",
     "blake3_version": "1.8.2",
-    "domains": 20,
-    "typed_values": 22,
+    "domains": 21,
+    "typed_values": 23,
     "unit_tests": 7,
     "ariadne_spec_review": "PASS",
     "vulcan_implementation_review": "PASS"
@@ -374,7 +403,7 @@
     "The S20-180 exclusive GC guard is a local witness; S20-390 and S20-500 must integrate all accepted-state mutation with the same ownership boundary",
     "S20-240 is a restricted epoch-1 profile; full-GA TypeDef invariants, effect/capability/resource contracts, effectful tests, adapter replay/configuration, observations, and policy-final selection require a later schema epoch",
     "S20-250 is a restricted epoch-1 profile; Workspace, Package, Namespace, EntryPoint, PolicyBinding, and DependencyBinding bodies plus complete-root impact extraction remain required before S20-300/S20-510 or GA",
-    "No VM exists",
+    "S20-260 is a restricted lowering-only profile; the other 52 opcode signatures, generics, adapter ABIs, execution flags, root/module lowering, decoding, and VM execution remain required before full S20-260/S20-270 or GA",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]
 }

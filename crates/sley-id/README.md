@@ -7,6 +7,8 @@ keeps the frozen domain registry internal and exposes only type-specific
 derivation functions, so callers cannot provide arbitrary domain strings.
 ADR-0007 adds a dedicated `ValueHash` domain; it is not an alias for semantic
 fingerprints or immutable-object identities.
+ADR-0008 adds a distinct derived `BytecodeCacheKey` domain that carries no
+canonical-state authority.
 
 This crate has no filesystem, network, environment, SCB1 encoding, repository,
 policy, or VM authority.

@@ -10,6 +10,7 @@ members = [
     "crates/sley-ssmc",
     "crates/sley-state-root",
     "crates/sley-store",
+    "crates/sley-vm",
 ]
 
 [workspace.package]
