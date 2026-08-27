@@ -15,7 +15,13 @@ print(
         {
             "phase": "M1",
             "changed_files": changed,
-            "affected_crates": ["sley-id", "sley-scb1", "sley-schema", "oracle/scb1"],
+            "affected_crates": [
+                "sley-id",
+                "sley-scb1",
+                "sley-schema",
+                "sley-store",
+                "oracle/scb1",
+            ],
             "affected_contracts": [
                 "M0 repository/document baseline",
                 "S20-040 benchmark baseline",
@@ -24,12 +30,14 @@ print(
                 "S20-120 Rust SCB1 codec",
                 "S20-130 independent SCB1 oracle",
                 "S20-140 schema epoch registry and migration skeleton",
+                "S20-150 immutable object store and corruption recovery",
             ],
             "selected_checks": [
                 "scripts/check_m0.py",
                 "scripts/check_benchmark_baseline.py",
                 "scripts/check_scb1_spec.py",
                 "scripts/check_schema_epoch_spec.py",
+                "scripts/check_object_store_spec.py",
                 "cargo fmt --check",
                 "cargo check --workspace --locked",
                 "cargo test --workspace --locked",
@@ -42,7 +50,7 @@ print(
                 "v2",
                 "release-check",
             ],
-            "skip_rationale": "S20-120 through S20-140 establish SCB1 and schema-epoch conformance; later store, semantic, and product gates remain unavailable.",
+            "skip_rationale": "S20-120 through S20-150 establish SCB1, schema-epoch, and immutable-store conformance; state roots, semantic kernel, and later product gates remain unavailable.",
             "v2_required": False,
             "cache_use": "none",
             "result": "PASS",

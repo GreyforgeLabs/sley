@@ -75,3 +75,25 @@ interface and uncollapsed SCB error channel, required an externally approved
 plan ID, added a capability-minimal equivalence verifier with reproduced digest
 matching, enforced increasing epoch numbers, and guarded malformed counts
 before allocation. The hardened 15-test candidate then passed Vulcan review.
+
+## 2026-08-27 — S20-150 recovery and path hardening
+
+Merlin's first green `sley-store` candidate matched any filename with the stage
+prefix and suffix during recovery, emitted filesystem enumeration order, and
+followed symlinks during bounded reads. Codex rejected that surface, restricted
+recovery to exact lowercase stage tokens whose embedded object ID matches the
+canonical fan-out directories, sorted recovery events, rejected symlink and
+non-regular object paths, and made exclusive-startup recovery an explicit
+precondition.
+
+## 2026-08-27 — S20-150 Vulcan P1 corrections
+
+Vulcan rejected the first hardened candidate because concurrent same-process
+writers could select the same deterministic stage name and one would fail
+`create_new` with `STORE_IO`. Vulcan also found that newly created fan-out
+parents were not synced, so the stated durability boundary was stronger than
+the implementation. Stage reservation now retries atomic exclusive-create
+collisions and an eight-writer test proves one promotion plus seven idempotent
+present results. Fan-out components are now created individually, verified as
+real directories, and each parent directory entry is synced. The 21-test
+candidate passed Vulcan re-review with no remaining P0/P1 finding.

@@ -43,7 +43,8 @@ objects/scb1/<hex[0..2]>/<hex[2..4]>/<64-hex-object-id>.scb1
 
 The path is a lookup index, not identity. Callers cannot supply a relative or
 absolute object path. The store root is configured out of band and never
-participates in a canonical digest.
+participates in a canonical digest. It MUST already exist as a real directory;
+object operations reject symlink or non-directory fan-out components.
 
 ## Write, verify, and promote
 
@@ -58,7 +59,8 @@ The required algorithm is:
 
 1. validate the caller-supplied record in memory;
 2. recompute its `ObjectId` and compare it with both trailer and declared ID;
-3. derive and create the final fan-out directory;
+3. derive the final fan-out directory, create each missing component
+   individually, and sync its parent directory entry;
 4. create a new staging file in that final directory with exclusive creation;
 5. write all bytes, flush, and sync the staging file;
 6. read the staging file through the bounded path and repeat canonical,
@@ -91,8 +93,9 @@ Failure precedence is deterministic:
    `STORE_OBJECT_SUBSTITUTION`.
 
 `STORE_OBJECT_SUBSTITUTION` never collapses into not-found, success, or a
-generic unknown result. No failure may promote bytes or advance accepted
-state.
+generic unknown result. A validation failure before promotion cannot create a
+final object. An interruption after atomic promotion may leave an unreachable
+object, but no S20-150 outcome can advance accepted state.
 
 ## Crash and recovery boundary
 
@@ -107,6 +110,11 @@ inspection, and it emits one `RECOVERY_STAGED_OBJECT` event per remnant. It
 MUST NOT infer acceptance or reachability from timestamps and MUST NOT remove
 final `.scb1` object paths. Full reachability and garbage collection belong to
 S20-180.
+
+Recovery is an exclusive startup operation. Its caller MUST prove that no
+writer is active for the store root. S20-150 does not add a cross-process
+repository lock, and a recovery scan MUST NOT race a live stage operation.
+Recovery events are sorted by relative staging path.
 
 ## Required evidence
 

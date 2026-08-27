@@ -46,6 +46,26 @@
     "vulcan_review": "PASS",
     "implementation_complete": true
   },
+  "object_store": {
+    "status": "S20_150_COMPLETE",
+    "contract": "docs/spec/OBJECT_STORE_V1.md",
+    "implementation": "crates/sley-store",
+    "record_format": "EXACT_SCB1_STANDALONE_BYTES",
+    "path_identity": "LOWERCASE_OBJECT_ID_FANOUT_INDEX_ONLY",
+    "promotion": "SAME_FILESYSTEM_ATOMIC_HARD_LINK_NO_OVERWRITE",
+    "fanout_parent_fsync": true,
+    "same_object_idempotent": true,
+    "canonical_verifier_required": true,
+    "independent_digest_verification": true,
+    "symlink_object_paths_rejected": true,
+    "recovery_scope": "EXACT_STAGE_NAMES_EXCLUSIVE_STARTUP_ONLY",
+    "rust_unit_tests": 21,
+    "threat_evidence": ["T03", "T04", "T37"],
+    "ariadne_design_review": "PASS",
+    "vulcan_initial_review": "FAIL_2_P1",
+    "vulcan_final_review": "PASS",
+    "implementation_complete": true
+  },
   "protocol": {"status": "DRAFT"},
   "identifiers": {
     "status": "S20_110_COMPLETE",
@@ -109,12 +129,12 @@
   },
   "open_findings": {"p0": 0, "p1": 0, "p2": 0, "p3": 0, "p4": 0},
   "evidence_gaps": [
-    "S20-150 immutable object store and corruption verification",
+    "S20-160 deterministic state roots",
     "M2 through M6 implementation and release evidence"
   ],
   "open_risks": [
     "The schema registry is executable, but production SSMC descriptor rows await S20-200",
-    "No object store or VM exists",
+    "No deterministic state-root implementation or VM exists",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]
 }
