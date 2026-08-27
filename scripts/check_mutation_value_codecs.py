@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 import subprocess
 import sys
@@ -15,6 +17,21 @@ VALUE_SOURCE = ROOT / "crates/sley-mutate/src/value.rs"
 DESCRIPTORS = ROOT / "crates/sley-mutate/src/generated.rs"
 CODEC_SOURCE = ROOT / "crates/sley-mutate/src/codec.rs"
 LIB_SOURCE = ROOT / "crates/sley-mutate/src/lib.rs"
+FIXTURE_TEST_SOURCE = ROOT / "crates/sley-mutate/src/codec/fixture_tests.rs"
+ORACLE_SOURCE = ROOT / "oracle/scb1/src/sley2_scb1_oracle/mutation_value.py"
+ACCEPTED_FIXTURES = ROOT / "conformance/mutation-value/v1/accepted.json"
+REJECTED_FIXTURES = ROOT / "conformance/mutation-value/v1/rejected.json"
+FIXTURE_SUMS = ROOT / "conformance/mutation-value/v1/SHA256SUMS"
+
+EXPECTED_ACCEPTED_FIXTURE_SHA256 = (
+    "73ed1ec291fd6f0bc63868ef71bb381d92001f3cb79c9ce89b42597f96f7ec6f"
+)
+EXPECTED_REJECTED_FIXTURE_SHA256 = (
+    "44a2752f830a057aad3a636c266d64ab9738f5800ed6fbf6404f91c6c1eee756"
+)
+EXPECTED_SCHEMA_BLAKE3 = (
+    "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73"
+)
 
 ENTITY_RE = re.compile(r"^entity ([0-9]+) ([A-Za-z][A-Za-z0-9]*) ([A-Za-z][A-Za-z0-9]*)$")
 RECORD_RE = re.compile(r"^record ([A-Za-z][A-Za-z0-9]*)\((.*)\)$")
@@ -51,12 +68,117 @@ def body_fields(raw: str) -> list[tuple[str, str, bool]]:
     return fields
 
 
+def check_partial_fixtures() -> None:
+    for path in (
+        FIXTURE_TEST_SOURCE,
+        ORACLE_SOURCE,
+        ACCEPTED_FIXTURES,
+        REJECTED_FIXTURES,
+        FIXTURE_SUMS,
+    ):
+        if not path.is_file():
+            raise SystemExit(f"partial mutation fixture file missing: {path.relative_to(ROOT)}")
+
+    fixture_hashes = {
+        ACCEPTED_FIXTURES.name: hashlib.sha256(ACCEPTED_FIXTURES.read_bytes()).hexdigest(),
+        REJECTED_FIXTURES.name: hashlib.sha256(REJECTED_FIXTURES.read_bytes()).hexdigest(),
+    }
+    expected_hashes = {
+        ACCEPTED_FIXTURES.name: EXPECTED_ACCEPTED_FIXTURE_SHA256,
+        REJECTED_FIXTURES.name: EXPECTED_REJECTED_FIXTURE_SHA256,
+    }
+    if fixture_hashes != expected_hashes:
+        raise SystemExit("partial mutation fixture digest drift")
+    expected_sums = "".join(
+        f"{expected_hashes[name]}  {name}\n" for name in ("accepted.json", "rejected.json")
+    )
+    if FIXTURE_SUMS.read_text(encoding="utf-8") != expected_sums:
+        raise SystemExit("partial mutation fixture SHA256SUMS drift")
+
+    accepted = json.loads(ACCEPTED_FIXTURES.read_text(encoding="utf-8"))
+    rejected = json.loads(REJECTED_FIXTURES.read_text(encoding="utf-8"))
+    for label, fixture in (("accepted", accepted), ("rejected", rejected)):
+        if fixture.get("contract") != "sley2-mutation-value-v1-partial":
+            raise SystemExit(f"partial mutation {label} fixture contract drift")
+        if fixture.get("claim") != "partial":
+            raise SystemExit(f"partial mutation {label} fixture overclaims completeness")
+        if fixture.get("source_schema_blake3") != EXPECTED_SCHEMA_BLAKE3:
+            raise SystemExit(f"partial mutation {label} fixture schema digest drift")
+        vector_ids = [vector["id"] for vector in fixture["vectors"]]
+        if len(vector_ids) != len(set(vector_ids)):
+            raise SystemExit(f"partial mutation {label} fixture ID duplication")
+
+    accepted_vectors = accepted["vectors"]
+    rejected_vectors = rejected["vectors"]
+    if len(accepted_vectors) != 61 or len(rejected_vectors) != 18:
+        raise SystemExit("partial mutation fixture vector inventory drift")
+    if len([vector for vector in accepted_vectors if vector["id"].startswith("type_expr_")]) != 20:
+        raise SystemExit("partial mutation fixture TypeExpr inventory is not 20")
+    expected_body_ids = {
+        "body_workspace",
+        "body_package",
+        "body_function",
+        "body_parameter",
+        "body_operation",
+        "body_global_value",
+        "body_effect_def",
+        "body_adapter_import",
+        "body_entry_point",
+        "body_policy_binding",
+        "body_dependency_binding",
+    }
+    actual_body_ids = {
+        vector["id"] for vector in accepted_vectors if vector["id"].startswith("body_")
+    }
+    if actual_body_ids != expected_body_ids:
+        raise SystemExit("partial mutation fixture body inventory drift")
+    for vector in accepted_vectors + rejected_vectors:
+        declared_type = vector["declared_type"]
+        if "Option<" in declared_type or "Const" in declared_type:
+            raise SystemExit(f"blocked family entered partial mutation fixtures: {declared_type}")
+        encoded = vector.get("expected_hex", vector.get("input_hex"))
+        if not isinstance(encoded, str) or encoded != encoded.lower():
+            raise SystemExit(f"partial mutation fixture hex drift: {vector['id']}")
+        try:
+            bytes.fromhex(encoded)
+        except ValueError as error:
+            raise SystemExit(f"partial mutation fixture hex invalid: {vector['id']}") from error
+
+    fixture_tests = FIXTURE_TEST_SOURCE.read_text(encoding="utf-8")
+    for marker in (
+        "independent_partial_accepted_fixtures_match_exact_private_codec_bytes",
+        "independent_partial_rejected_fixtures_return_exact_private_codes",
+        "assert_eq!(corpus.vectors.len(), 61)",
+        "assert_eq!(corpus.vectors.len(), 18)",
+        "assert_fixture(vector, &fixture_type_expr(&vector.value))",
+        "decode_rejected::<OperationBody>(input)",
+    ):
+        if marker not in fixture_tests:
+            raise SystemExit(f"partial mutation Rust fixture consumer drift: {marker}")
+    oracle_source = ORACLE_SOURCE.read_text(encoding="utf-8")
+    for marker in (
+        "def check_mutation_value(",
+        "def encode_mutation_value(",
+        "def decode_declared_mutation_value(",
+        "SOURCE_SCHEMA_BLAKE3",
+        "_fixture_checksum_problems",
+    ):
+        if marker not in oracle_source:
+            raise SystemExit(f"independent mutation oracle drift: {marker}")
+
+
 def main() -> int:
     subprocess.run(
         [sys.executable, str(ROOT / "scripts/generate_mutation_value_codecs.py"), "--check"],
         cwd=ROOT,
         check=True,
     )
+    subprocess.run(
+        [sys.executable, str(ROOT / "scripts/check_oracle_independence.py")],
+        cwd=ROOT,
+        check=True,
+    )
+    check_partial_fixtures()
 
     manifest = MANIFEST.read_text(encoding="utf-8")
     generated = GENERATED.read_text(encoding="utf-8")
@@ -165,6 +287,8 @@ def main() -> int:
 
     if lib_source.count("\nmod codec;\n") != 1 or "pub mod codec" in lib_source:
         raise SystemExit("mutation value codec foundation must remain crate-private")
+    if codec_source.count("\nmod fixture_tests;\n") != 1:
+        raise SystemExit("private mutation fixture consumer module drift")
     codec_markers = [
         "trait MutationValueCodec",
         "MAX_NESTING_DEPTH",

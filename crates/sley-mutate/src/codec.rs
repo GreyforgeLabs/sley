@@ -1865,6 +1865,9 @@ impl MutationValueCodec for OperationBody {
 }
 
 #[cfg(test)]
+mod fixture_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 

@@ -181,6 +181,8 @@ name = "sley-mutate"
 version = "2.0.0-alpha.0"
 dependencies = [
  "blake3",
+ "serde",
+ "serde_json",
  "sley-id",
  "sley-scb1",
  "sley-schema",

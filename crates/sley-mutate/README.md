@@ -8,7 +8,8 @@ This crate describes all eighteen entity kinds, their fields, and the sixteen
 closed primitive mutation classes. Its closed host values cover all eighteen
 entity bodies and seventy-five fields without runtime type-name selection, and
 all 179 immutable descriptors bind to exact closed value discriminants. The
-admission surface performs type selection only; there is no binary value codec.
+public admission surface performs type selection only; there is no public
+binary value codec.
 A crate-private staged codec foundation handles primitive leaves, IDs/roots,
 direct enums, ordered lists/options, and canonical entity-ID sets under exact
 SCB depth and allocation limits. It also closes all twenty `TypeExpr` variants
@@ -24,7 +25,14 @@ dependency-complete body records: `WorkspaceBody`, `PackageBody`, `FunctionBody`
 `ParameterBody`, `GlobalValueBody`, `EffectDefBody`, `AdapterImportBody`,
 `EntryPointBody`, `PolicyBindingBody`, and `DependencyBindingBody`. Bodies
 requiring generic `Option<T>`, `Terminator`, or `ConstValue` remain excluded. All
-body/field aggregate selection stays private and unimplemented. `TrapTerminator`
+body/field aggregate selection stays private and unimplemented. An explicitly
+partial independent corpus fixes 61 accepted and 18 rejected vectors for the
+landed unambiguous families, including all twenty `TypeExpr` variants and all
+eleven closed body records. A structurally separate Python oracle checks the
+committed exact bytes and rejection taxonomy; private Rust tests consume those
+bytes rather than constructing their expected encodings. The corpus does not
+claim full body, field, aggregate, precondition, candidate, or runtime coverage.
+`TrapTerminator`
 and the enclosing `Terminator` union remain open because the frozen SCB1 and
 SSMC manifest `Option<T>` tags conflict. It is not publicly
 descriptor-selectable, and the other recursive value families remain open. The

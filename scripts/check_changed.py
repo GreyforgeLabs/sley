@@ -58,6 +58,8 @@ print(
                 "S20-310 restricted epoch-1 modeled-snapshot typed queries",
                 "S20-320 restricted complete-query evidence capsules",
                 "S20-340 full epoch-1 generated immutable mutation descriptors",
+                "S20-345 frozen proposal-only candidate contracts",
+                "S20-350 private partial mutation-value codecs and conformance fixtures",
                 "S20-370 registry-authorized protected policy roots and mandatory test rules",
             ],
             "selected_checks": [
@@ -82,6 +84,8 @@ print(
                 "scripts/check_restricted_query_profile.py",
                 "scripts/check_restricted_query_capsule_profile.py",
                 "scripts/check_mutation_schema.py",
+                "scripts/check_mutation_value_codecs.py",
+                "scripts/check_oracle_independence.py",
                 "scripts/check_policy_root.py",
                 "cargo fmt --check",
                 "cargo check --workspace --locked",

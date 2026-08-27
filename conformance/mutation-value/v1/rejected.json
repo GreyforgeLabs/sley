@@ -1,0 +1,133 @@
+{
+  "claim": "partial",
+  "contract": "sley2-mutation-value-v1-partial",
+  "source_schema_blake3": "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73",
+  "vectors": [
+    {
+      "declared_type": "Bool",
+      "expected_code": "SCB_BOOL_INVALID",
+      "family": "leaf",
+      "id": "reject_bool_invalid",
+      "input_hex": "02"
+    },
+    {
+      "declared_type": "UInt16",
+      "expected_code": "SCB_INTEGER_OVERFLOW",
+      "family": "leaf",
+      "id": "reject_uint16_overflow",
+      "input_hex": "808004"
+    },
+    {
+      "declared_type": "UInt32",
+      "expected_code": "SCB_VARINT_NON_MINIMAL",
+      "family": "leaf",
+      "id": "reject_uint32_nonminimal",
+      "input_hex": "8000"
+    },
+    {
+      "declared_type": "Text",
+      "expected_code": "SCB_UTF8_INVALID",
+      "family": "leaf",
+      "id": "reject_text_utf8",
+      "input_hex": "01ff"
+    },
+    {
+      "declared_type": "FixedBytes32",
+      "expected_code": "SCB_LENGTH_OVERFLOW",
+      "family": "identity",
+      "id": "reject_fixed32_short",
+      "input_hex": "00000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "declared_type": "EntityIdSet",
+      "expected_code": "SCB_MAP_DUPLICATE",
+      "family": "collection",
+      "id": "reject_set_duplicate",
+      "input_hex": "02200101010101010101010101010101010101010101010101010101010101010101200101010101010101010101010101010101010101010101010101010101010101"
+    },
+    {
+      "declared_type": "EntityIdSet",
+      "expected_code": "SCB_MAP_ORDER",
+      "family": "collection",
+      "id": "reject_set_order",
+      "input_hex": "02200202020202020202020202020202020202020202020202020202020202020202200101010101010101010101010101010101010101010101010101010101010101"
+    },
+    {
+      "declared_type": "Visibility",
+      "expected_code": "SCB_UNION_INVALID",
+      "family": "enum",
+      "id": "reject_visibility_unknown",
+      "input_hex": "05"
+    },
+    {
+      "declared_type": "TypeExpr",
+      "expected_code": "SCB_UNION_INVALID",
+      "family": "type-expr",
+      "id": "reject_type_expr_unknown",
+      "input_hex": "6300"
+    },
+    {
+      "declared_type": "TypeExpr",
+      "expected_code": "SCB_UNION_INVALID",
+      "family": "type-expr",
+      "id": "reject_type_expr_unit_payload",
+      "input_hex": "010100"
+    },
+    {
+      "declared_type": "Immediate",
+      "expected_code": "SCB_UNION_INVALID",
+      "family": "cfg",
+      "id": "reject_immediate_none_payload",
+      "input_hex": "010100"
+    },
+    {
+      "declared_type": "ContractSource",
+      "expected_code": "SCB_UNION_INVALID",
+      "family": "helper",
+      "id": "reject_contract_source_unknown",
+      "input_hex": "0500"
+    },
+    {
+      "declared_type": "List<UInt32>",
+      "expected_code": "SCB_RESOURCE_LIMIT",
+      "family": "collection",
+      "id": "reject_list_resource_limit",
+      "input_hex": "c1843d"
+    },
+    {
+      "declared_type": "OperationBody",
+      "expected_code": "SCB_FIELD_MISSING",
+      "family": "body",
+      "id": "reject_operation_missing",
+      "input_hex": "0501201212121212121212121212121212121212121212121212121212121212121212020107030137044d0222012013131313131313131313131313131313131313131313131313131313131313132802260201201e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e0201020531020202002c0a2a020120141414141414141414141414141414141414141414141414141414141414141402050103040140"
+    },
+    {
+      "declared_type": "OperationBody",
+      "expected_code": "SCB_FIELD_UNKNOWN",
+      "family": "body",
+      "id": "reject_operation_unknown",
+      "input_hex": "0701201212121212121212121212121212121212121212121212121212121212121212020107030137044d0222012013131313131313131313131313131313131313131313131313131313131313132802260201201e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e0201020531020202002c0a2a020120141414141414141414141414141414141414141414141414141414141414141402050103040140062b07290201201515151515151515151515151515151515151515151515151515151515151515020401020800070100"
+    },
+    {
+      "declared_type": "OperationBody",
+      "expected_code": "SCB_FIELD_DUPLICATE",
+      "family": "body",
+      "id": "reject_operation_duplicate",
+      "input_hex": "0601201212121212121212121212121212121212121212121212121212121212121212020107030137044d0222012013131313131313131313131313131313131313131313131313131313131313132802260201201e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e0201020531020202002c0a2a0201201414141414141414141414141414141414141414141414141414141414141414020501030401400531020202002c0a2a020120141414141414141414141414141414141414141414141414141414141414141402050103040140"
+    },
+    {
+      "declared_type": "OperationBody",
+      "expected_code": "SCB_FIELD_ORDER",
+      "family": "body",
+      "id": "reject_operation_order",
+      "input_hex": "0601201212121212121212121212121212121212121212121212121212121212121212020107044d0222012013131313131313131313131313131313131313131313131313131313131313132802260201201e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e0201020301370531020202002c0a2a020120141414141414141414141414141414141414141414141414141414141414141402050103040140062b07290201201515151515151515151515151515151515151515151515151515151515151515020401020800"
+    },
+    {
+      "declared_type": "OperationBody",
+      "expected_code": "SCB_TRAILING_BYTES",
+      "family": "body",
+      "id": "reject_operation_nested_trailing",
+      "input_hex": "0601201212121212121212121212121212121212121212121212121212121212121212020107030137044e0222012013131313131313131313131313131313131313131313131313131313131313132802260201201e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e020102000531020202002c0a2a020120141414141414141414141414141414141414141414141414141414141414141402050103040140062b07290201201515151515151515151515151515151515151515151515151515151515151515020401020800"
+    }
+  ]
+}

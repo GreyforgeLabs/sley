@@ -47,6 +47,7 @@ conformance:
 	cargo test -p sley-repo --locked
 	uv run --project oracle/scb1 --frozen python -m unittest discover -s oracle/scb1/tests -v
 	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check --accepted conformance/scb1/v1/accepted.json --rejected conformance/scb1/v1/rejected.json
+	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check-mutation-value --accepted conformance/mutation-value/v1/accepted.json --rejected conformance/mutation-value/v1/rejected.json
 	uv run --project oracle/scb1 --frozen python scripts/check_schema_epoch_vector.py
 	uv run --project oracle/scb1 --frozen python scripts/check_state_root_vector.py
 	uv run --project oracle/scb1 --frozen python scripts/check_repository_pack_vector.py

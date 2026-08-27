@@ -2,7 +2,7 @@
   "blockers": [
     "workspace-license-text:missing-operator-approved-root-license"
   ],
-  "cargo_lock_sha256": "764d282fe6e4aa4dbc45c287c8ce1a94a59b9e86ce8ab0bfee7bca7b2ca5ec54",
+  "cargo_lock_sha256": "64e391c06b8d4541a626b7777714d7bd9dc306c965473c00466a2c20ae6b92b0",
   "contract": "s20-710-pre-release-inventory-v1",
   "full_release_sbom": false,
   "history_anchor_commit": "51863f7b93271bd7a73f9b7b3b02eeca93447d9a",
@@ -717,6 +717,14 @@
     {
       "from": "pkg:cargo/sley-mutate@2.0.0-alpha.0?workspace=true",
       "to": "pkg:cargo/blake3@1.8.2"
+    },
+    {
+      "from": "pkg:cargo/sley-mutate@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/serde@1.0.228"
+    },
+    {
+      "from": "pkg:cargo/sley-mutate@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/serde_json@1.0.145"
     },
     {
       "from": "pkg:cargo/sley-mutate@2.0.0-alpha.0?workspace=true",

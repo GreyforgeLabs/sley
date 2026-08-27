@@ -74,7 +74,15 @@ six-field `OperationBody` record. A second dependency-closed body slice covers
 `WorkspaceBody`, `PackageBody`, `FunctionBody`, `ParameterBody`,
 `GlobalValueBody`, `EffectDefBody`, `AdapterImportBody`, `EntryPointBody`,
 `PolicyBindingBody`, and `DependencyBindingBody`, still without exposing a body
-or field aggregate codec. `TrapTerminator` and the enclosing `Terminator` union
+or field aggregate codec. An explicitly partial, implementation-independent
+mutation-value corpus now pins 61 accepted and 18 rejected vectors across the
+landed unambiguous families, including all twenty `TypeExpr` variants and all
+eleven closed body records. Its Python oracle derives and checks exact bytes
+without importing, executing, or inspecting the Rust codec; private Rust tests
+consume the committed expected bytes and exact rejection codes. This is not
+complete 18-body or 75-field conformance: generic `Option<T>`, `ConstValue`, the
+seven deferred bodies, aggregates, preconditions, candidate records, and runtime
+surfaces remain explicitly excluded. `TrapTerminator` and the enclosing `Terminator` union
 remain unimplemented pending locked-canon resolution of the conflicting SCB1
 and manifest `Option<T>` tags. `ConstValue`, complete CFG/body/field codecs,
 contract/test families, preconditions, candidate records, and candidate

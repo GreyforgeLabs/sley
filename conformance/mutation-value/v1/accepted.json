@@ -1,0 +1,967 @@
+{
+  "claim": "partial",
+  "contract": "sley2-mutation-value-v1-partial",
+  "excluded": [
+    "generic Option<T> value codecs",
+    "ConstValue and recursive constant families",
+    "NamespaceBody, TypeDefBody, BlockBody, ConstantBody, CapabilityRequirementBody, ContractBody, TestCaseBody",
+    "EntityBodyValue, FieldValue, ProposalValue, preconditions, candidates, validation, runtime mutation"
+  ],
+  "source_schema_blake3": "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73",
+  "vectors": [
+    {
+      "case": "true",
+      "declared_type": "Bool",
+      "expected_hex": "01",
+      "family": "leaf",
+      "id": "leaf_bool_true",
+      "value": true
+    },
+    {
+      "case": "maximum",
+      "declared_type": "UInt16",
+      "expected_hex": "ffff03",
+      "family": "leaf",
+      "id": "leaf_uint16_max",
+      "value": 65535
+    },
+    {
+      "case": "maximum",
+      "declared_type": "UInt32",
+      "expected_hex": "ffffffff0f",
+      "family": "leaf",
+      "id": "leaf_uint32_max",
+      "value": 4294967295
+    },
+    {
+      "case": "maximum",
+      "declared_type": "UInt64",
+      "expected_hex": "ffffffffffffffffff01",
+      "family": "leaf",
+      "id": "leaf_uint64_max",
+      "value": "18446744073709551615"
+    },
+    {
+      "case": "minimum",
+      "declared_type": "SInt64",
+      "expected_hex": "ffffffffffffffffff01",
+      "family": "leaf",
+      "id": "leaf_sint64_min",
+      "value": "-9223372036854775808"
+    },
+    {
+      "case": "binary",
+      "declared_type": "Bytes",
+      "expected_hex": "0300ff10",
+      "family": "leaf",
+      "id": "leaf_bytes",
+      "value": "00ff10"
+    },
+    {
+      "case": "unicode",
+      "declared_type": "Text",
+      "expected_hex": "07536c657920cf80",
+      "family": "leaf",
+      "id": "leaf_text",
+      "value": "Sley π"
+    },
+    {
+      "case": "fixed",
+      "declared_type": "FixedBytes32",
+      "expected_hex": "0101010101010101010101010101010101010101010101010101010101010101",
+      "family": "identity",
+      "id": "leaf_fixed32",
+      "value": "0101010101010101010101010101010101010101010101010101010101010101"
+    },
+    {
+      "case": "entity",
+      "declared_type": "EntityId",
+      "expected_hex": "0202020202020202020202020202020202020202020202020202020202020202",
+      "family": "identity",
+      "id": "leaf_entity_id",
+      "value": "0202020202020202020202020202020202020202020202020202020202020202"
+    },
+    {
+      "case": "state-root",
+      "declared_type": "StateRoot",
+      "expected_hex": "0303030303030303030303030303030303030303030303030303030303030303",
+      "family": "identity",
+      "id": "leaf_state_root",
+      "value": "0303030303030303030303030303030303030303030303030303030303030303"
+    },
+    {
+      "case": "member",
+      "declared_type": "MemberId",
+      "expected_hex": "0404040404040404040404040404040404040404040404040404040404040404",
+      "family": "identity",
+      "id": "leaf_member_id",
+      "value": "0404040404040404040404040404040404040404040404040404040404040404"
+    },
+    {
+      "case": "canonical-set",
+      "declared_type": "EntityIdSet",
+      "expected_hex": "02200505050505050505050505050505050505050505050505050505050505050505200606060606060606060606060606060606060606060606060606060606060606",
+      "family": "collection",
+      "id": "collection_entity_id_set",
+      "value": [
+        "0505050505050505050505050505050505050505050505050505050505050505",
+        "0606060606060606060606060606060606060606060606060606060606060606"
+      ]
+    },
+    {
+      "case": "semantic-order",
+      "declared_type": "List<UInt32>",
+      "expected_hex": "03010301010102",
+      "family": "collection",
+      "id": "collection_uint32_list",
+      "value": [
+        3,
+        1,
+        2
+      ]
+    },
+    {
+      "case": "all-tags",
+      "declared_type": "List<Visibility>",
+      "expected_hex": "040101010201030104",
+      "family": "enum",
+      "id": "enum_visibility",
+      "value": [
+        "Private",
+        "Package",
+        "Workspace",
+        "Exported"
+      ]
+    },
+    {
+      "case": "all-tags",
+      "declared_type": "List<ParameterRole>",
+      "expected_hex": "0201010102",
+      "family": "enum",
+      "id": "enum_parameter_role",
+      "value": [
+        "Function",
+        "Block"
+      ]
+    },
+    {
+      "case": "all-tags",
+      "declared_type": "List<Reachability>",
+      "expected_hex": "0201010102",
+      "family": "enum",
+      "id": "enum_reachability",
+      "value": [
+        "Required",
+        "ExplicitlyUnreachable"
+      ]
+    },
+    {
+      "case": "all-tags",
+      "declared_type": "List<EffectKind>",
+      "expected_hex": "0801010102010301040105010601070108",
+      "family": "enum",
+      "id": "enum_effect_kind",
+      "value": [
+        "StdoutWrite",
+        "StderrWrite",
+        "FileRead",
+        "FileWrite",
+        "ClockRead",
+        "RandomRead",
+        "EnvironmentRead",
+        "AdapterCall"
+      ]
+    },
+    {
+      "case": "all-tags",
+      "declared_type": "List<ContractKind>",
+      "expected_hex": "070101010201030104010501060107",
+      "family": "enum",
+      "id": "enum_contract_kind",
+      "value": [
+        "Precondition",
+        "Postcondition",
+        "Invariant",
+        "EffectBound",
+        "CapabilityBound",
+        "ResultPredicate",
+        "ResourceCeiling"
+      ]
+    },
+    {
+      "case": "all-tags",
+      "declared_type": "List<EntryExposure>",
+      "expected_hex": "0201010102",
+      "family": "enum",
+      "id": "enum_entry_exposure",
+      "value": [
+        "Local",
+        "Protocol"
+      ]
+    },
+    {
+      "case": "all-tags",
+      "declared_type": "List<BuiltinFailureKind>",
+      "expected_hex": "0501010102010301040105",
+      "family": "enum",
+      "id": "enum_builtin_failure_kind",
+      "value": [
+        "ArithmeticError",
+        "IndexError",
+        "DuplicateKeyError",
+        "ContractViolation",
+        "CapabilityFailure"
+      ]
+    },
+    {
+      "case": "all-tags",
+      "declared_type": "List<BuiltinCase>",
+      "expected_hex": "040101010201030104",
+      "family": "enum",
+      "id": "enum_builtin_case",
+      "value": [
+        "None",
+        "Some",
+        "Ok",
+        "Err"
+      ]
+    },
+    {
+      "case": "all-tags",
+      "declared_type": "List<TrapCode>",
+      "expected_hex": "040101010201030104",
+      "family": "enum",
+      "id": "enum_trap_code",
+      "value": [
+        "Unreachable",
+        "ResourceExhausted",
+        "AdapterContractViolation",
+        "InternalInvariant"
+      ]
+    },
+    {
+      "case": "unit",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0100",
+      "family": "type-expr",
+      "id": "type_expr_01_unit",
+      "value": {
+        "variant": "Unit"
+      }
+    },
+    {
+      "case": "bool",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0200",
+      "family": "type-expr",
+      "id": "type_expr_02_bool",
+      "value": {
+        "variant": "Bool"
+      }
+    },
+    {
+      "case": "sint",
+      "declared_type": "TypeExpr",
+      "expected_hex": "030108",
+      "family": "type-expr",
+      "id": "type_expr_03_sint",
+      "value": {
+        "value": 8,
+        "variant": "SInt"
+      }
+    },
+    {
+      "case": "uint",
+      "declared_type": "TypeExpr",
+      "expected_hex": "04028001",
+      "family": "type-expr",
+      "id": "type_expr_04_uint",
+      "value": {
+        "value": 128,
+        "variant": "UInt"
+      }
+    },
+    {
+      "case": "f32",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0500",
+      "family": "type-expr",
+      "id": "type_expr_05_f32",
+      "value": {
+        "variant": "F32"
+      }
+    },
+    {
+      "case": "f64",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0600",
+      "family": "type-expr",
+      "id": "type_expr_06_f64",
+      "value": {
+        "variant": "F64"
+      }
+    },
+    {
+      "case": "bytes",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0700",
+      "family": "type-expr",
+      "id": "type_expr_07_bytes",
+      "value": {
+        "variant": "Bytes"
+      }
+    },
+    {
+      "case": "text",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0800",
+      "family": "type-expr",
+      "id": "type_expr_08_text",
+      "value": {
+        "variant": "Text"
+      }
+    },
+    {
+      "case": "tuple",
+      "declared_type": "TypeExpr",
+      "expected_hex": "090702020200020800",
+      "family": "type-expr",
+      "id": "type_expr_09_tuple",
+      "value": {
+        "value": [
+          {
+            "variant": "Bool"
+          },
+          {
+            "variant": "Text"
+          }
+        ],
+        "variant": "Tuple"
+      }
+    },
+    {
+      "case": "named",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0a2a0201200a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a02050103040140",
+      "family": "type-expr",
+      "id": "type_expr_10_named",
+      "value": {
+        "value": {
+          "arguments": [
+            {
+              "value": 64,
+              "variant": "UInt"
+            }
+          ],
+          "definition": "0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a"
+        },
+        "variant": "Named"
+      }
+    },
+    {
+      "case": "vector",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0b020200",
+      "family": "type-expr",
+      "id": "type_expr_11_vector",
+      "value": {
+        "value": {
+          "variant": "Bool"
+        },
+        "variant": "Vector"
+      }
+    },
+    {
+      "case": "ordered-map",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0c0a02010208000203040120",
+      "family": "type-expr",
+      "id": "type_expr_12_ordered_map",
+      "value": {
+        "value": {
+          "key": {
+            "variant": "Text"
+          },
+          "value": {
+            "value": 32,
+            "variant": "UInt"
+          }
+        },
+        "variant": "OrderedMap"
+      }
+    },
+    {
+      "case": "option-type",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0d020700",
+      "family": "type-expr",
+      "id": "type_expr_13_option_type",
+      "value": {
+        "value": {
+          "variant": "Bytes"
+        },
+        "variant": "Option"
+      }
+    },
+    {
+      "case": "result",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0e0a02010202000203140105",
+      "family": "type-expr",
+      "id": "type_expr_14_result",
+      "value": {
+        "value": {
+          "error": {
+            "value": "CapabilityFailure",
+            "variant": "BuiltinFailure"
+          },
+          "ok": {
+            "variant": "Bool"
+          }
+        },
+        "variant": "Result"
+      }
+    },
+    {
+      "case": "function-ref",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0f530301070202020002080002020100034302200b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b200c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c",
+      "family": "type-expr",
+      "id": "type_expr_15_function_ref",
+      "value": {
+        "value": {
+          "effects": [
+            "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b",
+            "0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c"
+          ],
+          "parameters": [
+            {
+              "variant": "Bool"
+            },
+            {
+              "variant": "Text"
+            }
+          ],
+          "result": {
+            "variant": "Unit"
+          }
+        },
+        "variant": "FunctionRef"
+      }
+    },
+    {
+      "case": "adapter-handle",
+      "declared_type": "TypeExpr",
+      "expected_hex": "10200d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+      "family": "type-expr",
+      "id": "type_expr_16_adapter_handle",
+      "value": {
+        "value": "0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "variant": "AdapterHandle"
+      }
+    },
+    {
+      "case": "capability-token",
+      "declared_type": "TypeExpr",
+      "expected_hex": "11200e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+      "family": "type-expr",
+      "id": "type_expr_17_capability_token",
+      "value": {
+        "value": "0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e",
+        "variant": "CapabilityToken"
+      }
+    },
+    {
+      "case": "local-cell",
+      "declared_type": "TypeExpr",
+      "expected_hex": "1203040110",
+      "family": "type-expr",
+      "id": "type_expr_18_local_cell",
+      "value": {
+        "value": {
+          "value": 16,
+          "variant": "UInt"
+        },
+        "variant": "LocalCell"
+      }
+    },
+    {
+      "case": "type-parameter",
+      "declared_type": "TypeExpr",
+      "expected_hex": "130107",
+      "family": "type-expr",
+      "id": "type_expr_19_type_parameter",
+      "value": {
+        "value": 7,
+        "variant": "TypeParameter"
+      }
+    },
+    {
+      "case": "builtin-failure",
+      "declared_type": "TypeExpr",
+      "expected_hex": "140103",
+      "family": "type-expr",
+      "id": "type_expr_20_builtin_failure",
+      "value": {
+        "value": "DuplicateKeyError",
+        "variant": "BuiltinFailure"
+      }
+    },
+    {
+      "case": "immediate-all-tags",
+      "declared_type": "List<Immediate>",
+      "expected_hex": "07020100220220141414141414141414141414141414141414141414141414141414141414141403030109220420151515151515151515151515151515151515151515151515151515151515151547054502012016161616161616161616161616161616161616161616161616161616161616160220171717171717171717171717171717171717171717171717171717171717171722062018181818181818181818181818181818181818181818181818181818181818182b07290201201919191919191919191919191919191919191919191919191919191919191919020401020800",
+      "family": "cfg",
+      "id": "cfg_immediate_all_tags",
+      "value": [
+        {
+          "variant": "None"
+        },
+        {
+          "value": "1414141414141414141414141414141414141414141414141414141414141414",
+          "variant": "Entity"
+        },
+        {
+          "value": 9,
+          "variant": "Index"
+        },
+        {
+          "value": "1515151515151515151515151515151515151515151515151515151515151515",
+          "variant": "Field"
+        },
+        {
+          "value": {
+            "definition": "1616161616161616161616161616161616161616161616161616161616161616",
+            "member_id": "1717171717171717171717171717171717171717171717171717171717171717"
+          },
+          "variant": "Variant"
+        },
+        {
+          "value": "1818181818181818181818181818181818181818181818181818181818181818",
+          "variant": "Observation"
+        },
+        {
+          "value": {
+            "function": "1919191919191919191919191919191919191919191919191919191919191919",
+            "type_arguments": [
+              {
+                "variant": "Text"
+              }
+            ]
+          },
+          "variant": "Function"
+        }
+      ]
+    },
+    {
+      "case": "switch-composite",
+      "declared_type": "VariantSwitchTerminator",
+      "expected_hex": "02012802260201201e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e02010202a601025002012201201f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f0229020120202020202020202020202020202020202020202020202020202020202020202002040102020053020103020102024b020120212121212121212121212121212121212121212121212121212121212121212102260124012201202222222222222222222222222222222222222222222222222222222222222222",
+      "family": "cfg",
+      "id": "cfg_variant_switch",
+      "value": {
+        "cases": [
+          {
+            "case_key": {
+              "value": "1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f",
+              "variant": "Member"
+            },
+            "edge": {
+              "arguments": [
+                {
+                  "variant": "CasePayload"
+                }
+              ],
+              "target": "2020202020202020202020202020202020202020202020202020202020202020"
+            }
+          },
+          {
+            "case_key": {
+              "value": "Some",
+              "variant": "Builtin"
+            },
+            "edge": {
+              "arguments": [
+                {
+                  "value": {
+                    "value": "2222222222222222222222222222222222222222222222222222222222222222",
+                    "variant": "Parameter"
+                  },
+                  "variant": "Value"
+                }
+              ],
+              "target": "2121212121212121212121212121212121212121212121212121212121212121"
+            }
+          }
+        ],
+        "value": {
+          "value": {
+            "operation": "1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e",
+            "result_index": 2
+          },
+          "variant": "OperationResult"
+        }
+      }
+    },
+    {
+      "case": "edge-composite",
+      "declared_type": "CondBranchTerminator",
+      "expected_hex": "03012201202626262626262626262626262626262626262626262626262626262626262626024902012023232323232323232323232323232323232323232323232323232323232323230224012201202424242424242424242424242424242424242424242424242424242424242424034f0201202525252525252525252525252525252525252525252525252525252525252525022a012802260201201e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e020102",
+      "family": "cfg",
+      "id": "cfg_cond_branch",
+      "value": {
+        "condition": {
+          "value": "2626262626262626262626262626262626262626262626262626262626262626",
+          "variant": "Parameter"
+        },
+        "if_false": {
+          "arguments": [
+            {
+              "value": {
+                "operation": "1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e",
+                "result_index": 2
+              },
+              "variant": "OperationResult"
+            }
+          ],
+          "target": "2525252525252525252525252525252525252525252525252525252525252525"
+        },
+        "if_true": {
+          "arguments": [
+            {
+              "value": "2424242424242424242424242424242424242424242424242424242424242424",
+              "variant": "Parameter"
+            }
+          ],
+          "target": "2323232323232323232323232323232323232323232323232323232323232323"
+        }
+      }
+    },
+    {
+      "case": "contract-source-all-tags",
+      "declared_type": "List<ContractSource>",
+      "expected_hex": "0422012028282828282828282828282828282828282828282828282828282828282828280202000203002204202929292929292929292929292929292929292929292929292929292929292929",
+      "family": "helper",
+      "id": "helper_contract_source_all_tags",
+      "value": [
+        {
+          "value": "2828282828282828282828282828282828282828282828282828282828282828",
+          "variant": "Parameter"
+        },
+        {
+          "variant": "Result"
+        },
+        {
+          "variant": "Error"
+        },
+        {
+          "value": "2929292929292929292929292929292929292929292929292929292929292929",
+          "variant": "Global"
+        }
+      ]
+    },
+    {
+      "case": "contract-binding",
+      "declared_type": "ContractBinding",
+      "expected_hex": "02010103022204202a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a",
+      "family": "helper",
+      "id": "helper_contract_binding",
+      "value": {
+        "predicate_parameter": 3,
+        "source": {
+          "value": "2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a",
+          "variant": "Global"
+        }
+      }
+    },
+    {
+      "case": "resource-limits",
+      "declared_type": "ResourceLimits",
+      "expected_hex": "0601010102017f0302800104038080010501200603e0d403",
+      "family": "helper",
+      "id": "helper_resource_limits",
+      "value": {
+        "call_depth": 32,
+        "effect_count": 16384,
+        "fuel": 1,
+        "memory_bytes": 127,
+        "output_bytes": 128,
+        "wall_timeout_millis": 60000
+      }
+    },
+    {
+      "case": "builtin-failure",
+      "declared_type": "BuiltinFailureValue",
+      "expected_hex": "02010105020104",
+      "family": "helper",
+      "id": "helper_builtin_failure_value",
+      "value": {
+        "code": 4,
+        "kind": "CapabilityFailure"
+      }
+    },
+    {
+      "case": "record-field",
+      "declared_type": "RecordField",
+      "expected_hex": "0301202b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b022b0a290201202c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c020401020200030104",
+      "family": "helper",
+      "id": "helper_record_field",
+      "value": {
+        "member_id": "2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b",
+        "value_type": {
+          "value": {
+            "arguments": [
+              {
+                "variant": "Bool"
+              }
+            ],
+            "definition": "2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c2c"
+          },
+          "variant": "Named"
+        },
+        "visibility": "Exported"
+      }
+    },
+    {
+      "case": "workspace",
+      "declared_type": "WorkspaceBody",
+      "expected_hex": "0501220120010101010101010101010101010101010101010101010101010101010101010102200202020202020202020202020202020202020202020202020202020202020202032201200303030303030303030303030303030303030303030303030303030303030303042201200404040404040404040404040404040404040404040404040404040404040404052201200505050505050505050505050505050505050505050505050505050505050505",
+      "family": "body",
+      "id": "body_workspace",
+      "value": {
+        "capability_requirements": [
+          "0303030303030303030303030303030303030303030303030303030303030303"
+        ],
+        "contracts": [
+          "0404040404040404040404040404040404040404040404040404040404040404"
+        ],
+        "packages": [
+          "0101010101010101010101010101010101010101010101010101010101010101"
+        ],
+        "root_namespace": "0202020202020202020202020202020202020202020202020202020202020202",
+        "tests": [
+          "0505050505050505050505050505050505050505050505050505050505050505"
+        ]
+      }
+    },
+    {
+      "case": "package",
+      "declared_type": "PackageBody",
+      "expected_hex": "040120060606060606060606060606060606060606060606060606060606060606060602200707070707070707070707070707070707070707070707070707070707070707032201200808080808080808080808080808080808080808080808080808080808080808042201200909090909090909090909090909090909090909090909090909090909090909",
+      "family": "body",
+      "id": "body_package",
+      "value": {
+        "dependencies": [
+          "0808080808080808080808080808080808080808080808080808080808080808"
+        ],
+        "exports": [
+          "0909090909090909090909090909090909090909090909090909090909090909"
+        ],
+        "root_namespace": "0707070707070707070707070707070707070707070707070707070707070707",
+        "workspace": "0606060606060606060606060606060606060606060606060606060606060606"
+      }
+    },
+    {
+      "case": "function",
+      "declared_type": "FunctionBody",
+      "expected_hex": "080106010401010101024302200a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a200b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b03020200042201200c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c05200d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d064302200f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f200e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e072201201010101010101010101010101010101010101010101010101010101010101010080103",
+      "family": "body",
+      "id": "body_function",
+      "value": {
+        "blocks": [
+          "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+          "0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e"
+        ],
+        "contracts": [
+          "1010101010101010101010101010101010101010101010101010101010101010"
+        ],
+        "effects": [
+          "0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c"
+        ],
+        "entry_block": "0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d",
+        "parameters": [
+          "0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+          "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"
+        ],
+        "result_type": {
+          "variant": "Bool"
+        },
+        "type_parameters": [
+          {
+            "ordinal": 1
+          }
+        ],
+        "visibility": "Workspace"
+      }
+    },
+    {
+      "case": "parameter",
+      "declared_type": "ParameterBody",
+      "expected_hex": "04012011111111111111111111111111111111111111111111111111111111111111110201020305ffffffff0f0403130102",
+      "family": "body",
+      "id": "body_parameter",
+      "value": {
+        "ordinal": 4294967295,
+        "owner": "1111111111111111111111111111111111111111111111111111111111111111",
+        "role": "Block",
+        "value_type": {
+          "value": 2,
+          "variant": "TypeParameter"
+        }
+      }
+    },
+    {
+      "case": "operation",
+      "declared_type": "OperationBody",
+      "expected_hex": "0601201212121212121212121212121212121212121212121212121212121212121212020107030137044d0222012013131313131313131313131313131313131313131313131313131313131313132802260201201e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e0201020531020202002c0a2a020120141414141414141414141414141414141414141414141414141414141414141402050103040140062b07290201201515151515151515151515151515151515151515151515151515151515151515020401020800",
+      "family": "body",
+      "id": "body_operation",
+      "value": {
+        "block": "1212121212121212121212121212121212121212121212121212121212121212",
+        "immediate": {
+          "value": {
+            "function": "1515151515151515151515151515151515151515151515151515151515151515",
+            "type_arguments": [
+              {
+                "variant": "Text"
+              }
+            ]
+          },
+          "variant": "Function"
+        },
+        "opcode": 55,
+        "operands": [
+          {
+            "value": "1313131313131313131313131313131313131313131313131313131313131313",
+            "variant": "Parameter"
+          },
+          {
+            "value": {
+              "operation": "1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e",
+              "result_index": 2
+            },
+            "variant": "OperationResult"
+          }
+        ],
+        "ordinal": 7,
+        "result_types": [
+          {
+            "variant": "Bool"
+          },
+          {
+            "value": {
+              "arguments": [
+                {
+                  "value": 64,
+                  "variant": "UInt"
+                }
+              ],
+              "definition": "1414141414141414141414141414141414141414141414141414141414141414"
+            },
+            "variant": "Named"
+          }
+        ]
+      }
+    },
+    {
+      "case": "global-value",
+      "declared_type": "GlobalValueBody",
+      "expected_hex": "030102080002201616161616161616161616161616161616161616161616161616161616161616030104",
+      "family": "body",
+      "id": "body_global_value",
+      "value": {
+        "initializer": "1616161616161616161616161616161616161616161616161616161616161616",
+        "value_type": {
+          "variant": "Text"
+        },
+        "visibility": "Exported"
+      }
+    },
+    {
+      "case": "effect-def",
+      "declared_type": "EffectDefBody",
+      "expected_hex": "060101080202070003020800040202000503140105060102",
+      "family": "body",
+      "id": "body_effect_def",
+      "value": {
+        "effect_kind": "AdapterCall",
+        "failure_type": {
+          "value": "CapabilityFailure",
+          "variant": "BuiltinFailure"
+        },
+        "request_type": {
+          "variant": "Text"
+        },
+        "response_type": {
+          "variant": "Bool"
+        },
+        "scope_type": {
+          "variant": "Bytes"
+        },
+        "visibility": "Package"
+      }
+    },
+    {
+      "case": "adapter-import",
+      "declared_type": "AdapterImportBody",
+      "expected_hex": "06012017171717171717171717171717171717171717171717171717171717171717170205ffffffff0f03020700040208000503140104064302201818181818181818181818181818181818181818181818181818181818181818201919191919191919191919191919191919191919191919191919191919191919",
+      "family": "body",
+      "id": "body_adapter_import",
+      "value": {
+        "abi_version": 4294967295,
+        "adapter_id": "1717171717171717171717171717171717171717171717171717171717171717",
+        "effects": [
+          "1818181818181818181818181818181818181818181818181818181818181818",
+          "1919191919191919191919191919191919191919191919191919191919191919"
+        ],
+        "failure_type": {
+          "value": "ContractViolation",
+          "variant": "BuiltinFailure"
+        },
+        "request_type": {
+          "variant": "Bytes"
+        },
+        "response_type": {
+          "variant": "Text"
+        }
+      }
+    },
+    {
+      "case": "entry-point",
+      "declared_type": "EntryPointBody",
+      "expected_hex": "0201201a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a020102",
+      "family": "body",
+      "id": "body_entry_point",
+      "value": {
+        "exposure": "Protocol",
+        "function": "1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a"
+      }
+    },
+    {
+      "case": "policy-binding",
+      "declared_type": "PolicyBindingBody",
+      "expected_hex": "0201201b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b024302201c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c201d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d",
+      "family": "body",
+      "id": "body_policy_binding",
+      "value": {
+        "requirements": [
+          "1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c",
+          "1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d"
+        ],
+        "subject": "1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b"
+      }
+    },
+    {
+      "case": "dependency-binding",
+      "declared_type": "DependencyBindingBody",
+      "expected_hex": "0301201e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e02201f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f03202020202020202020202020202020202020202020202020202020202020202020",
+      "family": "body",
+      "id": "body_dependency_binding",
+      "value": {
+        "dependency_root": "1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e",
+        "external_package": "1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f",
+        "local_namespace": "2020202020202020202020202020202020202020202020202020202020202020"
+      }
+    }
+  ]
+}

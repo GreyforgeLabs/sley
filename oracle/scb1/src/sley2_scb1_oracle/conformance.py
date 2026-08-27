@@ -8,6 +8,7 @@ from pathlib import Path
 
 from .codec import decode_accepted_vector, decode_declared_value, encode_accepted_vector
 from .errors import ScbError
+from .mutation_value import check_mutation_value
 
 
 def check(accepted_path: Path, rejected_path: Path) -> dict[str, object]:
@@ -64,11 +65,14 @@ def check(accepted_path: Path, rejected_path: Path) -> dict[str, object]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("check",))
+    parser.add_argument("command", choices=("check", "check-mutation-value"))
     parser.add_argument("--accepted", required=True, type=Path)
     parser.add_argument("--rejected", required=True, type=Path)
     arguments = parser.parse_args()
-    result = check(arguments.accepted, arguments.rejected)
+    if arguments.command == "check-mutation-value":
+        result = check_mutation_value(arguments.accepted, arguments.rejected)
+    else:
+        result = check(arguments.accepted, arguments.rejected)
     print(json.dumps(result, indent=2, sort_keys=True))
     if result["result"] != "PASS":
         raise SystemExit(1)

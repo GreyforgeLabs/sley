@@ -11,11 +11,14 @@ ROOT = Path(__file__).resolve().parents[1]
 ORACLE = ROOT / "oracle/scb1"
 forbidden = (
     "subprocess",
-    "cargo ",
+    "cargo",
     "sley-id",
     "sley_id",
-    "target/debug",
-    "target/release",
+    "sley-mutate",
+    "sley_mutate",
+    "crates/sley-mutate",
+    "value_generated.rs",
+    "target/",
 )
 problems: list[str] = []
 for path in sorted((ORACLE / "src").rglob("*.py")):
