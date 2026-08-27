@@ -5,6 +5,7 @@ members = [
     "crates/sley-check",
     "crates/sley-conformance",
     "crates/sley-id",
+    "crates/sley-mutate",
     "crates/sley-repo",
     "crates/sley-query",
     "crates/sley-scb1",

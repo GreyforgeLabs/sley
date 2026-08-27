@@ -50,7 +50,12 @@ now adds a separately identified restricted evidence capsule for those complete
 responses, with exact raw-ID dictionaries and direct-edge tables but fixed
 no-omission, no-truncation, and no-continuation status. It is not the master
 context capsule and adds no workspace/root/session authority. Every next
-package must follow `docs/WORK_PACKAGES.md`.
+package must follow `docs/WORK_PACKAGES.md`. S20-330 is deliberately deferred
+until negotiated session and verified workspace/root authority exist. S20-340
+now generates immutable mutation descriptors for all eighteen SSMC1 entity
+kinds and all sixteen primitive classes from the exact frozen manifest. It
+provides no candidate construction, executable mutation, validation, policy,
+session, commit, or transaction authority.
 
 ## Authority
 
@@ -74,7 +79,7 @@ work belongs to a separate session and repository worktree.
 `make quick` and `make check-changed` validate the implemented M0/M1 and
 current M2 type-system/CFG/effect/restricted-contract/fingerprint/lowering/
 execution/reference-adapter/report-envelope/index-snapshot/restricted-query/
-restricted-capsule surface. Later
+restricted-capsule/mutation-schema surface. Later
 profiles are present but intentionally fail closed until their corresponding
 work packages land.
 `make v2` remains the eventual authoritative full gate.

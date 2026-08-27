@@ -1,0 +1,16 @@
+[package]
+name = "sley-mutate"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Generated immutable Sley 2 mutation schema descriptors."
+
+[dependencies]
+sley-schema = { path = "../sley-schema" }
+
+[dev-dependencies]
+blake3 = "=1.8.2"
+
+[lints]
+workspace = true

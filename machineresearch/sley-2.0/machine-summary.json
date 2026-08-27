@@ -393,6 +393,30 @@
     "nabu_architecture_review": "DEFER",
     "unblocked_by_restricted_s20_320": false
   },
+  "mutation_schema": {
+    "status": "S20_340_COMPLETE_IMMUTABLE_DESCRIPTORS_ONLY",
+    "contract": "docs/spec/MUTATION_SCHEMA_V1.md",
+    "implementation": "crates/sley-mutate",
+    "generator": "scripts/generate_mutation_schema.py",
+    "schema_manifest": "docs/spec/SSMC1_EPOCH1_SCHEMA.txt",
+    "schema_manifest_blake3": "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73",
+    "entity_kinds": 18,
+    "entity_fields": 75,
+    "mutation_classes": 16,
+    "concrete_operation_descriptors": 179,
+    "typed_field_replacements": 75,
+    "mutation_schema_unit_tests": 8,
+    "workspace_total_unit_tests": 271,
+    "candidate_construction": false,
+    "runtime_mutation": false,
+    "root_session_workspace_authority": false,
+    "nabu_architecture_review": "REVISE_TO_FULL_IMMUTABLE_DESCRIPTOR_CODEGEN",
+    "merlin_handoff": "BLOCKED_READ_ONLY_IMPLEMENTED_BY_CODEX",
+    "vulcan_review": "PASS_NO_OPEN_P0_P1_P2_P3_P4",
+    "s20_350_input_available": true,
+    "m3_exit_complete": false,
+    "implementation_complete": true
+  },
   "schema_epoch": {
     "status": "S20_140_COMPLETE",
     "bootstrap_magic": "SLEYEP01",
@@ -603,6 +627,7 @@
     "S20-310 exposes only four modeled-snapshot queries with hard no-partial limits; nineteen root-backed query classes, truncation/continuation, capsules, SMP1, full M3, and GA remain blocked",
     "S20-320 is only a complete restricted-query evidence envelope with a distinct ID; master context capsules, verified workspace/root/session facts, lawful omission/continuation, downstream S20-330/S20-400/S20-620, M3, M5, and GA remain blocked",
     "S20-330 is deliberately unimplemented until negotiated session, verified workspace/root, and epoch authority exist; claimed roots and capsule IDs are forbidden substitutes",
+    "S20-340 is immutable descriptor codegen only; executable operations, fully bound candidate/preimage construction, validation, policy/capability authority, commit, receipts, M3/M4, and GA remain blocked",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]
 }

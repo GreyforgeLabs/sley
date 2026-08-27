@@ -19,3 +19,4 @@ Current records:
 - ADR-0011: restricted derived index snapshot domain and admission
 - ADR-0012: restricted modeled-snapshot query authority and hard-limit policy
 - ADR-0013: restricted complete-query capsule identity and non-authority
+- ADR-0014: full epoch-1 mutation descriptor code generation

@@ -21,6 +21,7 @@ quick:
 	python3 scripts/check_index_snapshot_profile.py
 	python3 scripts/check_restricted_query_profile.py
 	python3 scripts/check_restricted_query_capsule_profile.py
+	python3 scripts/check_mutation_schema.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked

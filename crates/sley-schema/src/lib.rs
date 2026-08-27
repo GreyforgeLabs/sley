@@ -9,6 +9,16 @@ use sley_scb1::{
     encode_record, encode_union, encode_uvar,
 };
 
+/// Exact frozen SSMC1 epoch-1 schema manifest used by generated schema consumers.
+pub const SSMC1_EPOCH1_MANIFEST: &[u8] =
+    include_bytes!("../../../docs/spec/SSMC1_EPOCH1_SCHEMA.txt");
+
+/// BLAKE3-256 of [`SSMC1_EPOCH1_MANIFEST`].
+pub const SSMC1_EPOCH1_MANIFEST_BLAKE3: [u8; 32] = [
+    0x04, 0x4d, 0x21, 0xd3, 0x28, 0xe4, 0x0d, 0x51, 0x7f, 0xd0, 0x9f, 0xd0, 0x99, 0xc9, 0x69, 0x7f,
+    0xbb, 0xa2, 0xc9, 0x5d, 0x0a, 0x51, 0x9e, 0xad, 0xe3, 0x33, 0xc1, 0x14, 0x0d, 0x64, 0x8e, 0x73,
+];
+
 const BOOTSTRAP_MAGIC: &[u8; 8] = b"SLEYEP01";
 const BOOTSTRAP_VERSION: u64 = 1;
 const SCB_FORMAT_VERSION: u32 = 1;
@@ -1843,12 +1853,15 @@ mod tests {
 
     #[test]
     fn ssmc1_descriptor_inputs_do_not_drift() {
-        const MANIFEST: &[u8] = include_bytes!("../../../docs/spec/SSMC1_EPOCH1_SCHEMA.txt");
         const LIMITS: &[u8] = b"sley2.ssmc1.v1.decoder-limits:scb1-epoch1;label_bytes=1024;type_depth=64;type_args=1024;tuple_items=65535;fields_or_cases=65535;function_params=65535;block_params=65535;blocks_per_function=1000000;operations_per_block=1000000;operands_per_operation=65535;results_per_operation=65535;switch_cases=65535;constant_depth=64;constant_elements=1000000;constant_payload_bytes=16777216";
 
         assert_eq!(
-            hex(blake3::hash(MANIFEST).as_bytes()),
+            hex(blake3::hash(SSMC1_EPOCH1_MANIFEST).as_bytes()),
             "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73"
+        );
+        assert_eq!(
+            *blake3::hash(SSMC1_EPOCH1_MANIFEST).as_bytes(),
+            SSMC1_EPOCH1_MANIFEST_BLAKE3
         );
         assert_eq!(
             hex(blake3::hash(LIMITS).as_bytes()),

@@ -176,6 +176,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "sley-mutate"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "blake3",
+ "sley-schema",
+]
+
+[[package]]
 name = "sley-query"
 version = "2.0.0-alpha.0"
 dependencies = [

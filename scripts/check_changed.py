@@ -17,6 +17,7 @@ print(
             "changed_files": changed,
             "affected_crates": [
                 "sley-id",
+                "sley-mutate",
                 "sley-scb1",
                 "sley-schema",
                 "sley-ssmc",
@@ -55,6 +56,7 @@ print(
                 "S20-300 restricted epoch-1 rebuild-first index snapshots",
                 "S20-310 restricted epoch-1 modeled-snapshot typed queries",
                 "S20-320 restricted complete-query evidence capsules",
+                "S20-340 full epoch-1 generated immutable mutation descriptors",
             ],
             "selected_checks": [
                 "scripts/check_m0.py",
@@ -77,6 +79,7 @@ print(
                 "scripts/check_index_snapshot_profile.py",
                 "scripts/check_restricted_query_profile.py",
                 "scripts/check_restricted_query_capsule_profile.py",
+                "scripts/check_mutation_schema.py",
                 "cargo fmt --check",
                 "cargo check --workspace --locked",
                 "cargo test --workspace --locked",
@@ -89,7 +92,7 @@ print(
                 "v2",
                 "release-check",
             ],
-            "skip_rationale": "M1 canonical-state implementation and scoped exit profiles pass; S20-200 through S20-230 plus restricted epoch-1 S20-240 through S20-320 profiles are implemented, while their full-GA semantic surfaces, VM-integrated/live adapters, canonical/persistent policy-final reports, complete-root/useful cache indexes, nineteen-class root-backed queries, master context capsules with lawful omission/continuation, clone-equivalent profiles, and later product/release gates remain unavailable.",
+            "skip_rationale": "M1 canonical-state implementation and scoped exit profiles pass; S20-200 through S20-230, restricted epoch-1 S20-240 through S20-320, and immutable descriptor-only S20-340 are implemented. Executable candidates/mutations, full-GA semantic surfaces, VM-integrated/live adapters, canonical/persistent policy-final reports, complete-root/useful cache indexes, nineteen-class root-backed queries, master context capsules with lawful omission/continuation, clone-equivalent profiles, and later product/release gates remain unavailable.",
             "v2_required": False,
             "cache_use": "none",
             "result": "PASS",
