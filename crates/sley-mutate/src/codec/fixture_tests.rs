@@ -50,7 +50,7 @@ fn independent_partial_accepted_fixtures_match_exact_private_codec_bytes() {
         &corpus.claim,
         &corpus.source_schema_blake3,
     );
-    assert_eq!(corpus.vectors.len(), 61);
+    assert_eq!(corpus.vectors.len(), 126);
     assert_eq!(
         corpus
             .vectors
@@ -66,6 +66,14 @@ fn independent_partial_accepted_fixtures_match_exact_private_codec_bytes() {
             .filter(|vector| vector.id.starts_with("body_"))
             .count(),
         11
+    );
+    assert_eq!(
+        corpus
+            .vectors
+            .iter()
+            .filter(|vector| vector.id.starts_with("field_"))
+            .count(),
+        65
     );
     assert_unique_ids(corpus.vectors.iter().map(|vector| vector.id.as_str()));
     assert!(
@@ -111,6 +119,9 @@ fn assert_unique_ids<'a>(ids: impl Iterator<Item = &'a str>) {
 }
 
 fn assert_accepted_vector(vector: &AcceptedVector) {
+    if assert_accepted_field_vector(vector) {
+        return;
+    }
     match vector.declared_type.as_str() {
         "Bool" => assert_fixture(vector, &fixture_bool(&vector.value)),
         "UInt16" => assert_fixture(vector, &fixture_u16(&vector.value)),
@@ -193,6 +204,38 @@ fn assert_accepted_vector(vector: &AcceptedVector) {
         }
         declared_type => panic!("unsupported accepted fixture type {declared_type}"),
     }
+}
+
+fn assert_accepted_field_vector(vector: &AcceptedVector) -> bool {
+    match vector.declared_type.as_str() {
+        "Set<EntityId>" => assert_fixture(vector, &fixture_entity_id_set(&vector.value)),
+        "List<EntityId>" => assert_fixture(vector, &fixture_vec(&vector.value, fixture_entity_id)),
+        "Visibility" => assert_fixture(vector, &fixture_visibility(&vector.value)),
+        "ParameterRole" => assert_fixture(vector, &fixture_parameter_role(&vector.value)),
+        "Reachability" => assert_fixture(vector, &fixture_reachability(&vector.value)),
+        "EffectKind" => assert_fixture(vector, &fixture_effect_kind(&vector.value)),
+        "ContractKind" => assert_fixture(vector, &fixture_contract_kind(&vector.value)),
+        "EntryExposure" => assert_fixture(vector, &fixture_entry_exposure(&vector.value)),
+        "List<TypeExpr>" => {
+            assert_fixture(vector, &fixture_vec(&vector.value, fixture_type_expr));
+        }
+        "List<TypeParameterDef>" => {
+            assert_fixture(
+                vector,
+                &fixture_vec(&vector.value, fixture_type_parameter_def),
+            );
+        }
+        "List<ValueRef>" => assert_fixture(vector, &fixture_vec(&vector.value, fixture_value_ref)),
+        "Immediate" => assert_fixture(vector, &fixture_immediate(&vector.value)),
+        "List<ContractBinding>" => {
+            assert_fixture(
+                vector,
+                &fixture_vec(&vector.value, fixture_contract_binding),
+            );
+        }
+        _ => return false,
+    }
+    true
 }
 
 fn assert_fixture<T>(vector: &AcceptedVector, value: &T)

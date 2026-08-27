@@ -26,12 +26,14 @@ dependency-complete body records: `WorkspaceBody`, `PackageBody`, `FunctionBody`
 `EntryPointBody`, `PolicyBindingBody`, and `DependencyBindingBody`. Bodies
 requiring generic `Option<T>`, `Terminator`, or `ConstValue` remain excluded. All
 body/field aggregate selection stays private and unimplemented. An explicitly
-partial independent corpus fixes 61 accepted and 18 rejected vectors for the
-landed unambiguous families, including all twenty `TypeExpr` variants and all
-eleven closed body records. A structurally separate Python oracle checks the
+partial independent corpus fixes 126 accepted and 18 rejected vectors for the
+landed unambiguous families, including all twenty `TypeExpr` variants, all
+eleven closed body records, and exact declared-value fixtures for 65 of the 75
+manifest fields. A structurally separate Python oracle checks the
 committed exact bytes and rejection taxonomy; private Rust tests consume those
 bytes rather than constructing their expected encodings. The corpus does not
-claim full body, field, aggregate, precondition, candidate, or runtime coverage.
+claim full body, field, aggregate, precondition, candidate, or runtime coverage;
+ten fields remain excluded with their blocked families named in the corpus.
 `TrapTerminator`
 and the enclosing `Terminator` union remain open because the frozen SCB1 and
 SSMC manifest `Option<T>` tags conflict. It is not publicly

@@ -2,9 +2,9 @@
   "claim": "partial",
   "contract": "sley2-mutation-value-v1-partial",
   "excluded": [
-    "generic Option<T> value codecs",
+    "generic Option<T> value codecs beyond existing internal helpers",
     "ConstValue and recursive constant families",
-    "NamespaceBody, TypeDefBody, BlockBody, ConstantBody, CapabilityRequirementBody, ContractBody, TestCaseBody",
+    "Namespace.parent, TypeDef.form, Block.terminator, Constant.value, CapabilityRequirement.allowed_scopes, Contract.resource_limits, TestCase.inputs, TestCase.effect_environment, TestCase.expected, TestCase.observations",
     "EntityBodyValue, FieldValue, ProposalValue, preconditions, candidates, validation, runtime mutation"
   ],
   "source_schema_blake3": "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73",
@@ -962,6 +962,736 @@
         "external_package": "1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f",
         "local_namespace": "2020202020202020202020202020202020202020202020202020202020202020"
       }
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Set<EntityId>",
+      "expected_hex": "02203131313131313131313131313131313131313131313131313131313131313131203232323232323232323232323232323232323232323232323232323232323232",
+      "family": "field",
+      "id": "field_workspace_packages",
+      "value": [
+        "3131313131313131313131313131313131313131313131313131313131313131",
+        "3232323232323232323232323232323232323232323232323232323232323232"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_workspace_root_namespace",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Set<EntityId>",
+      "expected_hex": "02203131313131313131313131313131313131313131313131313131313131313131203232323232323232323232323232323232323232323232323232323232323232",
+      "family": "field",
+      "id": "field_workspace_capability_requirements",
+      "value": [
+        "3131313131313131313131313131313131313131313131313131313131313131",
+        "3232323232323232323232323232323232323232323232323232323232323232"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Set<EntityId>",
+      "expected_hex": "02203131313131313131313131313131313131313131313131313131313131313131203232323232323232323232323232323232323232323232323232323232323232",
+      "family": "field",
+      "id": "field_workspace_contracts",
+      "value": [
+        "3131313131313131313131313131313131313131313131313131313131313131",
+        "3232323232323232323232323232323232323232323232323232323232323232"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Set<EntityId>",
+      "expected_hex": "02203131313131313131313131313131313131313131313131313131313131313131203232323232323232323232323232323232323232323232323232323232323232",
+      "family": "field",
+      "id": "field_workspace_tests",
+      "value": [
+        "3131313131313131313131313131313131313131313131313131313131313131",
+        "3232323232323232323232323232323232323232323232323232323232323232"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_package_workspace",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_package_root_namespace",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Set<EntityId>",
+      "expected_hex": "02203131313131313131313131313131313131313131313131313131313131313131203232323232323232323232323232323232323232323232323232323232323232",
+      "family": "field",
+      "id": "field_package_dependencies",
+      "value": [
+        "3131313131313131313131313131313131313131313131313131313131313131",
+        "3232323232323232323232323232323232323232323232323232323232323232"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Set<EntityId>",
+      "expected_hex": "02203131313131313131313131313131313131313131313131313131313131313131203232323232323232323232323232323232323232323232323232323232323232",
+      "family": "field",
+      "id": "field_package_exports",
+      "value": [
+        "3131313131313131313131313131313131313131313131313131313131313131",
+        "3232323232323232323232323232323232323232323232323232323232323232"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Set<EntityId>",
+      "expected_hex": "02203131313131313131313131313131313131313131313131313131313131313131203232323232323232323232323232323232323232323232323232323232323232",
+      "family": "field",
+      "id": "field_namespace_members",
+      "value": [
+        "3131313131313131313131313131313131313131313131313131313131313131",
+        "3232323232323232323232323232323232323232323232323232323232323232"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "List<TypeParameterDef>",
+      "expected_hex": "010401010107",
+      "family": "field",
+      "id": "field_type_def_type_parameters",
+      "value": [
+        {
+          "ordinal": 7
+        }
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Set<EntityId>",
+      "expected_hex": "02203131313131313131313131313131313131313131313131313131313131313131203232323232323232323232323232323232323232323232323232323232323232",
+      "family": "field",
+      "id": "field_type_def_invariants",
+      "value": [
+        "3131313131313131313131313131313131313131313131313131313131313131",
+        "3232323232323232323232323232323232323232323232323232323232323232"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Visibility",
+      "expected_hex": "02",
+      "family": "field",
+      "id": "field_type_def_visibility",
+      "value": "Package"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "List<TypeParameterDef>",
+      "expected_hex": "010401010107",
+      "family": "field",
+      "id": "field_function_type_parameters",
+      "value": [
+        {
+          "ordinal": 7
+        }
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "List<EntityId>",
+      "expected_hex": "02203333333333333333333333333333333333333333333333333333333333333333203434343434343434343434343434343434343434343434343434343434343434",
+      "family": "field",
+      "id": "field_function_parameters",
+      "value": [
+        "3333333333333333333333333333333333333333333333333333333333333333",
+        "3434343434343434343434343434343434343434343434343434343434343434"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0a290201203535353535353535353535353535353535353535353535353535353535353535020401020200",
+      "family": "field",
+      "id": "field_function_result_type",
+      "value": {
+        "value": {
+          "arguments": [
+            {
+              "variant": "Bool"
+            }
+          ],
+          "definition": "3535353535353535353535353535353535353535353535353535353535353535"
+        },
+        "variant": "Named"
+      }
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Set<EntityId>",
+      "expected_hex": "02203131313131313131313131313131313131313131313131313131313131313131203232323232323232323232323232323232323232323232323232323232323232",
+      "family": "field",
+      "id": "field_function_effects",
+      "value": [
+        "3131313131313131313131313131313131313131313131313131313131313131",
+        "3232323232323232323232323232323232323232323232323232323232323232"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_function_entry_block",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "List<EntityId>",
+      "expected_hex": "02203333333333333333333333333333333333333333333333333333333333333333203434343434343434343434343434343434343434343434343434343434343434",
+      "family": "field",
+      "id": "field_function_blocks",
+      "value": [
+        "3333333333333333333333333333333333333333333333333333333333333333",
+        "3434343434343434343434343434343434343434343434343434343434343434"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Set<EntityId>",
+      "expected_hex": "02203131313131313131313131313131313131313131313131313131313131313131203232323232323232323232323232323232323232323232323232323232323232",
+      "family": "field",
+      "id": "field_function_contracts",
+      "value": [
+        "3131313131313131313131313131313131313131313131313131313131313131",
+        "3232323232323232323232323232323232323232323232323232323232323232"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Visibility",
+      "expected_hex": "02",
+      "family": "field",
+      "id": "field_function_visibility",
+      "value": "Package"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_parameter_owner",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "ParameterRole",
+      "expected_hex": "02",
+      "family": "field",
+      "id": "field_parameter_role",
+      "value": "Block"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "UInt32",
+      "expected_hex": "2a",
+      "family": "field",
+      "id": "field_parameter_ordinal",
+      "value": 42
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0a290201203535353535353535353535353535353535353535353535353535353535353535020401020200",
+      "family": "field",
+      "id": "field_parameter_value_type",
+      "value": {
+        "value": {
+          "arguments": [
+            {
+              "variant": "Bool"
+            }
+          ],
+          "definition": "3535353535353535353535353535353535353535353535353535353535353535"
+        },
+        "variant": "Named"
+      }
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_block_function",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "List<EntityId>",
+      "expected_hex": "02203333333333333333333333333333333333333333333333333333333333333333203434343434343434343434343434343434343434343434343434343434343434",
+      "family": "field",
+      "id": "field_block_parameters",
+      "value": [
+        "3333333333333333333333333333333333333333333333333333333333333333",
+        "3434343434343434343434343434343434343434343434343434343434343434"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "List<EntityId>",
+      "expected_hex": "02203333333333333333333333333333333333333333333333333333333333333333203434343434343434343434343434343434343434343434343434343434343434",
+      "family": "field",
+      "id": "field_block_operations",
+      "value": [
+        "3333333333333333333333333333333333333333333333333333333333333333",
+        "3434343434343434343434343434343434343434343434343434343434343434"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Reachability",
+      "expected_hex": "01",
+      "family": "field",
+      "id": "field_block_reachability",
+      "value": "Required"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_operation_block",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "UInt32",
+      "expected_hex": "2a",
+      "family": "field",
+      "id": "field_operation_ordinal",
+      "value": 42
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "UInt32",
+      "expected_hex": "2a",
+      "family": "field",
+      "id": "field_operation_opcode",
+      "value": 42
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "List<ValueRef>",
+      "expected_hex": "0222012036363636363636363636363636363636363636363636363636363636363636362802260201203737373737373737373737373737373737373737373737373737373737373737020102",
+      "family": "field",
+      "id": "field_operation_operands",
+      "value": [
+        {
+          "value": "3636363636363636363636363636363636363636363636363636363636363636",
+          "variant": "Parameter"
+        },
+        {
+          "value": {
+            "operation": "3737373737373737373737373737373737373737373737373737373737373737",
+            "result_index": 2
+          },
+          "variant": "OperationResult"
+        }
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "List<TypeExpr>",
+      "expected_hex": "0203040120020800",
+      "family": "field",
+      "id": "field_operation_result_types",
+      "value": [
+        {
+          "value": 32,
+          "variant": "UInt"
+        },
+        {
+          "variant": "Text"
+        }
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Immediate",
+      "expected_hex": "07290201203838383838383838383838383838383838383838383838383838383838383838020401020700",
+      "family": "field",
+      "id": "field_operation_immediate",
+      "value": {
+        "value": {
+          "function": "3838383838383838383838383838383838383838383838383838383838383838",
+          "type_arguments": [
+            {
+              "variant": "Bytes"
+            }
+          ]
+        },
+        "variant": "Function"
+      }
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0a290201203535353535353535353535353535353535353535353535353535353535353535020401020200",
+      "family": "field",
+      "id": "field_global_value_value_type",
+      "value": {
+        "value": {
+          "arguments": [
+            {
+              "variant": "Bool"
+            }
+          ],
+          "definition": "3535353535353535353535353535353535353535353535353535353535353535"
+        },
+        "variant": "Named"
+      }
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_global_value_initializer",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Visibility",
+      "expected_hex": "02",
+      "family": "field",
+      "id": "field_global_value_visibility",
+      "value": "Package"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EffectKind",
+      "expected_hex": "03",
+      "family": "field",
+      "id": "field_effect_def_effect_kind",
+      "value": "FileRead"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0a290201203535353535353535353535353535353535353535353535353535353535353535020401020200",
+      "family": "field",
+      "id": "field_effect_def_scope_type",
+      "value": {
+        "value": {
+          "arguments": [
+            {
+              "variant": "Bool"
+            }
+          ],
+          "definition": "3535353535353535353535353535353535353535353535353535353535353535"
+        },
+        "variant": "Named"
+      }
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0a290201203535353535353535353535353535353535353535353535353535353535353535020401020200",
+      "family": "field",
+      "id": "field_effect_def_request_type",
+      "value": {
+        "value": {
+          "arguments": [
+            {
+              "variant": "Bool"
+            }
+          ],
+          "definition": "3535353535353535353535353535353535353535353535353535353535353535"
+        },
+        "variant": "Named"
+      }
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0a290201203535353535353535353535353535353535353535353535353535353535353535020401020200",
+      "family": "field",
+      "id": "field_effect_def_response_type",
+      "value": {
+        "value": {
+          "arguments": [
+            {
+              "variant": "Bool"
+            }
+          ],
+          "definition": "3535353535353535353535353535353535353535353535353535353535353535"
+        },
+        "variant": "Named"
+      }
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0a290201203535353535353535353535353535353535353535353535353535353535353535020401020200",
+      "family": "field",
+      "id": "field_effect_def_failure_type",
+      "value": {
+        "value": {
+          "arguments": [
+            {
+              "variant": "Bool"
+            }
+          ],
+          "definition": "3535353535353535353535353535353535353535353535353535353535353535"
+        },
+        "variant": "Named"
+      }
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Visibility",
+      "expected_hex": "02",
+      "family": "field",
+      "id": "field_effect_def_visibility",
+      "value": "Package"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_capability_requirement_effect",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Set<EntityId>",
+      "expected_hex": "02203131313131313131313131313131313131313131313131313131313131313131203232323232323232323232323232323232323232323232323232323232323232",
+      "family": "field",
+      "id": "field_capability_requirement_constraint_contracts",
+      "value": [
+        "3131313131313131313131313131313131313131313131313131313131313131",
+        "3232323232323232323232323232323232323232323232323232323232323232"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_contract_target",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "ContractKind",
+      "expected_hex": "02",
+      "family": "field",
+      "id": "field_contract_contract_kind",
+      "value": "Postcondition"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_contract_predicate",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "List<ContractBinding>",
+      "expected_hex": "022802010101022201203939393939393939393939393939393939393939393939393939393939393939080201010202020200",
+      "family": "field",
+      "id": "field_contract_bindings",
+      "value": [
+        {
+          "predicate_parameter": 1,
+          "source": {
+            "value": "3939393939393939393939393939393939393939393939393939393939393939",
+            "variant": "Parameter"
+          }
+        },
+        {
+          "predicate_parameter": 2,
+          "source": {
+            "variant": "Result"
+          }
+        }
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_test_case_target",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "ResourceLimits",
+      "expected_hex": "060102e8070203808004030280200401080501040602fa01",
+      "family": "field",
+      "id": "field_test_case_resource_limits",
+      "value": {
+        "call_depth": "4",
+        "effect_count": "8",
+        "fuel": "1000",
+        "memory_bytes": "65536",
+        "output_bytes": "4096",
+        "wall_timeout_millis": "250"
+      }
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "FixedBytes32",
+      "expected_hex": "2323232323232323232323232323232323232323232323232323232323232323",
+      "family": "field",
+      "id": "field_adapter_import_adapter_id",
+      "value": "2323232323232323232323232323232323232323232323232323232323232323"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "UInt32",
+      "expected_hex": "2a",
+      "family": "field",
+      "id": "field_adapter_import_abi_version",
+      "value": 42
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0a290201203535353535353535353535353535353535353535353535353535353535353535020401020200",
+      "family": "field",
+      "id": "field_adapter_import_request_type",
+      "value": {
+        "value": {
+          "arguments": [
+            {
+              "variant": "Bool"
+            }
+          ],
+          "definition": "3535353535353535353535353535353535353535353535353535353535353535"
+        },
+        "variant": "Named"
+      }
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0a290201203535353535353535353535353535353535353535353535353535353535353535020401020200",
+      "family": "field",
+      "id": "field_adapter_import_response_type",
+      "value": {
+        "value": {
+          "arguments": [
+            {
+              "variant": "Bool"
+            }
+          ],
+          "definition": "3535353535353535353535353535353535353535353535353535353535353535"
+        },
+        "variant": "Named"
+      }
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "TypeExpr",
+      "expected_hex": "0a290201203535353535353535353535353535353535353535353535353535353535353535020401020200",
+      "family": "field",
+      "id": "field_adapter_import_failure_type",
+      "value": {
+        "value": {
+          "arguments": [
+            {
+              "variant": "Bool"
+            }
+          ],
+          "definition": "3535353535353535353535353535353535353535353535353535353535353535"
+        },
+        "variant": "Named"
+      }
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Set<EntityId>",
+      "expected_hex": "02203131313131313131313131313131313131313131313131313131313131313131203232323232323232323232323232323232323232323232323232323232323232",
+      "family": "field",
+      "id": "field_adapter_import_effects",
+      "value": [
+        "3131313131313131313131313131313131313131313131313131313131313131",
+        "3232323232323232323232323232323232323232323232323232323232323232"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_entry_point_function",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntryExposure",
+      "expected_hex": "02",
+      "family": "field",
+      "id": "field_entry_point_exposure",
+      "value": "Protocol"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_policy_binding_subject",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "Set<EntityId>",
+      "expected_hex": "02203131313131313131313131313131313131313131313131313131313131313131203232323232323232323232323232323232323232323232323232323232323232",
+      "family": "field",
+      "id": "field_policy_binding_requirements",
+      "value": [
+        "3131313131313131313131313131313131313131313131313131313131313131",
+        "3232323232323232323232323232323232323232323232323232323232323232"
+      ]
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "StateRoot",
+      "expected_hex": "2222222222222222222222222222222222222222222222222222222222222222",
+      "family": "field",
+      "id": "field_dependency_binding_dependency_root",
+      "value": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_dependency_binding_external_package",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
+    },
+    {
+      "case": "manifest-field",
+      "declared_type": "EntityId",
+      "expected_hex": "2121212121212121212121212121212121212121212121212121212121212121",
+      "family": "field",
+      "id": "field_dependency_binding_local_namespace",
+      "value": "2121212121212121212121212121212121212121212121212121212121212121"
     }
   ]
 }

@@ -24,7 +24,7 @@ REJECTED_FIXTURES = ROOT / "conformance/mutation-value/v1/rejected.json"
 FIXTURE_SUMS = ROOT / "conformance/mutation-value/v1/SHA256SUMS"
 
 EXPECTED_ACCEPTED_FIXTURE_SHA256 = (
-    "73ed1ec291fd6f0bc63868ef71bb381d92001f3cb79c9ce89b42597f96f7ec6f"
+    "57b1e3845dad4264c379e0f293131b4fc1076abc28fb786f15ff9e6977beca3e"
 )
 EXPECTED_REJECTED_FIXTURE_SHA256 = (
     "44a2752f830a057aad3a636c266d64ab9738f5800ed6fbf6404f91c6c1eee756"
@@ -32,6 +32,43 @@ EXPECTED_REJECTED_FIXTURE_SHA256 = (
 EXPECTED_SCHEMA_BLAKE3 = (
     "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73"
 )
+EXPECTED_FIELD_EXCLUSIONS = {
+    "Namespace.parent",
+    "TypeDef.form",
+    "Block.terminator",
+    "Constant.value",
+    "CapabilityRequirement.allowed_scopes",
+    "Contract.resource_limits",
+    "TestCase.inputs",
+    "TestCase.effect_environment",
+    "TestCase.expected",
+    "TestCase.observations",
+}
+BLOCKED_FIELD_TYPES = {
+    "ConstValue",
+    "EffectEnvironment",
+    "ExpectedOutcome",
+    "Terminator",
+    "TypeDefForm",
+    "List<ConstValue>",
+    "List<ExpectedObservation>",
+    "Option<EntityId>",
+    "Option<ResourceLimits>",
+}
+EXPECTED_CORPUS_EXCLUSIONS = [
+    "generic Option<T> value codecs beyond existing internal helpers",
+    "ConstValue and recursive constant families",
+    (
+        "Namespace.parent, TypeDef.form, Block.terminator, Constant.value, "
+        "CapabilityRequirement.allowed_scopes, Contract.resource_limits, "
+        "TestCase.inputs, TestCase.effect_environment, TestCase.expected, "
+        "TestCase.observations"
+    ),
+    (
+        "EntityBodyValue, FieldValue, ProposalValue, preconditions, candidates, "
+        "validation, runtime mutation"
+    ),
+]
 
 ENTITY_RE = re.compile(r"^entity ([0-9]+) ([A-Za-z][A-Za-z0-9]*) ([A-Za-z][A-Za-z0-9]*)$")
 RECORD_RE = re.compile(r"^record ([A-Za-z][A-Za-z0-9]*)\((.*)\)$")
@@ -66,6 +103,50 @@ def body_fields(raw: str) -> list[tuple[str, str, bool]]:
         _tag, name, typed = part.split(":", 2)
         fields.append((name, typed[:-1], typed[-1] == "!"))
     return fields
+
+
+def snake(value: str) -> str:
+    return re.sub(r"(?<!^)([A-Z])", r"_\1", value).lower()
+
+
+def manifest_records_and_entities() -> tuple[
+    dict[str, list[tuple[str, str, bool]]], list[tuple[int, str, str]]
+]:
+    manifest = MANIFEST.read_text(encoding="utf-8")
+    records = {
+        match[1]: body_fields(match[2])
+        for line in manifest.splitlines()
+        if (match := RECORD_RE.fullmatch(line))
+    }
+    entities = [
+        (int(match[1]), match[2], match[3])
+        for line in manifest.splitlines()
+        if (match := ENTITY_RE.fullmatch(line))
+    ]
+    return records, entities
+
+
+def expected_field_fixtures() -> dict[str, str]:
+    records, entities = manifest_records_and_entities()
+    included: dict[str, str] = {}
+    excluded: set[str] = set()
+    for _tag, entity_name, body in entities:
+        for field_name, value_type, _required_field in records[body]:
+            field = f"{entity_name}.{field_name}"
+            if field in EXPECTED_FIELD_EXCLUSIONS:
+                excluded.add(field)
+                continue
+            if value_type in BLOCKED_FIELD_TYPES:
+                raise SystemExit(f"blocked field type entered fixture inventory: {field}")
+            fixture_id = f"field_{snake(entity_name)}_{field_name}"
+            if fixture_id in included:
+                raise SystemExit(f"partial mutation fixture field ID collision: {fixture_id}")
+            included[fixture_id] = value_type
+    if excluded != EXPECTED_FIELD_EXCLUSIONS:
+        raise SystemExit("partial mutation fixture field exclusion drift")
+    if len(included) != 65:
+        raise SystemExit("partial mutation fixture field inventory is not 65")
+    return included
 
 
 def check_partial_fixtures() -> None:
@@ -110,7 +191,9 @@ def check_partial_fixtures() -> None:
 
     accepted_vectors = accepted["vectors"]
     rejected_vectors = rejected["vectors"]
-    if len(accepted_vectors) != 61 or len(rejected_vectors) != 18:
+    if accepted.get("excluded") != EXPECTED_CORPUS_EXCLUSIONS:
+        raise SystemExit("partial mutation fixture exclusion declaration drift")
+    if len(accepted_vectors) != 126 or len(rejected_vectors) != 18:
         raise SystemExit("partial mutation fixture vector inventory drift")
     if len([vector for vector in accepted_vectors if vector["id"].startswith("type_expr_")]) != 20:
         raise SystemExit("partial mutation fixture TypeExpr inventory is not 20")
@@ -132,9 +215,32 @@ def check_partial_fixtures() -> None:
     }
     if actual_body_ids != expected_body_ids:
         raise SystemExit("partial mutation fixture body inventory drift")
+    actual_field_fixtures = {
+        vector["id"]: vector["declared_type"]
+        for vector in accepted_vectors
+        if vector["id"].startswith("field_")
+    }
+    if actual_field_fixtures != expected_field_fixtures():
+        raise SystemExit("partial mutation fixture field ID/type inventory drift")
+    for vector in accepted_vectors:
+        if vector["id"].startswith("field_") and (
+            vector.get("family") != "field" or vector.get("case") != "manifest-field"
+        ):
+            raise SystemExit(f"partial mutation fixture field metadata drift: {vector['id']}")
     for vector in accepted_vectors + rejected_vectors:
         declared_type = vector["declared_type"]
-        if "Option<" in declared_type or "Const" in declared_type:
+        if (
+            "Option<" in declared_type
+            or "Const" in declared_type
+            or declared_type
+            in {
+                "Terminator",
+                "TypeDefForm",
+                "EffectEnvironment",
+                "ExpectedOutcome",
+                "List<ExpectedObservation>",
+            }
+        ):
             raise SystemExit(f"blocked family entered partial mutation fixtures: {declared_type}")
         encoded = vector.get("expected_hex", vector.get("input_hex"))
         if not isinstance(encoded, str) or encoded != encoded.lower():
@@ -148,8 +254,10 @@ def check_partial_fixtures() -> None:
     for marker in (
         "independent_partial_accepted_fixtures_match_exact_private_codec_bytes",
         "independent_partial_rejected_fixtures_return_exact_private_codes",
-        "assert_eq!(corpus.vectors.len(), 61)",
+        "assert_eq!(corpus.vectors.len(), 126)",
         "assert_eq!(corpus.vectors.len(), 18)",
+        "filter(|vector| vector.id.starts_with(\"field_\"))",
+        "\"Set<EntityId>\" => assert_fixture(vector, &fixture_entity_id_set(&vector.value))",
         "assert_fixture(vector, &fixture_type_expr(&vector.value))",
         "decode_rejected::<OperationBody>(input)",
     ):
