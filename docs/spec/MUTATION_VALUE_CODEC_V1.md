@@ -2,8 +2,8 @@
 
 Status: S20-345 normative contract freeze; S20-350a closed host model and
 S20-350b typed descriptor bindings implemented; S20-350c low-level SCB cursor
-foundation and S20-350d private leaf/collection codec implemented; complete
-binary codecs deferred.
+foundation, S20-350d private leaf/collection codec, and S20-350e private
+`TypeExpr` codec implemented; complete binary codecs deferred.
 
 ## Exact schema source
 
@@ -53,6 +53,15 @@ Decode owns a cumulative allocation budget, distinguishes the structural depth
 boundary from the allowed leaf boundary, rejects inner trailing bytes, and
 rejects unordered or duplicate set encodings. The module is intentionally not
 publicly descriptor-selectable while recursive manifest families remain open.
+
+S20-350e closes the complete twenty-variant `TypeExpr` union and its
+`IntegerWidth`, `NamedType`, ordered-map, result, `FunctionType`, and
+`BuiltinFailureKind` dependencies inside that private module. It preserves raw
+integer widths without semantic normalization, enforces exact `UInt16` failure
+tags, and treats function effects as a canonical entity-ID set. Recursive
+depth and cumulative allocation limits remain shared with the leaf foundation.
+`ConstValue`, CFG, contract/test, body/field, precondition, and candidate
+families remain later gates.
 
 ## Canonical rules
 

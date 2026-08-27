@@ -63,9 +63,10 @@ discriminants and performs type-selection-only admission. A strict low-level
 SCB value cursor now exposes the already-frozen primitive decoder behavior for
 later private codec work; it selects no schema or mutation type. A crate-private
 mutation layer now closes primitive values, IDs/roots, direct enums, ordered
-lists/options, and canonical entity-ID sets with depth and allocation budgets.
-Complete recursive/body/field codecs, preconditions, candidate records, and
-candidate construction remain deferred. S20-370 now
+lists/options, canonical entity-ID sets, and the complete twenty-variant
+recursive `TypeExpr` family with depth and allocation budgets. `ConstValue`,
+CFG, contract/test, complete body/field codecs, preconditions, candidate
+records, and candidate construction remain deferred. S20-370 now
 adds a separately registry-authorized protected policy root with exact opaque
 principals, principal-specific grants, protected entity bindings, and mandatory
 test/contract finalization. It has no authenticated policy-transition,

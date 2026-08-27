@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check closed S20-350 proposal host values and typed descriptor bindings."""
+"""Check closed S20-350 host, binding, and private staged codec slices."""
 
 from __future__ import annotations
 
@@ -171,12 +171,68 @@ def main() -> int:
         "MAX_TOTAL_ALLOCATION",
         "fn check_container_depth(",
         "impl MutationValueCodec for EntityIdSet",
+        "impl MutationValueCodec for IntegerWidth",
+        "impl MutationValueCodec for BuiltinFailureKind",
+        "impl MutationValueCodec for NamedType",
+        "impl MutationValueCodec for MapType",
+        "impl MutationValueCodec for ResultType",
+        "impl MutationValueCodec for FunctionType",
+        "impl MutationValueCodec for TypeExpr",
+        "fn encode_entity_id_set_vec(",
+        "fn decode_entity_id_set_vec(",
         "ScbErrorCode::MapDuplicate",
         "ScbErrorCode::MapOrder",
     ]
     for marker in codec_markers:
         if marker not in codec_source:
             raise SystemExit(f"private mutation codec foundation drift: {marker}")
+    type_expr_decode_arms = [
+        (1, "Unit"),
+        (2, "Bool"),
+        (3, "SInt"),
+        (4, "UInt"),
+        (5, "F32"),
+        (6, "F64"),
+        (7, "Bytes"),
+        (8, "Text"),
+        (9, "Tuple"),
+        (10, "Named"),
+        (11, "Vector"),
+        (12, "OrderedMap"),
+        (13, "Option"),
+        (14, "Result"),
+        (15, "FunctionRef"),
+        (16, "AdapterHandle"),
+        (17, "CapabilityToken"),
+        (18, "LocalCell"),
+        (19, "TypeParameter"),
+        (20, "BuiltinFailure"),
+    ]
+    type_expr_start = codec_source.index("impl MutationValueCodec for TypeExpr")
+    type_expr_end = codec_source.index("\n#[cfg(test)]", type_expr_start)
+    type_expr_codec = codec_source[type_expr_start:type_expr_end]
+    for tag, variant in type_expr_decode_arms:
+        arm_match = re.search(
+            rf"\n\s*{tag}(?:\s+if\s+payload\.is_empty\(\))?\s*=>",
+            type_expr_codec,
+        )
+        if arm_match is None:
+            raise SystemExit(
+                f"private TypeExpr decode arm drift: tag {tag} / {variant}"
+            )
+        next_arm = re.search(
+            r"\n\s*(?:[0-9]+|_)(?:\s+if\s+payload\.is_empty\(\))?\s*=>",
+            type_expr_codec[arm_match.end() :],
+        )
+        arm_end = (
+            arm_match.end() + next_arm.start()
+            if next_arm is not None
+            else len(type_expr_codec)
+        )
+        if f"Self::{variant}" not in type_expr_codec[arm_match.start() : arm_end]:
+            raise SystemExit(
+                f"private TypeExpr decode arm drift: tag {tag} / {variant}"
+            )
     for marker in [
         "pub fn encode_proposal",
         "pub fn decode_proposal",

@@ -11,8 +11,10 @@ all 179 immutable descriptors bind to exact closed value discriminants. The
 admission surface performs type selection only; there is no binary value codec.
 A crate-private staged codec foundation handles primitive leaves, IDs/roots,
 direct enums, ordered lists/options, and canonical entity-ID sets under exact
-SCB depth and allocation limits. It is not publicly descriptor-selectable and
-does not close recursive manifest families. The crate cannot construct
-candidates, mutate an entity or repository, evaluate preconditions, establish
-root/session/workspace authority, validate policy or capabilities, or commit
-transactions. Those are later work packages.
+SCB depth and allocation limits. It also closes all twenty `TypeExpr` variants
+and their recursive manifest dependencies, including canonical function-effect
+sets. It is not publicly descriptor-selectable, and the other recursive value
+families remain open. The crate cannot construct candidates, mutate an entity
+or repository, evaluate preconditions, establish root/session/workspace
+authority, validate policy or capabilities, or commit transactions. Those are
+later work packages.
