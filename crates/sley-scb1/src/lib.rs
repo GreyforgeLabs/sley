@@ -519,6 +519,199 @@ pub fn decode_payload_exact(schema: &Schema, input: &[u8]) -> Result<()> {
     }
 }
 
+/// Low-level strict cursor over one bounded SCB1 value byte slice.
+///
+/// This exposes primitive SCB1 value reads for callers that already know the
+/// expected shape. It does not select schemas or normalize non-canonical input.
+#[derive(Clone)]
+pub struct ScbValueCursor<'a> {
+    reader: Reader<'a>,
+}
+
+impl<'a> ScbValueCursor<'a> {
+    /// Constructs a cursor for one bounded input.
+    ///
+    /// # Errors
+    ///
+    /// Returns `SCB_RESOURCE_LIMIT` when input exceeds the epoch standalone
+    /// value limit.
+    pub fn new(input: &'a [u8]) -> Result<Self> {
+        if input.len() > MAX_STANDALONE_BYTES {
+            return Err(ScbError::new(ScbErrorCode::ResourceLimit));
+        }
+        Ok(Self {
+            reader: Reader::new(input),
+        })
+    }
+
+    /// Returns the current byte position.
+    #[must_use]
+    pub const fn position(&self) -> usize {
+        self.reader.position()
+    }
+
+    /// Returns true when all input bytes have been consumed.
+    #[must_use]
+    pub const fn is_finished(&self) -> bool {
+        self.reader.is_finished()
+    }
+
+    /// Rejects trailing bytes after the caller has decoded the expected value.
+    ///
+    /// # Errors
+    ///
+    /// Returns `SCB_TRAILING_BYTES` when unread input remains.
+    pub fn check_finished(&self) -> Result<()> {
+        if self.is_finished() {
+            Ok(())
+        } else {
+            Err(ScbError::new(ScbErrorCode::TrailingBytes))
+        }
+    }
+
+    /// Reads a canonical unsigned varint with an explicit supported bit width.
+    ///
+    /// Supported widths are `1..=64`.
+    ///
+    /// # Errors
+    ///
+    /// Returns stable SCB1 varint, integer, or length errors from the strict
+    /// decoder. Unsupported widths return `SCB_INTEGER_OVERFLOW`.
+    pub fn read_uvar(&mut self, width: u8) -> Result<u64> {
+        if width == 0 || width > 64 {
+            return Err(ScbError::new(ScbErrorCode::IntegerOverflow));
+        }
+        self.reader.read_uvar_width(width)
+    }
+
+    /// Reads a canonical ZigZag-encoded signed 64-bit integer.
+    ///
+    /// # Errors
+    ///
+    /// Returns stable SCB1 varint, integer, or length errors from the strict
+    /// decoder.
+    pub fn read_sint64(&mut self) -> Result<i64> {
+        let encoded = self.read_uvar(64)?;
+        Ok((encoded >> 1).cast_signed() ^ -(encoded & 1).cast_signed())
+    }
+
+    /// Reads a strict SCB1 boolean.
+    ///
+    /// # Errors
+    ///
+    /// Returns `SCB_BOOL_INVALID` for values other than `0` or `1`.
+    pub fn read_bool(&mut self) -> Result<bool> {
+        match self.reader.read_u8()? {
+            0 => Ok(false),
+            1 => Ok(true),
+            _ => Err(ScbError::new(ScbErrorCode::BoolInvalid)),
+        }
+    }
+
+    /// Reads length-delimited bytes bounded by the epoch byte-payload limit.
+    ///
+    /// # Errors
+    ///
+    /// Returns stable SCB1 length, varint, or resource-limit errors.
+    pub fn read_bytes(&mut self) -> Result<&'a [u8]> {
+        let len = self.reader.read_len(MAX_BYTE_PAYLOAD)?;
+        self.reader.take_exact(len)
+    }
+
+    /// Reads length-delimited UTF-8 text bounded by the epoch byte-payload limit.
+    ///
+    /// # Errors
+    ///
+    /// Returns `SCB_UTF8_INVALID` for invalid UTF-8 and stable length, varint,
+    /// or resource-limit errors for malformed payloads.
+    pub fn read_text(&mut self) -> Result<&'a str> {
+        let bytes = self.read_bytes()?;
+        str::from_utf8(bytes).map_err(|_| ScbError::new(ScbErrorCode::Utf8Invalid))
+    }
+
+    /// Reads canonical f32 bits in big-endian order.
+    ///
+    /// # Errors
+    ///
+    /// Returns `SCB_FLOAT_NON_CANONICAL` for negative zero or non-canonical NaN
+    /// encodings.
+    pub fn read_f32_bits(&mut self) -> Result<u32> {
+        let bits = u32::from_be_bytes(self.reader.take_array()?);
+        validate_f32_bits(bits)?;
+        Ok(bits)
+    }
+
+    /// Reads canonical f64 bits in big-endian order.
+    ///
+    /// # Errors
+    ///
+    /// Returns `SCB_FLOAT_NON_CANONICAL` for negative zero or non-canonical NaN
+    /// encodings.
+    pub fn read_f64_bits(&mut self) -> Result<u64> {
+        let bits = u64::from_be_bytes(self.reader.take_array()?);
+        validate_f64_bits(bits)?;
+        Ok(bits)
+    }
+
+    /// Reads exactly `len` fixed bytes.
+    ///
+    /// # Errors
+    ///
+    /// Returns `SCB_LENGTH_OVERFLOW` when fewer than `len` bytes remain.
+    pub fn read_exact_bytes(&mut self, len: usize) -> Result<&'a [u8]> {
+        self.reader.take_exact(len)
+    }
+
+    /// Reads exactly `N` fixed bytes into an array.
+    ///
+    /// # Errors
+    ///
+    /// Returns `SCB_LENGTH_OVERFLOW` when fewer than `N` bytes remain.
+    pub fn read_fixed_bytes<const N: usize>(&mut self) -> Result<[u8; N]> {
+        self.reader.take_array()
+    }
+
+    /// Reads a bounded list, set, or map element count.
+    ///
+    /// # Errors
+    ///
+    /// Returns `SCB_RESOURCE_LIMIT` when the epoch collection limit is exceeded.
+    pub fn read_list_count(&mut self) -> Result<u64> {
+        self.reader.read_count()
+    }
+
+    /// Reads a bounded record field count.
+    ///
+    /// # Errors
+    ///
+    /// Returns `SCB_RESOURCE_LIMIT` when the epoch record field limit is exceeded.
+    pub fn read_record_field_count(&mut self) -> Result<u64> {
+        self.reader.read_record_field_count()
+    }
+
+    /// Reads one standalone-sized payload.
+    ///
+    /// # Errors
+    ///
+    /// Returns stable SCB1 length, varint, or resource-limit errors.
+    pub fn read_sized_payload(&mut self) -> Result<&'a [u8]> {
+        let len = self.reader.read_len(MAX_STANDALONE_BYTES)?;
+        self.reader.take_exact(len)
+    }
+
+    /// Reads a 32-bit union tag and standalone-sized payload.
+    ///
+    /// # Errors
+    ///
+    /// Returns stable SCB1 integer, length, varint, or resource-limit errors.
+    pub fn read_union(&mut self) -> Result<(u32, &'a [u8])> {
+        let tag = self.read_uvar(32)?;
+        let tag = u32::try_from(tag).map_err(|_| ScbError::new(ScbErrorCode::IntegerOverflow))?;
+        let payload = self.read_sized_payload()?;
+        Ok((tag, payload))
+    }
+}
+
 fn contract_schema(contract: FixtureContract) -> Schema {
     match contract {
         FixtureContract::EmptyObject => Schema::FixtureEmptyObject,
@@ -1012,5 +1205,134 @@ impl<'a> Reader<'a> {
             return Err(ScbError::new(ScbErrorCode::ResourceLimit));
         }
         Ok(count)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        ScbErrorCode, ScbValueCursor, encode_bool, encode_bytes, encode_f32_bits, encode_f64_bits,
+        encode_list, encode_record, encode_sint64, encode_text, encode_union, encode_uvar,
+    };
+
+    #[test]
+    fn value_cursor_decodes_low_level_round_trip_primitives() {
+        let mut input = Vec::new();
+        input.extend_from_slice(&encode_uvar(300));
+        input.extend_from_slice(&encode_sint64(-42));
+        input.extend_from_slice(&encode_bool(true));
+        input.extend_from_slice(&encode_bytes(b"abc").unwrap());
+        input.extend_from_slice(&encode_text("hello").unwrap());
+        input.extend_from_slice(&encode_f32_bits(0x3f80_0000).unwrap());
+        input.extend_from_slice(&encode_f64_bits(0x4008_0000_0000_0000).unwrap());
+        input.extend_from_slice(&[0xaa, 0xbb, 0xcc, 0xdd]);
+        input.extend_from_slice(&encode_list(&[encode_uvar(1), encode_uvar(2)]).unwrap()[..1]);
+        input.extend_from_slice(
+            &encode_record(&[(1, encode_bool(false)), (2, encode_bool(true))]).unwrap()[..1],
+        );
+        input.extend_from_slice(&encode_bytes(b"payload").unwrap());
+        input.extend_from_slice(&encode_union(7, &encode_bool(false)).unwrap());
+
+        let mut cursor = ScbValueCursor::new(&input).unwrap();
+        assert_eq!(cursor.position(), 0);
+        assert_eq!(cursor.read_uvar(64).unwrap(), 300);
+        assert_eq!(cursor.read_sint64().unwrap(), -42);
+        assert!(cursor.read_bool().unwrap());
+        assert_eq!(cursor.read_bytes().unwrap(), b"abc");
+        assert_eq!(cursor.read_text().unwrap(), "hello");
+        assert_eq!(cursor.read_f32_bits().unwrap(), 0x3f80_0000);
+        assert_eq!(cursor.read_f64_bits().unwrap(), 0x4008_0000_0000_0000);
+        assert_eq!(cursor.read_exact_bytes(2).unwrap(), &[0xaa, 0xbb]);
+        assert_eq!(cursor.read_fixed_bytes::<2>().unwrap(), [0xcc, 0xdd]);
+        assert_eq!(cursor.read_list_count().unwrap(), 2);
+        assert_eq!(cursor.read_record_field_count().unwrap(), 2);
+        assert_eq!(cursor.read_sized_payload().unwrap(), b"payload");
+        let (tag, payload) = cursor.read_union().unwrap();
+        assert_eq!(tag, 7);
+        assert_eq!(payload, encode_bool(false));
+        assert!(cursor.is_finished());
+        cursor.check_finished().unwrap();
+    }
+
+    #[test]
+    fn value_cursor_returns_stable_low_level_failure_codes() {
+        assert_eq!(
+            ScbValueCursor::new(&[0x80, 0x00])
+                .unwrap()
+                .read_uvar(64)
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::VarintNonMinimal
+        );
+        assert_eq!(
+            ScbValueCursor::new(&[0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x02])
+                .unwrap()
+                .read_uvar(64)
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::IntegerOverflow
+        );
+        assert_eq!(
+            ScbValueCursor::new(&[2])
+                .unwrap()
+                .read_bool()
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::BoolInvalid
+        );
+        assert_eq!(
+            ScbValueCursor::new(&[1, 0xff])
+                .unwrap()
+                .read_text()
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::Utf8Invalid
+        );
+        assert_eq!(
+            ScbValueCursor::new(&0x8000_0000_u32.to_be_bytes())
+                .unwrap()
+                .read_f32_bits()
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::FloatNonCanonical
+        );
+        assert_eq!(
+            ScbValueCursor::new(&0x7ff0_0000_0000_0001_u64.to_be_bytes())
+                .unwrap()
+                .read_f64_bits()
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::FloatNonCanonical
+        );
+        assert_eq!(
+            ScbValueCursor::new(&[5, 1, 2])
+                .unwrap()
+                .read_bytes()
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::LengthOverflow
+        );
+        assert_eq!(
+            ScbValueCursor::new(&encode_uvar(1_000_001))
+                .unwrap()
+                .read_list_count()
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::ResourceLimit
+        );
+        assert_eq!(
+            ScbValueCursor::new(&encode_uvar(65_536))
+                .unwrap()
+                .read_record_field_count()
+                .unwrap_err()
+                .code(),
+            ScbErrorCode::ResourceLimit
+        );
+
+        let cursor = ScbValueCursor::new(&[0, 1]).unwrap();
+        assert_eq!(
+            cursor.check_finished().unwrap_err().code(),
+            ScbErrorCode::TrailingBytes
+        );
     }
 }

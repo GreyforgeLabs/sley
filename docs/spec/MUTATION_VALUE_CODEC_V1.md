@@ -1,7 +1,8 @@
 # Mutation Value Codec v1
 
 Status: S20-345 normative contract freeze; S20-350a closed host model and
-S20-350b typed descriptor bindings implemented; binary codecs deferred.
+S20-350b typed descriptor bindings implemented; S20-350c low-level SCB cursor
+foundation implemented; complete binary codecs deferred.
 
 ## Exact schema source
 
@@ -39,6 +40,11 @@ for each of S20-340's 179 immutable descriptors. Admission compares only those
 closed discriminants; it does not encode or validate value contents. Binary
 codecs and later candidate surfaces remain separate gates rather than implied
 behavior of the host representation.
+
+S20-350c exposes the already-frozen strict SCB primitive decoder through a
+schema-neutral bounded cursor. It adds no SSMC, descriptor, mutation, or
+candidate selection. Recursive mutation value codecs remain private future
+work until every manifest type family closes.
 
 ## Canonical rules
 

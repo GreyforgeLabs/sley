@@ -9,6 +9,11 @@ transactions, declared canonical protocol payloads, and packs. Decoding is
 strict: malformed or non-minimal input is rejected and is never normalized
 into accepted state.
 
+The implementation's low-level `ScbValueCursor` exposes these same strict
+primitive reads to schema-aware callers. The cursor itself never selects a
+contract, schema epoch, or semantic type, and successful complete-value callers
+must explicitly reject unread trailing bytes.
+
 This document uses `||` for byte concatenation, `uvar(x)` for the unsigned
 varint of `x`, `len(x)` for `uvar(byte_length(x))`, and `BLAKE3-256` for the
 32-byte BLAKE3 digest. Numeric tags are unsigned 32-bit values encoded as

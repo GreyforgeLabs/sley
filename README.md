@@ -59,9 +59,11 @@ session, commit, or transaction authority. The first decomposed S20-350 slice
 now generates closed proposal-only host values for all eighteen entity bodies
 and all seventy-five body fields, with no runtime type-name dispatch. A second
 slice binds all 179 immutable descriptors to exact closed body/field
-discriminants and performs type-selection-only admission. Binary codecs,
-preconditions, candidate records, and candidate construction remain deferred.
-S20-370 now
+discriminants and performs type-selection-only admission. A strict low-level
+SCB value cursor now exposes the already-frozen primitive decoder behavior for
+later private codec work; it selects no schema or mutation type. Complete
+binary codecs, preconditions, candidate records, and candidate construction
+remain deferred. S20-370 now
 adds a separately registry-authorized protected policy root with exact opaque
 principals, principal-specific grants, protected entity bindings, and mandatory
 test/contract finalization. It has no authenticated policy-transition,
