@@ -4,6 +4,7 @@ quick:
 	python3 scripts/check_m0.py
 	python3 scripts/check_benchmark_baseline.py
 	python3 scripts/check_scb1_spec.py
+	python3 scripts/check_schema_epoch_spec.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked

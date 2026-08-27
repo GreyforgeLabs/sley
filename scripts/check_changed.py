@@ -23,11 +23,13 @@ print(
                 "S20-110 canonical identifiers",
                 "S20-120 Rust SCB1 codec",
                 "S20-130 independent SCB1 oracle",
+                "S20-140 schema epoch and migration specification",
             ],
             "selected_checks": [
                 "scripts/check_m0.py",
                 "scripts/check_benchmark_baseline.py",
                 "scripts/check_scb1_spec.py",
+                "scripts/check_schema_epoch_spec.py",
                 "cargo fmt --check",
                 "cargo check --workspace --locked",
                 "cargo test --workspace --locked",

@@ -27,6 +27,16 @@
     "independent_oracle_implemented": true
   },
   "ssmc1": {"status": "DRAFT"},
+  "schema_epoch": {
+    "status": "S20_140_SPEC_FROZEN_IMPLEMENTATION_PENDING",
+    "bootstrap_magic": "SLEYEP01",
+    "bootstrap_version": 1,
+    "identity_cycle": "EXCLUDED_BY_BOOTSTRAP_PREIMAGE",
+    "registry_authority": "STATIC_IMMUTABLE_EXACT_ID",
+    "migration_scope": "EVIDENCE_ONLY_UNTIL_S20_160",
+    "ariadne_design_review": "PASS",
+    "implementation_complete": false
+  },
   "protocol": {"status": "DRAFT"},
   "identifiers": {
     "status": "S20_110_COMPLETE",

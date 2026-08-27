@@ -97,6 +97,12 @@ authenticates the complete persisted receipt evidence, including its
 metadata. The owning contracts supply exact preimages and canonical parent
 ordering for merges.
 
+`canonical_epoch_envelope_preimage` is the fixed, non-SCB standalone
+`SLEYEP01 || uvar(1) || len(epoch_record) || epoch_record` bootstrap preimage
+defined by `SCHEMA_EPOCH_V1.md`. It contains no `SchemaEpochId` and therefore
+does not create a self-hash cycle. Calling it an envelope does not give it an
+SCB1 digest trailer or registry-selected schema.
+
 ## Rust API boundary
 
 `sley-id` exposes opaque newtypes for every identifier and fixed nonce, byte-
