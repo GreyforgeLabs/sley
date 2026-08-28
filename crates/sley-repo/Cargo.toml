@@ -13,6 +13,11 @@ sley-scb1 = { path = "../sley-scb1" }
 sley-schema = { path = "../sley-schema" }
 sley-state-root = { path = "../sley-state-root" }
 sley-store = { path = "../sley-store" }
+sley-txn = { path = "../sley-txn" }
+
+[dev-dependencies]
+sley-mutate = { path = "../sley-mutate" }
+sley-policy = { path = "../sley-policy" }
 
 [lints]
 workspace = true

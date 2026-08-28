@@ -1,0 +1,65 @@
+{
+  "authority": {
+    "deploy": false,
+    "external_runtime_mutation": false,
+    "provider_call": false,
+    "publication": false,
+    "push": false,
+    "spend": false,
+    "trading": false
+  },
+  "claim": "NATIVE_NAMED_REFS_BRANCHES_AND_BOUNDED_ANCESTRY",
+  "commands": {
+    "focused": {
+      "cargo_clippy_sley_txn_sley_repo": "PASS_STRICT_ALL_TARGETS",
+      "cargo_test_sley_repo": "PASS_64",
+      "cargo_test_sley_txn": "PASS_19_ACTIVE_1_IGNORED",
+      "directory_retry_regression": "PASS_LAYOUT_AND_DIGEST_FANOUT",
+      "frontier_checkers": "PASS_LOCAL_AND_S20_700",
+      "gc_checker": "PASS",
+      "ref_branch_contract_checker": "PASS"
+    },
+    "tier_1_make_quick": "PASS",
+    "tier_2_make_adversarial": "PASS",
+    "tier_2_make_conformance": "PASS",
+    "tier_2_make_core": "PASS"
+  },
+  "contract": "s20-500-native-refs-branches-closeout-v1",
+  "deterministic_inputs": {
+    "branch_origin_fields": 8,
+    "branch_update_statuses": 3,
+    "error_codes": 21,
+    "maximum_ancestry_nodes": 65536,
+    "maximum_branch_origins": 65536,
+    "maximum_visible_branches": 4096,
+    "mutable_ref_fields": 9,
+    "native_ref_unit_tests": 28,
+    "repository_crate_tests": 64,
+    "transaction_crate_active_tests": 19,
+    "verified_revision_unit_tests": 5
+  },
+  "full_gate": {
+    "make_v1": "SKIPPED_NOT_RELEASE_BOUNDARY",
+    "make_v2": "NOT_IMPLEMENTED_FAIL_CLOSED",
+    "release_check": "NOT_IMPLEMENTED_FAIL_CLOSED"
+  },
+  "handoffs": {
+    "merlin": "GATEWAY_OAUTH_401_PARTIAL_DIFF_LOCALLY_AUDITED"
+  },
+  "remaining": {
+    "clone_exchange": false,
+    "full_crash_recovery": false,
+    "merge": false,
+    "named_branch_candidate_commit": false,
+    "protocol": false,
+    "release": false,
+    "semantic_root_comparison": false
+  },
+  "result": "PASS_NATIVE_REFS_BRANCHES_BOUNDARY",
+  "reviews": {
+    "ariadne": "PASS_FINAL_DIRECTORY_DURABILITY_NO_OPEN_P0_P1_P2_P3_P4",
+    "nabu": "PASS_FINAL_ARCHITECTURE_FRONTIER_NO_OPEN_P0_P1_P2_P3_P4",
+    "vulcan": "PASS_DIRECTORY_DURABILITY_FINDING_CLOSED_NO_OPEN_P0_P1_P2_P3_P4"
+  },
+  "validation_tier": "TIER_2_SUBSYSTEM_HANDOFF"
+}

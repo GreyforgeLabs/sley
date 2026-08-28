@@ -92,8 +92,8 @@ for marker in [
 repository_model = " ".join(REPOSITORY_MODEL.read_text(encoding="utf-8").split())
 if "fixed accepted-head transaction boundary is implemented" not in repository_model:
     problems.append("repository-merge-model-drift")
-if "S20-500 native named-ref and branch contract is frozen" not in repository_model:
-    problems.append("repository-ref-contract-freeze-drift")
+if "S20-500 native named-ref and branch boundary is implemented" not in repository_model:
+    problems.append("repository-ref-implementation-drift")
 if (ROOT / "crates/sley-repo/src/merge.rs").exists():
     problems.append("merge-production-boundary-now-present:reaudit-required")
 work_packages = WORK_PACKAGES.read_text(encoding="utf-8")
@@ -126,7 +126,7 @@ expected = {
     "merge_engine_production_boundary": False,
     "no_parallel_harness_created": True,
     "full_s20_700_complete": False,
-    "next_dependency_complete_package": "S20-500-NATIVE-REFS-AND-BRANCH-MODEL",
+    "next_dependency_complete_package": "S20-530-CRASH-INJECTION-AND-RECOVERY",
 }
 for key, value in expected.items():
     if frontier.get(key) != value:
@@ -135,6 +135,11 @@ if frontier.get("remaining_required_surfaces") != ["merge engine"]:
     problems.append("machine-summary-remaining-surface-drift")
 if frontier.get("vulcan_review") != "DEFERRED_FORGE_OAUTH_401":
     problems.append("machine-summary-vulcan-review-drift")
+if (
+    frontier.get("merge_engine_blocker")
+    != "S20-510 blocked by incomplete full S20-250"
+):
+    problems.append("machine-summary-merge-blocker-drift")
 if frontier.get("local_frontier_contract") != "docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md":
     problems.append("machine-summary-local-frontier-drift")
 
@@ -142,7 +147,8 @@ for path, marker in [
     (RESULTS, "eleven scoped persistent libFuzzer"),
     (GAPS, "S20-350 is complete as a proposal-only construction boundary"),
     (AUDIT, "No placeholder merge target is created"),
-    (AUDIT, "S20-500 is now"),
+    (AUDIT, "S20-510 remains blocked"),
+    (AUDIT, "S20-530 is the next dependency-complete"),
     (MAKEFILE, "python3 scripts/check_s20_700_frontier.py"),
 ]:
     if marker not in path.read_text(encoding="utf-8"):

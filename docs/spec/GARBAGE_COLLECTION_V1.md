@@ -111,12 +111,14 @@ there is no partial successful plan.
 
 Collection reruns the complete dry-run-equivalent mark phase while holding an
 exclusive GC guard for the exact store root. A guard is acquired by atomic
-exclusive creation of a store-root lock file and prevents concurrent GC runs.
-Acquiring the guard is a witness that the caller has already stopped all
-repository mutations. It cannot by itself stop code that ignores repository
-locking; S20-390 and S20-500 MUST integrate object promotion and accepted-state
-movement with this ownership boundary before concurrent repository mutation
-exists.
+exclusive creation of a store-root witness file followed by exclusive
+`locks/maintenance.lock` ownership. S20-390 transaction operations and S20-500
+ref operations hold that maintenance file shared from object/revision access
+through their visibility boundary. This prevents their success path from
+interleaving with GC deletion. The caller still owns constructing a complete
+retention snapshot while mutation is stopped by this guard or an enclosing
+repository-recovery owner. Code that bypasses repository locking is outside the
+cooperating local repository threat model.
 
 Collection deletes only canonical final object paths present in the verified
 inventory and absent from the complete reachable set. Immediately before each

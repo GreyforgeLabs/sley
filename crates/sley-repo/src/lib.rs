@@ -2,8 +2,10 @@
 #![doc = include_str!("../README.md")]
 
 mod gc;
+mod refs;
 
 pub use gc::*;
+pub use refs::*;
 
 use core::fmt;
 use std::collections::BTreeSet;

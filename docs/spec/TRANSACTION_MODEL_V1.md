@@ -207,12 +207,15 @@ is not a named branch or native ref API. S20-500 later owns those semantics and
 may reuse the transaction codec and compare-and-swap mechanism without
 creating a `sley-txn -> sley-repo` dependency.
 
-The fixed head is updated under an OS-released exclusive lock by writing and
-syncing a same-directory temporary file, atomically renaming it over the old
-head, and syncing the directory. The head value is checksummed and resolves
-only when its receipt, transaction, root, policy, and objects verify. Receipt
-paths are keyed by `TransactionId`; `ReceiptId` is the receipt trailer, not the
-lookup key.
+Transaction operations first hold shared `locks/maintenance.lock` ownership,
+then acquire the OS-released exclusive `accepted.lock`. GC owns the maintenance
+lock exclusively, so object promotion, receipt installation, fixed-head
+movement, recovery, and complete revision reads cannot interleave GC deletion.
+The fixed head is updated by writing and syncing a same-directory temporary
+file, atomically renaming it over the old head, and syncing the directory. The
+head value is checksummed and resolves only when its receipt, transaction,
+root, policy, and objects verify. Receipt paths are keyed by `TransactionId`;
+`ReceiptId` is the receipt trailer, not the lookup key.
 
 The exact fixed-head bytes are:
 

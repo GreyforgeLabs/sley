@@ -40,11 +40,13 @@ minimums.
 
 ## Merge engine
 
-S20-520 has no implementation. Its S20-500 native ref/branch and S20-510
-semantic comparison prerequisites are also absent. Restricted S20-390 is now
-complete, so S20-500 is the next dependency-complete package. There is no
-merge request, conflict object, or merge judgment to invoke. A synthetic merge
-fuzzer would define semantics outside the frozen dependency graph.
+S20-520 has no implementation. Its S20-500 native ref/branch prerequisite is
+implemented locally, while its S20-510 semantic comparison prerequisite is
+absent. S20-510 remains blocked because full S20-250 still lacks six canonical
+entity bodies and complete-root impact semantics. S20-530 is the next
+dependency-complete repository package. There is no merge
+request, conflict object, or merge judgment to invoke. A synthetic merge fuzzer
+would define semantics outside the frozen dependency graph.
 
 Protocol remains an adjacent future fuzz gap, but it is not one of the eleven
 minimum persistent surfaces listed in Section 18.5 and S20-410 is not landed.
@@ -53,9 +55,10 @@ No placeholder merge target is created for the absent boundary. S20-700 remains
 incomplete, the complete finding register and independent review remain
 deferred, and `make v2` remains a release-boundary gate. The scoped S20-600 and
 S20-610 mechanics, S20-650 unavailable disposition, and bounded S20-710 audit
-have since landed. Restricted S20-360 candidate validation and restricted
-S20-390 atomic commit are complete. S20-500 is now the next
-dependency-complete package; the current cross-lane result is
+have since landed. Restricted S20-360 candidate validation, restricted S20-390
+atomic commit, and S20-500 native refs are complete. S20-510 remains blocked
+by incomplete full S20-250 semantics. S20-530 is the next dependency-complete
+package; the current cross-lane result is
 `docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md`.
 
 Focused validation:

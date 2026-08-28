@@ -23,6 +23,10 @@ use crate::codec::{
     TransactionCodecError, TransactionErrorCode, TransactionKind, TransactionReceiptRecord,
     TransactionRecord, build_transaction, build_transaction_receipt, import_transaction_receipt,
 };
+use crate::maintenance::{
+    RepositoryMaintenanceGuard, acquire_shared_repository_maintenance,
+    initialize_repository_maintenance,
+};
 
 const HEAD_MAGIC: &[u8; 8] = b"SLEYHD01";
 const HEAD_VERSION: u64 = 1;
@@ -35,16 +39,16 @@ const MAX_STAGE_ATTEMPTS: u64 = 1_024;
 
 static STAGE_COUNTER: AtomicU64 = AtomicU64::new(0);
 
-/// Complete verified fixed-head state loaded from durable bytes.
+/// Complete verified transaction state loaded from durable bytes.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct AcceptedHead {
+pub struct VerifiedRevision {
     transaction_id: TransactionId,
     receipt: ImportedTransactionReceipt,
     objects: Vec<EntityObject>,
 }
 
-impl AcceptedHead {
-    /// Returns the exact accepted revision identity.
+impl VerifiedRevision {
+    /// Returns the exact verified revision identity.
     #[must_use]
     pub const fn transaction_id(&self) -> TransactionId {
         self.transaction_id
@@ -78,6 +82,56 @@ impl AcceptedHead {
     #[must_use]
     pub fn tombstoned_entities(&self) -> &[EntityId] {
         &self.receipt.transaction.record.tombstoned_entities
+    }
+}
+
+/// Complete verified fixed-head state loaded from durable bytes.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AcceptedHead {
+    revision: VerifiedRevision,
+}
+
+impl AcceptedHead {
+    /// Returns the exact accepted revision identity.
+    #[must_use]
+    pub const fn transaction_id(&self) -> TransactionId {
+        self.revision.transaction_id()
+    }
+
+    /// Returns the independently authenticated complete receipt.
+    #[must_use]
+    pub const fn receipt(&self) -> &ImportedTransactionReceipt {
+        self.revision.receipt()
+    }
+
+    /// Returns the registry-authorized accepted semantic root.
+    #[must_use]
+    pub const fn state_root(&self) -> &AcceptedStateRoot {
+        self.revision.state_root()
+    }
+
+    /// Returns the registry-authorized protected policy root.
+    #[must_use]
+    pub const fn policy_root(&self) -> &AcceptedPolicyRoot {
+        self.revision.policy_root()
+    }
+
+    /// Returns every exact live entity object in state-root binding order.
+    #[must_use]
+    pub fn objects(&self) -> &[EntityObject] {
+        self.revision.objects()
+    }
+
+    /// Returns the complete sorted non-reusable identity ledger.
+    #[must_use]
+    pub fn tombstoned_entities(&self) -> &[EntityId] {
+        self.revision.tombstoned_entities()
+    }
+
+    /// Returns the verified revision backing this accepted-head claim.
+    #[must_use]
+    pub const fn verified_revision(&self) -> &VerifiedRevision {
+        &self.revision
     }
 }
 
@@ -308,6 +362,21 @@ impl TransactionRepository {
         &self.root
     }
 
+    /// Acquires shared repository-maintenance ownership for one composite
+    /// transaction/ref operation.
+    ///
+    /// The guard must remain held until every object, transaction, head, and
+    /// ref read or mutation in that operation is complete.
+    ///
+    /// # Errors
+    ///
+    /// Returns `TXN_IO` when the repository maintenance boundary cannot be
+    /// created, verified, or locked.
+    pub fn acquire_shared_maintenance(&self) -> Result<RepositoryMaintenanceGuard, CommitError> {
+        initialize_repository_maintenance(&self.root)?;
+        Ok(acquire_shared_repository_maintenance(&self.root)?)
+    }
+
     /// Installs one explicit trusted genesis and makes it durably accepted.
     ///
     /// # Errors
@@ -338,12 +407,63 @@ impl TransactionRepository {
     /// Returns `REF_HEAD_MISSING` when uninitialized or the first exact
     /// head, receipt, root, policy, object, or ancestry failure.
     pub fn accepted_head(&self) -> Result<AcceptedHead, CommitError> {
-        self.ensure_layout()?;
-        let _lock = self.acquire_lock()?;
+        self.ensure_read_layout()?;
+        let maintenance = acquire_shared_repository_maintenance(&self.root)?;
+        self.accepted_head_with_maintenance(&maintenance)
+    }
+
+    /// Loads and verifies the accepted head while a composite caller holds
+    /// repository-maintenance ownership.
+    ///
+    /// # Errors
+    ///
+    /// Returns `TXN_IO` for a mismatched guard or invalid layout, or the first
+    /// exact accepted-head verification failure.
+    pub fn accepted_head_with_maintenance(
+        &self,
+        maintenance: &RepositoryMaintenanceGuard,
+    ) -> Result<AcceptedHead, CommitError> {
+        self.validate_maintenance(maintenance)?;
+        self.ensure_read_layout()?;
+        let _lock = self.acquire_existing_lock()?;
         let transaction_id = self
             .read_head()?
             .ok_or_else(|| txn_commit_error(TransactionErrorCode::HeadMissing))?;
         self.load_accepted(transaction_id)
+    }
+
+    /// Loads and verifies an arbitrary durable transaction revision without
+    /// consulting the accepted-head pointer.
+    ///
+    /// # Errors
+    ///
+    /// Returns the first exact receipt, root, policy, object, or ancestry
+    /// failure for the requested transaction.
+    pub fn verified_revision(
+        &self,
+        transaction_id: TransactionId,
+    ) -> Result<VerifiedRevision, CommitError> {
+        self.ensure_read_layout()?;
+        let maintenance = acquire_shared_repository_maintenance(&self.root)?;
+        self.verified_revision_with_maintenance(&maintenance, transaction_id)
+    }
+
+    /// Loads an arbitrary verified revision while a composite caller holds
+    /// repository-maintenance ownership.
+    ///
+    /// # Errors
+    ///
+    /// Returns `TXN_IO` for a mismatched guard or invalid layout, or the first
+    /// exact revision verification failure.
+    pub fn verified_revision_with_maintenance(
+        &self,
+        maintenance: &RepositoryMaintenanceGuard,
+        transaction_id: TransactionId,
+    ) -> Result<VerifiedRevision, CommitError> {
+        self.validate_maintenance(maintenance)?;
+        self.ensure_read_layout()?;
+        let _lock = self.acquire_existing_lock()?;
+        self.load_verified_revision(transaction_id)
     }
 
     /// Removes owned staging remnants and verifies the surviving accepted
@@ -353,7 +473,8 @@ impl TransactionRepository {
     ///
     /// Returns the first cleanup or accepted-state verification failure.
     pub fn recover(&self) -> Result<RecoveryReport, CommitError> {
-        self.ensure_layout()?;
+        let _maintenance = self.acquire_shared_maintenance()?;
+        self.ensure_layout_under_maintenance()?;
         let _lock = self.acquire_lock()?;
         let object_events = self.object_store.recover_staged()?;
         let removed_receipt_stages = self.remove_receipt_stages()?;
@@ -375,7 +496,8 @@ impl TransactionRepository {
         input: TrustedGenesisInput<'_>,
         fault: Fault,
     ) -> Result<AcceptedHead, CommitError> {
-        self.ensure_layout()?;
+        let _maintenance = self.acquire_shared_maintenance()?;
+        self.ensure_layout_under_maintenance()?;
         let _lock = self.acquire_lock()?;
         if self.read_head()?.is_some() {
             return Err(txn_commit_error(TransactionErrorCode::AlreadyInitialized));
@@ -435,7 +557,8 @@ impl TransactionRepository {
         input: CommitInput<'_>,
         fault: Fault,
     ) -> Result<CommitOutput, CommitError> {
-        self.ensure_layout()?;
+        let _maintenance = self.acquire_shared_maintenance()?;
+        self.ensure_layout_under_maintenance()?;
         let _lock = self.acquire_lock()?;
         let actual = self
             .read_head()?
@@ -531,7 +654,15 @@ impl TransactionRepository {
     }
 
     fn load_accepted(&self, transaction_id: TransactionId) -> Result<AcceptedHead, CommitError> {
-        let receipt = self.read_receipt(transaction_id)?;
+        let revision = self.load_verified_revision(transaction_id)?;
+        Ok(AcceptedHead { revision })
+    }
+
+    fn load_verified_revision(
+        &self,
+        transaction_id: TransactionId,
+    ) -> Result<VerifiedRevision, CommitError> {
+        let receipt = self.read_receipt_readonly(transaction_id)?;
         self.verify_transaction_relationship(&receipt)?;
         let objects = self.load_objects(&receipt.state_root)?;
         verify_manifest_lengths(&receipt.record.object_manifest, &objects)?;
@@ -541,7 +672,7 @@ impl TransactionRepository {
             &objects,
             &receipt.transaction.record.tombstoned_entities,
         )?;
-        Ok(AcceptedHead {
+        Ok(VerifiedRevision {
             transaction_id,
             receipt,
             objects,
@@ -563,7 +694,7 @@ impl TransactionRepository {
             }
             TransactionKind::OrdinaryCandidate => {
                 let parent_id = record.parent_transaction_ids[0];
-                let parent = self.read_receipt(parent_id)?;
+                let parent = self.read_receipt_readonly(parent_id)?;
                 if parent.transaction.transaction_id != parent_id
                     || parent.state_root.root != record.parent_roots[0]
                     || parent.state_root.record.workspace_id != record.workspace_id
@@ -715,17 +846,24 @@ impl TransactionRepository {
         }
     }
 
-    fn read_receipt(
+    fn read_receipt_readonly(
         &self,
         transaction_id: TransactionId,
     ) -> Result<ImportedTransactionReceipt, CommitError> {
-        let path = self.receipt_path(transaction_id)?;
-        if !path_exists(&path)? {
+        let path = self.receipt_path_readonly(transaction_id)?;
+        Self::read_receipt_at(transaction_id, &path)
+    }
+
+    fn read_receipt_at(
+        transaction_id: TransactionId,
+        path: &Path,
+    ) -> Result<ImportedTransactionReceipt, CommitError> {
+        if !path_exists(path)? {
             return Err(txn_commit_error(
                 TransactionErrorCode::RecoveryReceiptIncomplete,
             ));
         }
-        let bytes = bounded_read(&path, MAX_STANDALONE_BYTES)?;
+        let bytes = bounded_read(path, MAX_STANDALONE_BYTES)?;
         let receipt = import_transaction_receipt(&bytes)?;
         if receipt.transaction.transaction_id == transaction_id {
             Ok(receipt)
@@ -786,7 +924,38 @@ impl TransactionRepository {
         Ok(current.join(format!("{hex}.receipt.scb1")))
     }
 
+    fn receipt_path_readonly(&self, transaction_id: TransactionId) -> Result<PathBuf, CommitError> {
+        let hex = hex_id(transaction_id.as_bytes());
+        let final_path = self
+            .transactions_dir()
+            .join(&hex[0..2])
+            .join(&hex[2..4])
+            .join(format!("{hex}.receipt.scb1"));
+        let mut current = self.transactions_dir();
+        ensure_existing_directory(&current)?;
+        for component in [&hex[0..2], &hex[2..4]] {
+            let next = current.join(component);
+            match fs::symlink_metadata(&next) {
+                Ok(metadata) if metadata.file_type().is_symlink() || !metadata.is_dir() => {
+                    return Err(txn_commit_error(TransactionErrorCode::Io));
+                }
+                Ok(_) => current = next,
+                Err(error) if error.kind() == io::ErrorKind::NotFound => {
+                    break;
+                }
+                Err(error) => return Err(error.into()),
+            }
+        }
+        Ok(final_path)
+    }
+
+    #[cfg(test)]
     fn ensure_layout(&self) -> Result<(), CommitError> {
+        initialize_repository_maintenance(&self.root)?;
+        self.ensure_layout_under_maintenance()
+    }
+
+    fn ensure_layout_under_maintenance(&self) -> Result<(), CommitError> {
         ensure_existing_directory(&self.root)?;
         let transactions = create_dir_component(&self.root, "transactions")?;
         create_dir_component(&transactions, "v1")?;
@@ -795,15 +964,71 @@ impl TransactionRepository {
         Ok(())
     }
 
+    fn ensure_read_layout(&self) -> Result<(), CommitError> {
+        ensure_existing_directory(&self.root)?;
+        ensure_existing_directory(&self.transactions_dir())?;
+        ensure_existing_directory(&self.head_dir())?;
+        ensure_existing_directory(&self.root.join("locks"))?;
+        Ok(())
+    }
+
+    fn validate_maintenance(
+        &self,
+        maintenance: &RepositoryMaintenanceGuard,
+    ) -> Result<(), CommitError> {
+        if !maintenance.covers(&self.root) {
+            return Err(txn_commit_error(TransactionErrorCode::Io));
+        }
+        Ok(())
+    }
+
     fn acquire_lock(&self) -> Result<File, CommitError> {
+        self.acquire_lock_inner(false)
+    }
+
+    fn acquire_lock_inner(&self, fail_after_create_before_sync: bool) -> Result<File, CommitError> {
         let path = self.root.join("locks").join("accepted.lock");
         reject_symlink_if_present(&path)?;
-        let file = OpenOptions::new()
+        let (file, created) = match OpenOptions::new()
             .read(true)
             .write(true)
-            .create(true)
-            .truncate(false)
-            .open(path)?;
+            .create_new(true)
+            .open(&path)
+        {
+            Ok(file) => (file, true),
+            Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
+                reject_symlink_if_present(&path)?;
+                (
+                    OpenOptions::new().read(true).write(true).open(&path)?,
+                    false,
+                )
+            }
+            Err(error) => return Err(error.into()),
+        };
+        if created && fail_after_create_before_sync {
+            return Err(
+                io::Error::other("injected accepted-lock create-before-sync failure").into(),
+            );
+        }
+        if !file.metadata()?.is_file() {
+            return Err(txn_commit_error(TransactionErrorCode::Io));
+        }
+        file.sync_all()?;
+        sync_dir(
+            path.parent()
+                .ok_or_else(|| txn_commit_error(TransactionErrorCode::Io))?,
+        )?;
+        file.lock()?;
+        Ok(file)
+    }
+
+    fn acquire_existing_lock(&self) -> Result<File, CommitError> {
+        let path = self.root.join("locks").join("accepted.lock");
+        reject_symlink_if_present(&path)?;
+        let file = OpenOptions::new().read(true).write(true).open(path)?;
+        if !file.metadata()?.is_file() {
+            return Err(txn_commit_error(TransactionErrorCode::Io));
+        }
         file.lock()?;
         Ok(file)
     }
@@ -1254,7 +1479,7 @@ mod tests {
     }
 
     struct Fixture {
-        _temp: TempDir,
+        temp: TempDir,
         repository: TransactionRepository,
         principal_id: PrincipalId,
         genesis_transaction_id: TransactionId,
@@ -1316,7 +1541,7 @@ mod tests {
                 30,
             );
             Self {
-                _temp: temp,
+                temp,
                 repository,
                 principal_id,
                 genesis_transaction_id,
@@ -1423,6 +1648,22 @@ mod tests {
     }
 
     #[test]
+    fn interrupted_accepted_lock_creation_is_redurabilized_on_retry() {
+        let temp = TempDir::new("accepted-lock-retry");
+        let repository = TransactionRepository::new(&temp.path);
+        let _maintenance = repository.acquire_shared_maintenance().unwrap();
+        repository.ensure_layout_under_maintenance().unwrap();
+
+        assert_eq!(
+            repository.acquire_lock_inner(true).unwrap_err().code(),
+            "TXN_IO"
+        );
+        assert!(temp.path.join("locks/accepted.lock").is_file());
+        drop(repository.acquire_lock().unwrap());
+        drop(repository.acquire_existing_lock().unwrap());
+    }
+
+    #[test]
     fn valid_commit_advances_only_to_a_complete_verified_receipt() {
         let fixture = Fixture::new("valid");
         let output = fixture.repository.commit(fixture.input()).unwrap();
@@ -1451,6 +1692,65 @@ mod tests {
         assert_eq!(recovery.removed_object_stages, 0);
         assert_eq!(recovery.removed_receipt_stages, 0);
         assert_eq!(recovery.removed_head_stages, 0);
+    }
+
+    #[test]
+    fn verified_revision_loads_non_head_transaction_without_acceptance_claim() {
+        let fixture = Fixture::new("verified-non-head");
+        let output = fixture.repository.commit(fixture.input()).unwrap();
+
+        let genesis = fixture
+            .repository
+            .verified_revision(fixture.genesis_transaction_id)
+            .unwrap();
+        assert_eq!(genesis.transaction_id(), fixture.genesis_transaction_id);
+        assert_eq!(
+            fixture.repository.accepted_head().unwrap().transaction_id(),
+            output.transaction_id()
+        );
+        assert_ne!(genesis.transaction_id(), output.transaction_id());
+        assert!(genesis.receipt().candidate_result.is_none());
+    }
+
+    #[test]
+    fn verified_revision_does_not_consult_corrupt_accepted_head() {
+        let fixture = Fixture::new("verified-corrupt-head");
+        let output = fixture.repository.commit(fixture.input()).unwrap();
+        fs::write(fixture.repository.head_path(), b"not-a-valid-head").unwrap();
+
+        let revision = fixture
+            .repository
+            .verified_revision(output.transaction_id())
+            .unwrap();
+        assert_eq!(revision.transaction_id(), output.transaction_id());
+        assert_eq!(
+            fixture.repository.accepted_head().unwrap_err().code(),
+            "REF_HEAD_CORRUPT"
+        );
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn verified_revision_rejects_symlinked_receipt_fanout() {
+        use std::os::unix::fs::symlink;
+
+        let temp = TempDir::new("verified-symlink-fanout");
+        let outside = TempDir::new("verified-symlink-outside");
+        let repository = TransactionRepository::new(&temp.path);
+        repository.ensure_layout().unwrap();
+        symlink(
+            &outside.path,
+            temp.path.join("transactions").join("v1").join("ab"),
+        )
+        .unwrap();
+        let transaction_id = TransactionId::from_bytes([0xab; 32]);
+        assert_eq!(
+            repository
+                .verified_revision(transaction_id)
+                .unwrap_err()
+                .code(),
+            "TXN_IO"
+        );
     }
 
     #[test]
@@ -1620,6 +1920,60 @@ mod tests {
     }
 
     #[test]
+    fn verified_revision_rejects_manifest_length_mismatch() {
+        let fixture = Fixture::new("verified-manifest-length");
+        let output = fixture.repository.commit(fixture.input()).unwrap();
+        let revision = fixture
+            .repository
+            .verified_revision(output.transaction_id())
+            .unwrap();
+        let mut record = revision.receipt().record.clone();
+        record.object_manifest[0].stored_length = record.object_manifest[0]
+            .stored_length
+            .checked_add(1)
+            .unwrap();
+        let forged = build_transaction_receipt(&record).unwrap();
+        let path = fixture
+            .repository
+            .receipt_path(output.transaction_id())
+            .unwrap();
+        fs::write(path, forged.stored_bytes).unwrap();
+        assert_eq!(
+            fixture
+                .repository
+                .verified_revision(output.transaction_id())
+                .unwrap_err()
+                .code(),
+            "TXN_OBJECT_INVENTORY_MISMATCH"
+        );
+    }
+
+    #[test]
+    fn verified_revision_missing_parent_creates_no_fanout_or_lock_state() {
+        let fixture = Fixture::new("verified-missing-parent-readonly");
+        let output = fixture.repository.commit(fixture.input()).unwrap();
+        let parent_path = fixture
+            .repository
+            .receipt_path(fixture.genesis_transaction_id)
+            .unwrap();
+        let parent_leaf = parent_path.parent().unwrap().to_path_buf();
+        fs::remove_file(&parent_path).unwrap();
+        fs::remove_dir(&parent_leaf).unwrap();
+        let before = snapshot_tree(&fixture.temp.path);
+
+        assert_eq!(
+            fixture
+                .repository
+                .verified_revision(output.transaction_id())
+                .unwrap_err()
+                .code(),
+            "RECOVERY_RECEIPT_INCOMPLETE"
+        );
+        assert_eq!(snapshot_tree(&fixture.temp.path), before);
+        assert!(!parent_leaf.exists());
+    }
+
+    #[test]
     #[ignore = "explicit S20-390 conformance fixture refresh helper"]
     fn emit_transaction_receipt_vectors_for_fixture_refresh() {
         let fixture = Fixture::new("emit");
@@ -1666,6 +2020,27 @@ mod tests {
             })
             .collect::<Vec<_>>()
             .join(",")
+    }
+
+    fn snapshot_tree(root: &Path) -> Vec<PathBuf> {
+        fn visit(root: &Path, current: &Path, output: &mut Vec<PathBuf>) {
+            let mut entries = fs::read_dir(current)
+                .unwrap()
+                .map(|entry| entry.unwrap())
+                .collect::<Vec<_>>();
+            entries.sort_by_key(std::fs::DirEntry::file_name);
+            for entry in entries {
+                let path = entry.path();
+                output.push(path.strip_prefix(root).unwrap().to_path_buf());
+                if entry.file_type().unwrap().is_dir() {
+                    visit(root, &path, output);
+                }
+            }
+        }
+
+        let mut output = Vec::new();
+        visit(root, root, &mut output);
+        output
     }
 
     fn hex(bytes: &[u8]) -> String {

@@ -58,9 +58,9 @@ def main() -> int:
 
         frontier = summary.get("local_completion_frontier", {})
         expected_frontier = {
-            "status": "S20_390_RESTRICTED_COMPLETE_S20_500_READY",
+            "status": "S20_500_COMPLETE_S20_530_READY",
             "goal_complete": False,
-            "next_authority_safe_package": "S20-500-NATIVE-REFS-AND-BRANCH-MODEL",
+            "next_authority_safe_package": "S20-530-CRASH-INJECTION-AND-RECOVERY",
             "blocked_lane_count": 6,
             "blocked_lanes": [
                 "semantics_and_queries",
@@ -87,17 +87,20 @@ def main() -> int:
             "s20_390_independent_conformance_complete": True,
             "s20_390_persistent_fuzz_complete": True,
             "s20_390_full_recovery_complete": False,
+            "s20_500_native_refs_branches_implemented": True,
+            "s20_500_closeout_complete": True,
+            "s20_510_blocked_by_full_s20_250": True,
             "session_authority_available": False,
             "transaction_boundary_available": True,
             "fixed_accepted_head_available": True,
-            "named_ref_boundary_available": False,
+            "named_ref_boundary_available": True,
             "protocol_boundary_available": False,
             "merge_boundary_available": False,
             "real_benchmark_run_authorized": False,
             "root_license_text_approved": False,
             "release_artifact_available": False,
-            "required_specialist_review": "PASS_S20_390_NABU_ARIADNE_VULCAN",
-            "focused_semantic_security_review": "PASS_NO_OPEN_REPORT_GRADE_FINDINGS",
+            "required_specialist_review": "PASS_S20_500_NABU_ARIADNE_VULCAN",
+            "focused_semantic_security_review": "PASS_NO_OPEN_P0_P1_P2_P3_P4",
             "full_v2_eligible": False,
             "release_check_eligible": False,
         }
@@ -146,7 +149,7 @@ def main() -> int:
             summary.get("s20_700_remaining_surface_audit", {}).get(
                 "next_dependency_complete_package"
             ),
-            "S20-500-NATIVE-REFS-AND-BRANCH-MODEL",
+            "S20-530-CRASH-INJECTION-AND-RECOVERY",
             "S20-700 next package",
         )
         validation = summary.get("s20_360_candidate_validation", {})
@@ -267,10 +270,10 @@ def main() -> int:
 
         audit = AUDIT.read_text(encoding="utf-8")
         for marker in (
-            "restricted S20-390 atomic commit is complete",
+            "S20-500 native refs are complete",
             "S20-250 remains incomplete",
             "candidate construction is proposal-only",
-            "S20-500 native refs are next",
+            "S20-530 crash injection",
         ):
             if marker not in audit:
                 fail(f"frontier audit marker missing: {marker}")
@@ -291,7 +294,7 @@ def main() -> int:
                 "blocked_lanes": 6,
                 "full_gate_run": False,
                 "goal_complete": False,
-                "next_authority_safe_package": "S20-500-NATIVE-REFS-AND-BRANCH-MODEL",
+                "next_authority_safe_package": "S20-530-CRASH-INJECTION-AND-RECOVERY",
                 "result": "PASS",
             },
             indent=2,

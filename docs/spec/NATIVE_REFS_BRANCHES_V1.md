@@ -1,7 +1,7 @@
 # Native Refs and Branches v1
 
-Status: S20-500 contract frozen and implementation-ready. No S20-500 code is
-present at this contract boundary.
+Status: S20-500 implemented locally against the frozen contract. Tier 2 and
+independent implementation review are pending.
 
 ## 1. Scope and authority
 
@@ -146,6 +146,14 @@ Temporary filenames use owned prefixes and exclusive creation. Recovery may
 remove only files whose full names match those prefixes and suffixes inside the
 owned fan-out depth.
 
+The repository root and its owned directories are trusted local storage. The
+concurrent threat model covers cooperating Sley callers that use the frozen
+locks. A privileged or external actor that renames or replaces repository
+directory entries while an operation holds those locks is outside S20-500.
+Static symlinks and non-regular entries are still rejected before use. A later
+host-hardening package may add descriptor-relative no-follow operations without
+changing the repository record or error contract.
+
 ## 7. New verified revision lookup
 
 The public lookup does not exist at contract-freeze time. S20-500
@@ -188,11 +196,15 @@ for a stale, corrupt, conflicting, or merely existing branch.
 `create_branch(name, origin_transaction_id)`:
 
 1. validates the exact name;
-2. acquires `locks/refs.lock` exclusively;
-3. verifies the origin revision from durable S20-390 evidence;
-4. derives and persists the immutable branch-origin record;
-5. derives and persists the visible ref record pointing at the origin;
-6. syncs each file and containing directory before returning.
+2. acquires shared repository-maintenance ownership and then
+   `locks/refs.lock` exclusively;
+3. classifies and strictly imports any existing origin/ref topology before
+   loading an unrelated proposed target;
+4. verifies the selected origin revision from durable S20-390 evidence;
+5. derives and persists the immutable branch-origin record when absent;
+6. derives and persists the visible ref record pointing at the origin;
+7. syncs each reused or newly installed file and containing directory before
+   returning.
 
 If an exact origin record exists without a ref after interruption, an exact
 retry may finish creation. If the exact visible branch already exists at the
@@ -237,12 +249,14 @@ If a retry finds the exact requested `new_head` already visible with all facts
 valid, it returns idempotent `PRESENT` before applying the expected-head check.
 Any other current-head mismatch returns `REF_NAMED_CAS_STALE`.
 
-After strict transaction import and revision verification, zero occurrences of
-`expected_head` in the new transaction parent list returns
+After strict transaction import and revision verification, workspace mismatch
+with the immutable branch origin returns `BRANCH_ORIGIN_MISMATCH` before the
+branch layer evaluates a missing direct-parent edge. This ordering makes the
+workspace result reachable for a valid foreign genesis revision. Otherwise,
+zero occurrences of `expected_head` in the new transaction parent list returns
 `BRANCH_NOT_FAST_FORWARD`. A duplicate parent ID is an invalid transaction and
 preserves the earlier S20-390 `TXN_PARENT_SHAPE` failure; branch logic does not
-reinterpret it. A verified new revision whose workspace differs from the
-immutable branch-origin workspace returns `BRANCH_ORIGIN_MISMATCH`. Arbitrary
+reinterpret it. Arbitrary
 rewinds, sideways moves, skipped parent edges, and last-write-wins updates are
 not supported.
 
@@ -276,14 +290,28 @@ case. No condition maps to both success and an error.
 
 ## 9. Locking and durability
 
-Every S20-500 operation uses one exclusive repository-wide refs lock. The
-frozen lock order is:
+Every transaction and S20-500 ref operation holds shared
+`locks/maintenance.lock` ownership. GC holds the same file exclusively. Every
+S20-500 operation then uses one exclusive repository-wide refs lock. The frozen
+lock order is:
 
 ```text
-future recovery owner -> refs.lock -> S20-390 transaction lock
+GC witness or future recovery owner
+  -> maintenance.lock (exclusive for GC, shared for transactions/refs)
+  -> refs.lock
+  -> S20-390 accepted.lock
 ```
 
-The fixed accepted-head commit path never acquires `refs.lock`.
+The fixed accepted-head commit path acquires shared maintenance ownership and
+then `accepted.lock`; it never acquires `refs.lock`. Arbitrary revision lookup
+under an already-held maintenance guard acquires only `accepted.lock` and uses
+non-creating receipt paths.
+
+Every repository-owned directory component is validated, then its parent
+directory is synced before that component may be used. This parent sync occurs
+for both a newly created component and an exact existing component observed by
+a retry or concurrent first-use operation. No branch success may rely on an
+unsynced layout or digest fan-out entry.
 
 Creation durability is origin record before ref. Advancement durability is
 temporary ref file before atomic rename before ref-directory sync. A failure
@@ -324,8 +352,12 @@ The fixed `heads/accepted` slot remains solely owned by S20-390. S20-500:
 ## 12. GC, recovery, and pack boundaries
 
 Verified visible branch heads may be projected into the explicit S20-180
-retention-snapshot input. S20-500 does not run GC, infer retention from record
-age, or treat orphan origin records as live anchors.
+retention-snapshot input. Collection owns exclusive repository-maintenance
+access, so a successful transaction or ref mutation cannot interleave object
+promotion/verification and GC deletion. The caller still owns a complete
+retention snapshot acquired under that boundary or an enclosing recovery
+owner. S20-500 does not run GC, infer retention from record age, or treat orphan
+origin records as live anchors.
 
 S20-530 owns interruption injection across transaction and ref locks and any
 repair policy beyond owned temporary cleanup. S20-540 owns transaction/ref pack
@@ -340,6 +372,7 @@ and transactions.
 | branch-name components | 8 |
 | bytes per component | 63 |
 | visible branches per repository | 4,096 |
+| immutable branch-origin records per repository | 65,536 |
 | ancestry nodes per request | 65,536 |
 | stored branch/ref record bytes | 67,108,864 |
 | temporary-name reservation attempts | 1,024 |
@@ -388,7 +421,11 @@ Implementation acceptance requires at least:
 - the complete name grammar acceptance/rejection matrix;
 - name-key path and cross-path substitution tests;
 - root, fan-out, record, and lock symlink rejection;
+- cooperating transaction/ref versus exclusive-GC serialization;
 - exact create retry and origin-conflict tests;
+- injected layout and digest fan-out creation failures before parent sync,
+  including an exact retry that cannot report branch success before resync;
+- injected origin-link, ref-link, and ref-rename pre-sync retry tests;
 - concurrent create and advance races with one CAS winner;
 - stale expected-head and non-fast-forward rejection with distinct exact codes;
 - all three `BranchUpdateStatus` tags and the complete Section 8.5 precedence

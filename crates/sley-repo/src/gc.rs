@@ -10,6 +10,10 @@ use sley_state_root::{
     AcceptedStateRoot, conformance_registry as state_root_registry, import_state_root,
 };
 use sley_store::{CanonicalVerifier, ObjectStore, StoreErrorCode};
+use sley_txn::{
+    RepositoryMaintenanceGuard, acquire_exclusive_repository_maintenance,
+    initialize_repository_maintenance,
+};
 
 const GC_LOCK_BYTES: &[u8; 8] = b"SLEYGC01";
 const GC_LOCK_DIR: &str = "locks";
@@ -368,6 +372,7 @@ struct Reachability {
 pub struct ExclusiveGcGuard {
     store_root: PathBuf,
     lock_path: PathBuf,
+    maintenance: RepositoryMaintenanceGuard,
     active: bool,
 }
 
@@ -409,8 +414,9 @@ impl Drop for ExclusiveGcGuard {
 
 /// Atomically acquires the local exclusive GC guard.
 ///
-/// The caller must already own the wider repository maintenance boundary and
-/// stop all mutation code that has not yet integrated this lock.
+/// The returned guard owns both the durable GC witness and the exclusive
+/// repository-maintenance lock. Cooperating transaction and ref operations
+/// cannot run until it is released.
 ///
 /// # Errors
 ///
@@ -426,6 +432,8 @@ pub fn acquire_exclusive_gc(store: &ObjectStore) -> Result<ExclusiveGcGuard> {
         .map_err(|error| GcError::io(GcErrorCode::ExclusiveLockRequired, error))?;
     let lock_dir = store_root.join(GC_LOCK_DIR);
     create_real_dir(&store_root, &lock_dir)?;
+    initialize_repository_maintenance(&store_root)
+        .map_err(|error| GcError::io(GcErrorCode::ExclusiveLockRequired, error))?;
     let lock_path = lock_dir.join(GC_LOCK_FILE);
     let mut lock = OpenOptions::new()
         .write(true)
@@ -440,9 +448,18 @@ pub fn acquire_exclusive_gc(store: &ObjectStore) -> Result<ExclusiveGcGuard> {
         let _ = fs::remove_file(&lock_path);
         return Err(GcError::io(GcErrorCode::ExclusiveLockRequired, error));
     }
+    let maintenance = match acquire_exclusive_repository_maintenance(&store_root) {
+        Ok(maintenance) => maintenance,
+        Err(error) => {
+            let _ = fs::remove_file(&lock_path);
+            let _ = sync_dir(&lock_dir);
+            return Err(GcError::io(GcErrorCode::ExclusiveLockRequired, error));
+        }
+    };
     Ok(ExclusiveGcGuard {
         store_root,
         lock_path,
+        maintenance,
         active: true,
     })
 }
@@ -832,6 +849,9 @@ fn require_guard(store: &ObjectStore, guard: &ExclusiveGcGuard) -> Result<()> {
     let store_root = fs::canonicalize(store.root())
         .map_err(|error| GcError::io(GcErrorCode::ExclusiveLockRequired, error))?;
     if store_root != guard.store_root {
+        return Err(GcError::gc(GcErrorCode::ExclusiveLockRequired));
+    }
+    if !guard.maintenance.is_exclusive() || !guard.maintenance.covers(store.root()) {
         return Err(GcError::gc(GcErrorCode::ExclusiveLockRequired));
     }
     let lock_metadata = fs::symlink_metadata(&guard.lock_path)

@@ -1,7 +1,7 @@
 # Repository Model v1
 
-Status: M0 normative model with the S20-500 native branch/ref contract drafted
-for independent review.
+Status: M0 normative model with the S20-500 native branch/ref boundary
+implemented locally and pending closeout review.
 
 A Sley repository contains immutable objects, schema epochs, protected policy
 roots, refs, a transaction DAG, pack manifests, pins/leases, and derived lock,
@@ -27,7 +27,7 @@ ancestry operations on top of verified S20-390 transaction records.
 `sley-repo` may depend on `sley-txn`; `sley-txn` does not depend on
 `sley-repo`.
 
-`NATIVE_REFS_BRANCHES_V1.md` freezes the S20-500 draft boundary. Canonical
+`NATIVE_REFS_BRANCHES_V1.md` freezes the implemented S20-500 boundary. Canonical
 lowercase ASCII branch names are embedded in strict branch/ref records but are
 mapped to host paths only through a domain-separated digest. An immutable
 origin record preserves the exact creation transaction/root/workspace/epoch/

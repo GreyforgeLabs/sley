@@ -22,7 +22,9 @@ SPEC_MARKERS = (
     "`session_pin`",
     "There is no expiry timestamp or age comparison in this API.",
     "GC_REACHABILITY_VIOLATION",
-    "S20-390 and S20-500 MUST integrate",
+    "`locks/maintenance.lock` ownership",
+    "S20-390 transaction operations and S20-500",
+    "interleaving with GC deletion",
     "inventory objects: `262,144`",
 )
 SOURCE_MARKERS = (

@@ -65,7 +65,7 @@ print(
                 "S20-370 registry-authorized protected policy roots and mandatory test rules",
                 "S20-380 authenticated local capability tokens and authorized adapter wrapper",
                 "S20-390 restricted atomic transactions, complete receipts, and fixed accepted head",
-                "S20-500 strict native branch/ref contract draft",
+                "S20-500 verified native branch/ref and bounded ancestry implementation",
                 "S20-600 verified frozen legacy artifact and retained version-smoke adapter",
                 "S20-610 offline raw baseline manifest and unverified digest-claim chain",
                 "S20-650 optional external comparison explicit-unavailability record",
