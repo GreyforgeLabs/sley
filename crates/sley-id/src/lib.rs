@@ -35,11 +35,12 @@ enum Domain {
     IndexSnapshot,
     RestrictedQueryCapsule,
     ValidationProfile,
+    CandidateAttempt,
 }
 
 impl Domain {
     #[cfg(test)]
-    const ALL: [Self; 28] = [
+    const ALL: [Self; 29] = [
         Self::Workspace,
         Self::Entity,
         Self::Object,
@@ -68,6 +69,7 @@ impl Domain {
         Self::IndexSnapshot,
         Self::RestrictedQueryCapsule,
         Self::ValidationProfile,
+        Self::CandidateAttempt,
     ];
 
     const fn bytes(self) -> &'static [u8] {
@@ -100,6 +102,7 @@ impl Domain {
             Self::IndexSnapshot => b"sley2.index-snapshot.v1",
             Self::RestrictedQueryCapsule => b"sley2.restricted-query-capsule.v1",
             Self::ValidationProfile => b"sley2.validation-profile.v1",
+            Self::CandidateAttempt => b"sley2.candidate-attempt.v1",
         }
     }
 }
@@ -213,6 +216,10 @@ fixed_bytes_type!(
 fixed_bytes_type!(
     /// Candidate digest.
     CandidateId
+);
+fixed_bytes_type!(
+    /// Causal digest of one raw candidate-byte validation attempt.
+    CandidateAttemptDigest
 );
 fixed_bytes_type!(
     /// Candidate-result digest.
@@ -330,6 +337,7 @@ digest_type!(PolicyRootId, Domain::PolicyRoot);
 digest_type!(CapabilityTokenDigest, Domain::CapabilityToken);
 digest_type!(CapabilitySummaryDigest, Domain::CapabilitySummary);
 digest_type!(CandidateId, Domain::Candidate);
+digest_type!(CandidateAttemptDigest, Domain::CandidateAttempt);
 digest_type!(CandidateResultId, Domain::CandidateResult);
 digest_type!(QueryId, Domain::Query);
 digest_type!(ContextCapsuleId, Domain::ContextCapsule);
@@ -381,7 +389,7 @@ mod tests {
     const ZERO: [u8; ID_LEN] = [0; ID_LEN];
     const ONE: [u8; ID_LEN] = [1; ID_LEN];
     const TEST_PREIMAGE: &[u8] = b"sley-id fixed vector preimage";
-    const FIXED_VECTORS: [(Domain, &str); 28] = [
+    const FIXED_VECTORS: [(Domain, &str); 29] = [
         (
             Domain::Workspace,
             "91280bdf6e8df93eafb445c63cf92f0590981d2d9e735d6b01cc9594e0b92f55",
@@ -494,6 +502,10 @@ mod tests {
             Domain::ValidationProfile,
             "974290a6758c97f547093e707ba18055c3ab73a6a504c3c0514b2a7d4dc7bf11",
         ),
+        (
+            Domain::CandidateAttempt,
+            "cd296e4ca56f3149cb171446a9de98847cb2439fba7ab8bd531f937f809422c6",
+        ),
     ];
 
     fn decode_hex_32(hex: &str) -> [u8; ID_LEN] {
@@ -539,6 +551,7 @@ mod tests {
                 b"sley2.index-snapshot.v1",
                 b"sley2.restricted-query-capsule.v1",
                 b"sley2.validation-profile.v1",
+                b"sley2.candidate-attempt.v1",
             ]
         );
     }
@@ -669,6 +682,7 @@ mod tests {
         assert_eq!(core::mem::size_of::<CapabilityTokenDigest>(), ID_LEN);
         assert_eq!(core::mem::size_of::<CapabilitySummaryDigest>(), ID_LEN);
         assert_eq!(core::mem::size_of::<CandidateId>(), ID_LEN);
+        assert_eq!(core::mem::size_of::<CandidateAttemptDigest>(), ID_LEN);
         assert_eq!(core::mem::size_of::<CandidateResultId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<QueryId>(), ID_LEN);
         assert_eq!(core::mem::size_of::<ContextCapsuleId>(), ID_LEN);

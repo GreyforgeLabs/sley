@@ -22,6 +22,9 @@ record may associate it with policy data.
 ADR-0017 adds `CapabilitySummaryDigest` and `ValidationProfileId` as
 proposal-binding domains. Neither authenticates capabilities nor proves that
 validation ran; trusted S20-360 judgment remains required.
+ADR-0020 adds `CandidateAttemptDigest` as a causal digest for raw candidate
+bytes that may be malformed. It is deliberately distinct from `CandidateId`
+and grants no candidate identity or validation authority.
 
 This crate has no filesystem, network, environment, SCB1 encoding, repository,
 policy, or VM authority.
