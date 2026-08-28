@@ -136,7 +136,7 @@ document their manual indefinite-run form.
 
 ## Authority
 
-- Product goal: `<LOCAL_HOME>/machineresearch/Sley2.0mastergoal.md`
+- Product goal: `<LOCAL_HOME>/machineresearch/sley/in-progress/2.0/Sley2.0mastergoal.md`
 - Local architecture: `ARCHITECTURE.md`
 - Security and threat register: `SECURITY.md`
 - Normative drafts: `docs/spec/`

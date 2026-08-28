@@ -1,6 +1,6 @@
 # Specification Input Dossier
 
-Primary input: `<LOCAL_HOME>/machineresearch/Sley2.0mastergoal.md`, dated
+Primary input: `<LOCAL_HOME>/machineresearch/sley/in-progress/2.0/Sley2.0mastergoal.md`, dated
 2026-08-26 and activated by the operator on 2026-08-27.
 
 Supporting authority used for M0:
