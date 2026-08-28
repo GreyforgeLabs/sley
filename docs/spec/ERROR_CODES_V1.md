@@ -41,6 +41,7 @@ and ambiguity are failures, never success.
 - `VM_*`, `TEST_*`: execution, cancellation, determinism, and oracle.
 - `PACK_*`, `GC_*`, `MERGE_*`: repository operations.
 - `MUTATION_CANDIDATE_*`: proposal-record structure and descriptor binding.
+- `CANDIDATE_VALIDATION_*`: S20-360 terminal judgment and result integrity.
 
 S20-170 freezes these repository-pack codes:
 
@@ -203,6 +204,34 @@ canonicality, envelope, digest, and resource failures preserve their exact
 `SCB_*` code instead of being collapsed into this range. Neither namespace
 claims semantic validity, authority, freshness against trusted host time, or
 permission to mutate accepted state.
+
+S20-360 freezes numeric codes 36000 through 36014 for every non-`VALID`
+candidate decision, in the order listed by the master goal and
+`CANDIDATE_RESULT_V1.md`:
+
+| Numeric | Symbolic |
+|---:|---|
+| 36000 | `CANDIDATE_VALIDATION_INVALID_ENCODING` |
+| 36001 | `CANDIDATE_VALIDATION_INVALID_SCHEMA` |
+| 36002 | `CANDIDATE_VALIDATION_STALE_ROOT` |
+| 36003 | `CANDIDATE_VALIDATION_STALE_ENTITY` |
+| 36004 | `CANDIDATE_VALIDATION_INVALID_IDENTITY` |
+| 36005 | `CANDIDATE_VALIDATION_INVALID_GRAPH` |
+| 36006 | `CANDIDATE_VALIDATION_UNRESOLVED_REFERENCE` |
+| 36007 | `CANDIDATE_VALIDATION_TYPE_ERROR` |
+| 36008 | `CANDIDATE_VALIDATION_CONTROL_FLOW_ERROR` |
+| 36009 | `CANDIDATE_VALIDATION_EFFECT_ERROR` |
+| 36010 | `CANDIDATE_VALIDATION_CAPABILITY_DENIED` |
+| 36011 | `CANDIDATE_VALIDATION_CONTRACT_ERROR` |
+| 36012 | `CANDIDATE_VALIDATION_RESOURCE_LIMIT` |
+| 36013 | `CANDIDATE_VALIDATION_TEST_PLAN_ERROR` |
+| 36014 | `CANDIDATE_VALIDATION_INTERNAL_ERROR` |
+
+These are stable outer result codes. Diagnostics also preserve the exact
+owning `SCB_*`, `TYPE_*`, `CFG_*`, `EFFECT_*`, `POLICY_*`, `CAP_*`, or
+`CONTRACT_*` source symbol and optional source numeric code. A wrapper code
+never converts a source failure into success. Result byte canonicality and
+digest failures preserve their exact `SCB_*` code.
 
 S20-370 freezes numeric codes 37000 through 37018 for the exact `POLICY_*`
 failures listed in `POLICY_ROOT_V1.md`. They cover protected policy-record

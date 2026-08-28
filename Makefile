@@ -34,6 +34,7 @@ quick:
 	python3 scripts/check_s20_700_frontier.py
 	python3 scripts/check_local_completion_frontier.py
 	python3 scripts/check_candidate_contract_freeze.py
+	python3 scripts/check_candidate_result_contract.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked

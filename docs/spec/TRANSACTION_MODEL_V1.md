@@ -20,17 +20,23 @@ identity ledger, including tombstoned identities.
 3. base-root and preimage freshness;
 4. identity;
 5. graph structure and reference resolution;
-6. type and CFG;
-7. effects;
-8. protected policy and capability;
-9. contracts;
-10. test plan;
-11. supported resource analysis;
-12. candidate root;
-13. candidate result digest.
+6. type;
+7. CFG;
+8. effects;
+9. protected policy and capability;
+10. contracts;
+11. test plan;
+12. supported resource analysis;
+13. candidate root;
+14. candidate result digest.
 
 Failure is monotonic: a later phase cannot erase an earlier failure. Validation
 does not advance any ref.
+
+The later S20-345/S20-360 freeze in `VALIDATION_PROFILE_V1.md` and
+`CANDIDATE_RESULT_V1.md` owns this exact fourteen-phase order. It supersedes
+the earlier combined type/CFG shorthand without changing their separate
+terminal states.
 
 ## Commit
 

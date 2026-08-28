@@ -1,6 +1,7 @@
 # Candidate Validation Profile v1
 
-Status: S20-345 identity contract; validator implementation deferred.
+Status: S20-345 identity contract; S20-360 result/pipeline contract frozen;
+validator implementation pending.
 
 The validation profile is immutable policy-independent data naming the phases
 and hard work ceilings a candidate requests. It cannot skip a mandatory phase
@@ -34,3 +35,8 @@ loosened beyond the selected schema or policy. Missing, reordered, duplicated,
 unknown, unsupported, or partially executed phases fail closed. A profile ID
 is not evidence that its phases ran; the candidate result must carry exact
 phase evidence under S20-360.
+
+`CANDIDATE_RESULT_V1.md` is the owning S20-360 contract. It reconciles the
+older master-goal and M0-draft prose to these exact fourteen phases, retains
+separate graph/reference and type/CFG terminal decisions, and forbids
+caller-asserted phase success.
