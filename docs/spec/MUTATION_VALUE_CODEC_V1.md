@@ -9,8 +9,12 @@ foundation, S20-350d private leaf/collection codec, and S20-350e private
 
 The sole value-schema source is the exact byte file
 `docs/spec/SSMC1_EPOCH1_SCHEMA.txt`, whose BLAKE3-256 is
-`044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73`.
+`1983bc8d6ad9ac3cb5390853f43959cf2c3dc0ae8e0ca18ca8264ca4960133ae`.
 The codec generator must fail unless those bytes match.
+
+ADR-0019 resolves the provisional tag conflict in favor of SCB1: generic
+`Option<T>` uses `0=None` and `1=Some<T>`. Ordinary manifest unions retain
+their nonzero tags.
 
 The generator must produce closed typed codecs for all eighteen `EntityBody`
 variants, all seventy-five entity-body fields, and every recursively referenced

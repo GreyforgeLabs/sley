@@ -20,8 +20,21 @@ query_api = read("crates/sley-query/src/lib.rs")
 snapshot_code = read("crates/sley-query/src/snapshot.rs")
 work_packages = read("docs/WORK_PACKAGES.md")
 identifiers = read("docs/spec/IDENTIFIERS_V1.md")
+summary = json.loads(read("machineresearch/sley-2.0/machine-summary.json"))
 
 problems: list[str] = []
+
+expected_query_ids = {
+    "modeled_entity_kind": "de305bc5a264a33ed19aabf4e066a1a29e529868aff119518defff3408927666",
+    "direct_dependencies": "dabd0b6cc4a9822928fcfb7512fe96422980c2c979b2ed21e541185d09773de2",
+    "direct_dependents": "31ca7f958ad70279c35b37233f289d9fca1c1902cce492ea4b999c35e401c31a",
+    "reverse_impact_closure": "90dada7321516c1c5556e7f0f362bbf9edc79511291b9b85812b33eeaf007745",
+}
+if summary.get("restricted_query_profile", {}).get("fixed_query_ids") != expected_query_ids:
+    problems.append("machine-summary fixed query vector drift")
+for expected in expected_query_ids.values():
+    if expected not in query_code:
+        problems.append(f"fixed query source vector drift: {expected}")
 
 for token in [
     "Status: S20-310 restricted epoch-1 normative specification.",

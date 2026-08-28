@@ -24,7 +24,7 @@ from .errors import ScbError
 MAX_TOTAL_ALLOCATION = 134_217_728
 CONTRACT = "sley2-mutation-value-v1-partial"
 SOURCE_SCHEMA_BLAKE3 = (
-    "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73"
+    "1983bc8d6ad9ac3cb5390853f43959cf2c3dc0ae8e0ca18ca8264ca4960133ae"
 )
 
 

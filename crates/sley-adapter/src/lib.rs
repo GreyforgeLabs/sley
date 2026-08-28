@@ -1652,7 +1652,7 @@ mod tests {
         );
         assert_eq!(
             receipt.transcript.into_bytes(),
-            decode_hex_32("08c1516430b53fdc9f61feb6d9338822be568c0c012ad45aaf6c3443c3dd230a")
+            decode_hex_32("820510df49047b58d4cace426f72090b5e9e4ded84a0a4405a4957e4cdfdf6a1")
         );
     }
 

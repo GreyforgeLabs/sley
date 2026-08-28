@@ -15,8 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "docs/spec/SSMC1_EPOCH1_SCHEMA.txt"
 OUTPUT = ROOT / "crates/sley-mutate/src/value_generated.rs"
 SCHEMA_GENERATOR = ROOT / "scripts/generate_mutation_schema.py"
-EXPECTED_SHA256 = "d0a3097c4d62cf5812934932cb18c2b55a6f7beddda1cf2c3092715706aa0918"
-EXPECTED_BLAKE3 = "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73"
+EXPECTED_SHA256 = "8dbf14458d69482692464e00745f8f11a17007fa1e140ec040e92c7fd43f9c50"
+EXPECTED_BLAKE3 = "1983bc8d6ad9ac3cb5390853f43959cf2c3dc0ae8e0ca18ca8264ca4960133ae"
 
 ENTITY_RE = re.compile(r"^entity ([0-9]+) ([A-Za-z][A-Za-z0-9]*) ([A-Za-z][A-Za-z0-9]*)$")
 RECORD_RE = re.compile(r"^record ([A-Za-z][A-Za-z0-9]*)\((.*)\)$")

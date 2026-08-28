@@ -40,11 +40,10 @@ prefixes. They require panic-free deterministic rejection, preserve exact
 canonical re-encoding, and also recheck the 18 committed rejection codes. This
 is a fuzz-smoke slice, not randomness, persistent fuzzing, or full S20-700
 coverage.
-`TrapTerminator`
-and the enclosing `Terminator` union remain open because the frozen SCB1 and
-SSMC manifest `Option<T>` tags conflict. It is not publicly
-descriptor-selectable, and the other recursive value families remain open. The
-crate cannot construct
+`TrapTerminator` and the enclosing `Terminator` union remain open as
+implementation work; ADR-0019 has resolved the former SCB1/manifest
+`Option<T>` tag conflict. They are not publicly descriptor-selectable, and the
+other recursive value families remain open. The crate cannot construct
 candidates, mutate an entity or repository, evaluate preconditions, establish
 root/session/workspace authority, validate policy or capabilities, or commit
 transactions. Those are later work packages.

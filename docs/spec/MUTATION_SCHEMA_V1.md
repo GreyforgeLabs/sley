@@ -14,7 +14,7 @@ The sole structural input is:
 
 ```text
 docs/spec/SSMC1_EPOCH1_SCHEMA.txt
-BLAKE3-256 = 044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73
+BLAKE3-256 = 1983bc8d6ad9ac3cb5390853f43959cf2c3dc0ae8e0ca18ca8264ca4960133ae
 ```
 
 `scripts/generate_mutation_schema.py` accepts only those exact reviewed bytes.

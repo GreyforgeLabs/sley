@@ -30,10 +30,11 @@
   request-owned memory. It does not cover the authorized S20-380 wrapper, VM
   adapter opcodes, live host confinement, handle cleanup, or persistent
   execution and replay reports.
-- S20-350 candidate construction remains blocked by locked generic `Option<T>`
-  and `ConstValue` canon decisions; the current crate-private codec and fixture
-  foundation does not provide aggregate, precondition, candidate, or runtime
-  mutation authority.
+- S20-350 candidate construction is now implementation-ready after ADR-0019
+  aligned generic `Option<T>` with SCB1 and review confirmed the already-frozen
+  `ConstValue` contract. The current crate-private codec and fixture foundation
+  still does not provide the remaining bodies/fields, aggregates,
+  preconditions, candidate construction, or runtime mutation authority.
 - Full-GA S20-240 through S20-270 semantics, adapters, persistent reports, and
   all remaining M2–M6 runtime, query, mutation, policy, repository,
   adversarial, succession, packaging, reproducibility, and independent-review
@@ -44,6 +45,6 @@
 These post-M0 gaps prevent any GA or superiority claim.
 
 The current cross-lane audit is
-`docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md`. It records no
-authority-safe next package under the present contract, canon, review, and
-operator-approval state. This is a blocker frontier, not product completion.
+`docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md`. It records S20-350 as the next
+authority-safe implementation package. This is an active work frontier, not
+product completion.

@@ -6,7 +6,7 @@ use super::*;
 
 pub(super) const CONTRACT: &str = "sley2-mutation-value-v1-partial";
 pub(super) const SOURCE_SCHEMA_BLAKE3: &str =
-    "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73";
+    "1983bc8d6ad9ac3cb5390853f43959cf2c3dc0ae8e0ca18ca8264ca4960133ae";
 pub(super) const ACCEPTED_JSON: &str =
     include_str!("../../../../conformance/mutation-value/v1/accepted.json");
 pub(super) const REJECTED_JSON: &str =

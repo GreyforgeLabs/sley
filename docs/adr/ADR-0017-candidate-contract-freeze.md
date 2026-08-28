@@ -16,8 +16,9 @@ hashed.
 
 ## Consequences
 
-- S20-350 depends on S20-345 and remains blocked until all six contracts pass
-  architecture, semantic, and adversarial review.
+- S20-350 depends on S20-345 and remained blocked until all six contracts
+  passed architecture, semantic, and adversarial review. Those reviews and the
+  ADR-0019 epoch-1 re-anchor now permit local S20-350 implementation.
 - All eighteen entity bodies and seventy-five fields must use generated typed
   codecs from the exact SSMC1 manifest; opaque bytes and type-name dispatch are
   forbidden.

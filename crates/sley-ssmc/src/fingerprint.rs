@@ -13,8 +13,8 @@ use crate::{
 
 /// Exact SSMC1 field-schema hash frozen by S20-200.
 pub const SSMC1_FIELD_SCHEMA_HASH: [u8; 32] = [
-    0x04, 0x4d, 0x21, 0xd3, 0x28, 0xe4, 0x0d, 0x51, 0x7f, 0xd0, 0x9f, 0xd0, 0x99, 0xc9, 0x69, 0x7f,
-    0xbb, 0xa2, 0xc9, 0x5d, 0x0a, 0x51, 0x9e, 0xad, 0xe3, 0x33, 0xc1, 0x14, 0x0d, 0x64, 0x8e, 0x73,
+    0x19, 0x83, 0xbc, 0x8d, 0x6a, 0xd9, 0xac, 0x3c, 0xb5, 0x39, 0x08, 0x53, 0xf4, 0x39, 0x59, 0xcf,
+    0x2c, 0x3d, 0xc0, 0xae, 0x8e, 0x0c, 0xa1, 0x8c, 0xa8, 0x26, 0x4c, 0xa4, 0x96, 0x01, 0x33, 0xae,
 ];
 
 /// Maximum encoded S20-250 preimage size.
@@ -977,7 +977,7 @@ mod tests {
         let fingerprint = fingerprint_type_definition(epoch, &first).unwrap();
         assert_eq!(
             fingerprint.as_bytes(),
-            &hex_32("2577617e0a4c3ae7872bbcdeae98510e6173f2ef51aea32f5be25acbb3189abe")
+            &hex_32("1037b106a11461218ebd5414c00cff9cef41a0d7946bab92f06e7269875d94b1")
         );
         first.entity_id = id(2);
         assert_eq!(
@@ -1047,7 +1047,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             first.as_bytes(),
-            &hex_32("da0c8dbd242a663affc56afea576f30ecbbcfe7c2dd3a69c03ab47940c2e470f")
+            &hex_32("4b15f53c73e39e1628156155d10699701114e4965cc4ba770b95a0050c74ac4c")
         );
 
         let mut second_parameter = parameter.clone();
@@ -1097,7 +1097,7 @@ mod tests {
         let hash = hash_validated_value(epoch, &value).unwrap();
         assert_eq!(
             hash.as_bytes(),
-            &hex_32("7b41b6b9bdb3da41140423a8653a95bba432877657c3e86ffcb31345d41fa159")
+            &hex_32("07402ba7b4fae743eb4e5ab9a9471940d2b341824caf5a9b20ca069a1685b7d0")
         );
         assert_eq!(hash, hash_validated_value(epoch, &value).unwrap());
         assert_ne!(hash.as_bytes(), SemanticFingerprint::derive([]).as_bytes());

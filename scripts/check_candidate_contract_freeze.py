@@ -110,6 +110,8 @@ if freeze.get("status") != "S20_345_CONTRACT_AND_IDENTITY_FREEZE_COMPLETE":
 for reviewer in ("nabu_review", "vulcan_review"):
     if freeze.get(reviewer) != "PASS_NO_OPEN_P0_P1_P2":
         problems.append(f"machine-summary:{reviewer}")
+if freeze.get("s20_350_unblocked") is not True:
+    problems.append("machine-summary:s20-350-unblocked")
 
 print(json.dumps({
     "candidate_construction": False,
@@ -120,7 +122,7 @@ print(json.dumps({
     "files": len(FILES),
     "problems": problems,
     "result": "PASS" if not problems else "FAIL",
-    "s20_350_unblocked": False,
+    "s20_350_unblocked": True,
     "nabu_review": "PASS_NO_OPEN_P0_P1_P2",
     "vulcan_review": "PASS_NO_OPEN_P0_P1_P2",
 }, indent=2, sort_keys=True))

@@ -64,7 +64,7 @@ fingerprint_preimage =
 ```
 
 `bytes(x)` is `u64be(len(x)) || x`. The exact field-schema hash is
-`044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73`.
+`1983bc8d6ad9ac3cb5390853f43959cf2c3dc0ae8e0ca18ca8264ca4960133ae`.
 All arithmetic is checked. No host serializer, hash map order, debug format,
 pointer value, or platform integer representation enters the preimage.
 

@@ -1240,7 +1240,7 @@ mod tests {
         assert_eq!(preimage.len(), 428);
         assert_eq!(
             report.report_id.into_bytes(),
-            decode_hex_32("6a492a48bf104044413eb48ba9752c3fb48536aee88228e0382b882558d4f926")
+            decode_hex_32("ec5c4a9607f4b6aa79371f58d947d7be5e516840f76575b666181aea14fdf467")
         );
     }
 
@@ -1264,7 +1264,7 @@ mod tests {
         assert_eq!(execution_report_preimage(&report).unwrap().len(), 248);
         assert_eq!(
             report.report_id.into_bytes(),
-            decode_hex_32("599ff358eb271964c8c4a5273dc07074aedf102cbc04da01542abb286d6133cc")
+            decode_hex_32("e5aa428b5cf4fe81e72cecbbcfd901acf9c34cdbda2939945230d1f9aa3232a0")
         );
     }
 
@@ -1393,7 +1393,7 @@ mod tests {
         assert_eq!(preimage.len(), 412);
         assert_eq!(
             report.report_id.into_bytes(),
-            decode_hex_32("84ec5b6b388266836beb6ead51d6cb8648fb0cee1fbf348c4b6c2bb011d62a2d")
+            decode_hex_32("7bd8a85d393eeaba11727d44be3b37063cad207b834d16ea8cd4f93a87d522d3")
         );
     }
 

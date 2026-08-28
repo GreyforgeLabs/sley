@@ -30,7 +30,7 @@ required_spec = [
     '"sley2.vm-bytecode-cache-key.v1"',
     "all five terminators",
     "full S20-260 GA",
-    "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73",
+    "1983bc8d6ad9ac3cb5390853f43959cf2c3dc0ae8e0ca18ca8264ca4960133ae",
     "389791b170bc9d8575f7e6f338e4f9e9f2b75f35d7a2e52c7cb106cb2cd6136a",
 ]
 for token in required_spec:

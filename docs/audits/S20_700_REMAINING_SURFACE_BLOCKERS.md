@@ -14,9 +14,11 @@ S20-340 exposes immutable descriptors. The partial S20-350 foundation exposes
 closed proposal host values, descriptor-to-value admission, and crate-private
 leaf/body codecs. It explicitly provides no aggregate candidate codec,
 candidate constructor, precondition evaluator, validation authority, mutation
-application, or state transition. Generic `Option<T>` and complete
-`ConstValue` canon remain blocked. A persistent target at this point would fuzz
-a parallel constructor rather than production candidate behavior.
+application, or state transition. ADR-0019 resolves generic `Option<T>` and the
+S20-345 `ConstValue` contract is frozen, making S20-350 implementation-ready.
+Until the aggregate codecs and candidate constructor land, a persistent target
+would still fuzz a parallel constructor rather than production candidate
+behavior.
 
 ## Merge engine
 
@@ -33,8 +35,8 @@ No placeholder target is created for any absent boundary. S20-700 remains
 incomplete, the complete finding register and independent review remain
 deferred, and `make v2` remains a release-boundary gate. The scoped S20-600 and
 S20-610 mechanics, S20-650 unavailable disposition, and bounded S20-710 audit
-have since landed. No next authority-safe package is registered; the current
-cross-lane result is `docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md`.
+have since landed. S20-350 is now the next dependency-complete package; the
+current cross-lane result is `docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md`.
 
 Focused validation:
 

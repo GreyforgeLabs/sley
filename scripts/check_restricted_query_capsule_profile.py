@@ -18,7 +18,17 @@ ids = read("crates/sley-id/src/lib.rs")
 code = read("crates/sley-query/src/capsule.rs")
 api = read("crates/sley-query/src/lib.rs")
 work_packages = read("docs/WORK_PACKAGES.md")
+summary = json.loads(read("machineresearch/sley-2.0/machine-summary.json"))
 problems: list[str] = []
+
+expected_capsule_ids = [
+    "c76552fe88168afeb130c25d72c057e42c35bfc8213022de2b2c458513c83cb4",
+    "cf77171d57cfd6e134350bc0afc9a9368e3e34ef60c645029aee52d5bb5e16a5",
+    "1f207c5a27d8af0864a4156f9607a9de893a450ee566b24d6a457fd65f0c590d",
+    "4512b341275b8051ba826ff59194c0dca82cb770eb3191a6a99397009b1ca292",
+]
+if summary.get("restricted_query_capsule_profile", {}).get("fixed_capsule_ids") != expected_capsule_ids:
+    problems.append("machine-summary fixed capsule vector drift")
 
 for token in [
     "Status: S20-320 restricted epoch-1 normative specification.",

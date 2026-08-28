@@ -18,8 +18,21 @@ spec = read("docs/spec/REPORT_ENVELOPE_PROFILE_V1.md")
 code = read("crates/sley-conformance/src/lib.rs")
 vm_code = read("crates/sley-vm/src/execute.rs")
 work_packages = read("docs/WORK_PACKAGES.md")
+summary = json.loads(read("machineresearch/sley-2.0/machine-summary.json"))
 
 problems: list[str] = []
+
+expected_report_ids = {
+    "fixed_observed_execution_report_id": "ec5c4a9607f4b6aa79371f58d947d7be5e516840f76575b666181aea14fdf467",
+    "fixed_rejected_execution_report_id": "e5aa428b5cf4fe81e72cecbbcfd901acf9c34cdbda2939945230d1f9aa3232a0",
+    "fixed_test_report_id": "7bd8a85d393eeaba11727d44be3b37063cad207b834d16ea8cd4f93a87d522d3",
+}
+report_summary = summary.get("report_envelope_profile", {})
+for field, expected in expected_report_ids.items():
+    if expected not in code:
+        problems.append(f"fixed report source vector drift: {field}")
+    if report_summary.get(field) != expected:
+        problems.append(f"machine-summary report vector drift: {field}")
 
 for token in [
     "Status: S20-290 restricted epoch-1 normative specification.",

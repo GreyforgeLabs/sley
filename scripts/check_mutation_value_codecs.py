@@ -34,13 +34,13 @@ REJECTED_FIXTURES = ROOT / "conformance/mutation-value/v1/rejected.json"
 FIXTURE_SUMS = ROOT / "conformance/mutation-value/v1/SHA256SUMS"
 
 EXPECTED_ACCEPTED_FIXTURE_SHA256 = (
-    "57b1e3845dad4264c379e0f293131b4fc1076abc28fb786f15ff9e6977beca3e"
+    "98024278156d66c5d8d94579f9ec09a5691bff876929226822aed78f178330de"
 )
 EXPECTED_REJECTED_FIXTURE_SHA256 = (
-    "44a2752f830a057aad3a636c266d64ab9738f5800ed6fbf6404f91c6c1eee756"
+    "509b1b921d54d5e8e53d1a9fed8c7bf66ce0e7253f4b37d9dc2927be601a4291"
 )
 EXPECTED_SCHEMA_BLAKE3 = (
-    "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73"
+    "1983bc8d6ad9ac3cb5390853f43959cf2c3dc0ae8e0ca18ca8264ca4960133ae"
 )
 EXPECTED_FIELD_EXCLUSIONS = {
     "Namespace.parent",
@@ -328,8 +328,8 @@ def check_partial_fixtures() -> None:
         "bounded_proper_prefix_mutations": 446,
         "bounded_derived_mutations": 698,
         "exact_rejection_code_vectors": 18,
-        "generic_option_canon_resolved": False,
-        "const_value_canon_resolved": False,
+        "generic_option_canon_resolved": True,
+        "const_value_canon_resolved": True,
         "aggregate_codecs": False,
         "candidate_construction": False,
         "runtime_mutation": False,

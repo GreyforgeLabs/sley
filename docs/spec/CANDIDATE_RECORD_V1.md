@@ -1,6 +1,7 @@
 # Candidate Record v1
 
-Status: S20-345 normative contract freeze; no implementation or authority.
+Status: S20-345 normative contract freeze; S20-350 implementation unblocked;
+no candidate implementation or authority.
 
 ## Boundary
 
@@ -110,5 +111,7 @@ add/replace payload carries a body, never nested standalone-object bytes.
 - decode/import/build APIs expose no apply, commit, receipt, CAS, session,
   provider, network, process, or filesystem operation.
 
-S20-345 freezes this record only. S20-350 remains blocked until independent
-review confirms all referenced codecs and records are exact and implementable.
+S20-345 freezes this record only. ADR-0019 and independent review resolved the
+remaining generic `Option<T>` contradiction, so S20-350 may implement the
+referenced codecs and record. Construction still grants no authority and must
+remain separate from S20-360 validation and S20-390 commit.

@@ -81,7 +81,7 @@ The production epoch containing SSMC1 must include exactly this descriptor:
 | required_fields | `{1,2}` |
 | optional_fields | `{3,4}` |
 | variant_tags | `{1..18}` |
-| field_schema_hash | `044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73` |
+| field_schema_hash | `1983bc8d6ad9ac3cb5390853f43959cf2c3dc0ae8e0ca18ca8264ca4960133ae` |
 | decoder_limits_hash | `389791b170bc9d8575f7e6f338e4f9e9f2b75f35d7a2e52c7cb106cb2cd6136a` |
 
 The field-schema hash is raw BLAKE3-256 of the complete manifest bytes. The
@@ -93,6 +93,11 @@ sley2.ssmc1.v1.decoder-limits:scb1-epoch1;label_bytes=1024;type_depth=64;type_ar
 
 These are inputs to the eventual complete production epoch. They do not
 mutate the S20-140 conformance epoch or claim later descriptors already exist.
+
+The generic `Option<T>` follows SCB1's special encoding: tag `0` with an empty
+payload is `None`, and tag `1` with one canonical payload is `Some<T>`. It is
+not an ordinary nonzero-tag union. ADR-0019 records the unreleased epoch-1
+re-anchor that corrected the provisional manifest.
 
 ## 4. Entity kinds
 

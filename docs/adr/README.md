@@ -25,3 +25,4 @@ Current records:
 - ADR-0017: candidate contract and identity freeze
 - ADR-0017: offline raw baseline evidence runner
 - ADR-0018: frozen legacy artifact adapter and retained version smoke
+- ADR-0019: unreleased epoch-1 generic Option contract re-anchor

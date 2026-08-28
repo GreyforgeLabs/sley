@@ -84,9 +84,10 @@ consume the committed expected bytes and exact rejection codes. This is not
 complete 18-body or 75-field conformance: the ten fields that depend on generic
 `Option<T>`, `ConstValue`, `Terminator`, or deferred contract/test unions, the
 seven deferred bodies, aggregates, preconditions, candidate records, and runtime
-surfaces remain explicitly excluded. `TrapTerminator` and the enclosing `Terminator` union
-remain unimplemented pending locked-canon resolution of the conflicting SCB1
-and manifest `Option<T>` tags. `ConstValue`, complete CFG/body/field codecs,
+surfaces remain explicitly excluded. `TrapTerminator` and the enclosing
+`Terminator` union remain unimplemented, but ADR-0019 has resolved their former
+SCB1/manifest `Option<T>` tag conflict. The `ConstValue` contract is frozen;
+its codec, complete CFG/body/field codecs,
 contract/test families, preconditions, candidate records, and candidate
 construction remain deferred. S20-370 now
 adds a separately registry-authorized protected policy root with exact opaque
@@ -117,8 +118,8 @@ fan-out directories across put, read, and recovery without writing outside the
 store. A fourth bounded mutation-value slice exercises all 126 currently
 supported accepted fixtures through 252 trailing-byte and 446 distinct proper-
 prefix mutations with panic containment and deterministic errors, while the 18
-committed rejection vectors retain exact codes. It does not cover the blocked
-`Option<T>`, `ConstValue`, aggregate, candidate, or runtime surfaces. These
+committed rejection vectors retain exact codes. It does not cover the
+`ConstValue` codec, aggregate, candidate, or runtime surfaces. These
 slices do not complete the required cross-surface adversarial suite. Six
 honest persistent targets now cover the SCB1 decoder, direct `SLEYEP01` schema
 bootstrap importer, S20-170 repository-pack importer, public typed S20-210 type

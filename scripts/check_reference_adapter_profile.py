@@ -18,8 +18,15 @@ spec = read("docs/spec/REFERENCE_ADAPTER_PROFILE_V1.md")
 adapter = read("crates/sley-adapter/src/lib.rs")
 identifier = read("crates/sley-id/src/lib.rs")
 work_packages = read("docs/WORK_PACKAGES.md")
+summary = json.loads(read("machineresearch/sley-2.0/machine-summary.json"))
 
 problems: list[str] = []
+
+expected_transcript_id = "820510df49047b58d4cace426f72090b5e9e4ded84a0a4405a4957e4cdfdf6a1"
+if expected_transcript_id not in adapter:
+    problems.append("fixed adapter transcript vector drift")
+if summary.get("reference_adapter_profile", {}).get("fixed_transcript_id") != expected_transcript_id:
+    problems.append("machine-summary adapter transcript vector drift")
 
 required_spec = [
     "Status: S20-280 restricted epoch-1 normative specification.",

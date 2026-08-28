@@ -32,7 +32,7 @@ for marker in [
 mutation_model = " ".join(MUTATION_MODEL.read_text(encoding="utf-8").split())
 for marker in [
     "S20-350 remains a separate",
-    "no candidate/value codec exists yet",
+    "no aggregate codec, precondition codec, candidate record codec, builder",
 ]:
     if marker not in mutation_model:
         problems.append(f"mutation-model-marker-missing:{marker}")
@@ -65,7 +65,7 @@ expected = {
     "merge_engine_production_boundary": False,
     "no_parallel_harness_created": True,
     "full_s20_700_complete": False,
-    "next_dependency_complete_package": None,
+    "next_dependency_complete_package": "S20-350",
 }
 for key, value in expected.items():
     if frontier.get(key) != value:
@@ -83,9 +83,9 @@ if frontier.get("local_frontier_contract") != "docs/audits/S20_LOCAL_COMPLETION_
 for path, marker in [
     (RESULTS, "eight scoped persistent libFuzzer"),
     (GAPS, "persistent targets are still absent"),
-    (GAPS, "S20-350 candidate construction remains blocked"),
+    (GAPS, "S20-350 candidate construction is now implementation-ready"),
     (AUDIT, "No placeholder target is created"),
-    (AUDIT, "No next authority-safe package is registered"),
+    (AUDIT, "S20-350 is now the next dependency-complete package"),
     (MAKEFILE, "python3 scripts/check_s20_700_frontier.py"),
 ]:
     if marker not in path.read_text(encoding="utf-8"):

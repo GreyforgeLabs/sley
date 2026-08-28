@@ -7,7 +7,7 @@
     "Namespace.parent, TypeDef.form, Block.terminator, Constant.value, CapabilityRequirement.allowed_scopes, Contract.resource_limits, TestCase.inputs, TestCase.effect_environment, TestCase.expected, TestCase.observations",
     "EntityBodyValue, FieldValue, ProposalValue, preconditions, candidates, validation, runtime mutation"
   ],
-  "source_schema_blake3": "044d21d328e40d517fd09fd099c9697fbba2c95d0a519eade333c1140d648e73",
+  "source_schema_blake3": "1983bc8d6ad9ac3cb5390853f43959cf2c3dc0ae8e0ca18ca8264ca4960133ae",
   "vectors": [
     {
       "case": "true",

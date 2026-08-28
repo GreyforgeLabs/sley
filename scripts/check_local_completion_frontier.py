@@ -58,24 +58,24 @@ def main() -> int:
 
         frontier = summary.get("local_completion_frontier", {})
         expected_frontier = {
-            "status": "NO_AUTHORITY_SAFE_LOCAL_PACKAGE",
+            "status": "S20_350_READY_AFTER_EPOCH1_REANCHOR",
             "goal_complete": False,
-            "next_authority_safe_package": None,
-            "blocked_lane_count": 7,
+            "next_authority_safe_package": "S20-350",
+            "blocked_lane_count": 6,
             "blocked_lanes": [
                 "semantics_and_queries",
                 "sessions_and_protocol",
-                "mutation_and_transactions",
                 "repository",
                 "succession_benchmark",
                 "adversarial",
                 "supply_chain_and_release",
             ],
-            "p0_package_ready": False,
+            "p0_package_ready": True,
             "s20_250_schema_bodies_frozen": True,
             "s20_250_impact_semantics_frozen": False,
-            "locked_option_canon_resolved": False,
-            "const_value_canon_resolved": False,
+            "locked_option_canon_resolved": True,
+            "const_value_canon_resolved": True,
+            "s20_350_implementation_complete": False,
             "session_authority_available": False,
             "transaction_boundary_available": False,
             "protocol_boundary_available": False,
@@ -83,7 +83,7 @@ def main() -> int:
             "real_benchmark_run_authorized": False,
             "root_license_text_approved": False,
             "release_artifact_available": False,
-            "required_specialist_review": "DEFERRED_FORGE_OAUTH_401",
+            "required_specialist_review": "PASS_AFTER_P2_VECTOR_REANCHOR",
             "full_v2_eligible": False,
             "release_check_eligible": False,
         }
@@ -96,18 +96,28 @@ def main() -> int:
         )
         mutation = summary.get("mutation_value_profile", {})
         for field in (
-            "generic_option_canon_resolved",
-            "const_value_canon_resolved",
             "aggregate_codecs",
             "candidate_construction",
             "runtime_mutation",
             "full_s20_350_complete",
         ):
             require_equal(mutation.get(field), False, f"S20-350 {field}")
+        for field in ("generic_option_canon_resolved", "const_value_canon_resolved"):
+            require_equal(mutation.get(field), True, f"S20-350 {field}")
         require_equal(
             mutation.get("nabu_review"),
-            "NO_DEPENDENCY_SAFE_RECURSIVE_FAMILY_REMAINS",
+            "S20_350_IS_NEXT_DEPENDENCY_SAFE_PACKAGE",
             "S20-350 review",
+        )
+        require_equal(
+            mutation.get("epoch1_reanchor_review"),
+            "PASS_AFTER_P2_VECTOR_REANCHOR",
+            "S20-350 epoch-1 re-anchor review",
+        )
+        require_equal(
+            summary.get("candidate_contract_freeze", {}).get("s20_350_unblocked"),
+            True,
+            "S20-345 unblocks S20-350",
         )
         require_equal(
             summary.get("fingerprint_impact_profile", {}).get("unmodeled_entity_kinds"),
@@ -118,7 +128,7 @@ def main() -> int:
             summary.get("s20_700_remaining_surface_audit", {}).get(
                 "next_dependency_complete_package"
             ),
-            None,
+            "S20-350",
             "S20-700 next package",
         )
         require_equal(
@@ -133,10 +143,11 @@ def main() -> int:
             not in scb1
         ):
             fail("SCB1 Option<T> tag marker changed")
-        if "generic union Option<T>(1:None,2:Some<T>)" not in EPOCH_SCHEMA.read_text(
-            encoding="utf-8"
-        ):
+        epoch_schema = EPOCH_SCHEMA.read_text(encoding="utf-8")
+        if "generic union Option<T>(0:None,1:Some<T>)" not in epoch_schema:
             fail("epoch Option<T> tag marker changed")
+        if "generic union Option<T>(1:None,2:Some<T>)" in epoch_schema:
+            fail("provisional epoch Option<T> tags remain")
 
         ssmc = SSMC.read_text(encoding="utf-8")
         for type_name in (
@@ -174,9 +185,9 @@ def main() -> int:
 
         audit = AUDIT.read_text(encoding="utf-8")
         for marker in (
-            "no authority-safe package is ready",
-            "S20-250 negative result",
-            "Required new specialist review remains deferred",
+            "S20-350 is the next authority-safe package",
+            "S20-250 remains incomplete",
+            "candidate construction is still absent",
         ):
             if marker not in audit:
                 fail(f"frontier audit marker missing: {marker}")
@@ -194,10 +205,10 @@ def main() -> int:
     print(
         json.dumps(
             {
-                "blocked_lanes": 7,
+                "blocked_lanes": 6,
                 "full_gate_run": False,
                 "goal_complete": False,
-                "next_authority_safe_package": None,
+                "next_authority_safe_package": "S20-350",
                 "result": "PASS",
             },
             indent=2,
