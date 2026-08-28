@@ -233,6 +233,23 @@ owning `SCB_*`, `TYPE_*`, `CFG_*`, `EFFECT_*`, `POLICY_*`, `CAP_*`, or
 never converts a source failure into success. Result byte canonicality and
 digest failures preserve their exact `SCB_*` code.
 
+S20-360 also freezes result-integrity codes 36100 through 36107:
+
+| Numeric | Symbolic |
+|---:|---|
+| 36100 | `CANDIDATE_RESULT_FORMAT_VERSION` |
+| 36101 | `CANDIDATE_RESULT_PROFILE_INVALID` |
+| 36102 | `CANDIDATE_RESULT_PHASE_SHAPE` |
+| 36103 | `CANDIDATE_RESULT_DECISION_PHASE_MISMATCH` |
+| 36104 | `CANDIDATE_RESULT_DIAGNOSTIC_INVALID` |
+| 36105 | `CANDIDATE_RESULT_SET_INVALID` |
+| 36106 | `CANDIDATE_RESULT_CANDIDATE_ID_SHAPE` |
+| 36107 | `CANDIDATE_RESULT_ROOT_SHAPE` |
+
+These codes validate internal result shape only. Import never authenticates
+phase evidence or grants candidate/commit authority. Strict value/envelope
+failures remain in the independent `SCB_*` namespace.
+
 S20-370 freezes numeric codes 37000 through 37018 for the exact `POLICY_*`
 failures listed in `POLICY_ROOT_V1.md`. They cover protected policy-record
 construction/import, closed principal grant data, ordinary-program isolation,

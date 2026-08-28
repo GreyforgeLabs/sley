@@ -1,6 +1,7 @@
 # Candidate Result and Validation Pipeline v1
 
-Status: S20-360 normative contract freeze; implementation pending.
+Status: S20-360 normative contract; canonical result codec and monotonic import
+implemented, validator pipeline integration pending.
 
 ## 1. Boundary and authority
 
@@ -43,6 +44,20 @@ public projection: accepted base transaction/root, schema, policy, principal,
 rebuilt capability-summary digest, trusted time, object-inventory digest,
 tombstone digest, and effective ceilings. Host secrets, token authenticators,
 raw token bytes, ledger memory, paths, and handles are excluded.
+
+The exact digest wrapper is:
+
+```text
+ValidationContextDigest = BLAKE3-256(
+  "sley2.validation-context.v1" ||
+  u64be(byte_length(canonical_public_projection)) ||
+  canonical_public_projection
+)
+```
+
+This formula alone grants no context authority. The in-process validator owns
+construction of the closed public projection; a caller-supplied byte string or
+digest is never accepted as a phase result.
 
 ## 3. Candidate attempt and result identity
 
@@ -99,6 +114,41 @@ A candidate root is present exactly for `VALID`; every other decision carries
 For invalid encoding, fields derived from decoded candidate semantics are
 empty, `candidate_id=None`, and phase 1 alone is failed. For every other
 decision, `candidate_id=Some(exact verified CandidateId)`.
+
+Each `PhaseResult` is the exact required four-field Record:
+
+| Tag | Field | Type |
+|---:|---|---|
+| 1 | phase_tag | `UInt32`, exact ordinal `1..=14` |
+| 2 | outcome | `PhaseOutcome` |
+| 3 | evidence_digest | `Option<FixedBytes<32>>` |
+| 4 | terminal_decision | `Option<CandidateDecision>` |
+
+Each `CandidateDiagnostic` is the exact required six-field Record:
+
+| Tag | Field | Type |
+|---:|---|---|
+| 1 | phase_tag | `UInt32` |
+| 2 | result_code | frozen S20-360 `UInt32` |
+| 3 | source_numeric_code | `Option<UInt32>` |
+| 4 | source_symbol | bounded ASCII `Text` |
+| 5 | retryability | `DiagnosticRetryability` |
+| 6 | causal_digest | `Option<FixedBytes<32>>` |
+
+Diagnostic retryability tags are `1=PERMANENT`, `2=FRESH_BASE`,
+`3=FRESH_AUTHORITY`, `4=HIGHER_CEILINGS`, and `5=INTERNAL_REPAIR`. Source
+symbols are 1 through 96 ASCII bytes, begin with `A..Z`, and contain only
+`A..Z`, `0..9`, or `_`. Diagnostics are strictly ordered by their complete
+typed record, contain no duplicates, and all bind the one failed phase and its
+outer result code. `VALID` carries no diagnostics; every invalid decision
+carries at least one primary diagnostic. The primary diagnostic is exactly
+list element zero after that strict typed ordering; it has no redundant marker
+field. Import derives and validates this element explicitly, so an empty list
+is an omitted-primary failure.
+
+The three entity-ID sets are strictly raw-ID ascending and duplicate-free,
+with at most 65,535 members each. Invalid encoding carries empty sets. The
+diagnostic list is bounded to 1,024 records.
 
 ## 5. Decision tags
 
@@ -157,7 +207,7 @@ Phase evidence uses:
 ```text
 PhaseEvidenceDigest = BLAKE3-256(
   "sley2.candidate-phase-evidence.v1" ||
-  u32be(phase_tag) || len(canonical_phase_input_output) ||
+  u32be(phase_tag) || uvar(byte_length(canonical_phase_input_output)) ||
   canonical_phase_input_output
 )
 ```
@@ -165,6 +215,16 @@ PhaseEvidenceDigest = BLAKE3-256(
 Phase evidence cannot contain a caller-provided pass flag. Import validates
 the monotonic shape but does not rerun or authenticate the underlying
 judgment; only the in-process validator creates authoritative result objects.
+
+For a successful phase 14, `canonical_phase_input_output` is the
+validator-owned final-result core: result fields 1 through 6 and 8 through 13,
+phase records 1 through 13, and phase-14 tag/outcome with its evidence and
+terminal fields omitted. It excludes `CandidateResultId`, the stored result
+bytes, and its own `PhaseEvidenceDigest`, preventing a self-hash cycle. The
+canonical result envelope then binds that phase-14 evidence and every other
+record byte. A terminal result whose earlier phase failed may still receive
+its envelope integrity digest from the failure renderer; that does not mark
+phase 14 as executed or passed.
 
 ## 7. Required phase judgments
 
@@ -211,6 +271,12 @@ decision listed in Section 5. Their symbols are the decision prefixed with
 `CANDIDATE_VALIDATION_INVALID_ENCODING`. Exact underlying `SCB_*`, `TYPE_*`,
 `CFG_*`, `EFFECT_*`, `POLICY_*`, `CAP_*`, and `CONTRACT_*` symbols remain in
 the source-code field and are never collapsed into success.
+
+The result symbol is the unique mapping of `result_code` and is therefore not
+duplicated as a second text field. Result-integrity shape failures use numeric
+codes 36100 through 36107 under `CANDIDATE_RESULT_*`; strict SCB1 syntax,
+canonicality, resource, envelope, and digest failures retain their exact
+`SCB_*` source code.
 
 ## 9. Acceptance and explicit gaps
 

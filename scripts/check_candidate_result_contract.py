@@ -79,12 +79,13 @@ def main() -> int:
         '"SLEYCRS1"',
         '"sley2.candidate-result.v1"',
         (
-            "u32be(phase_tag) || len(canonical_phase_input_output) || "
+            "u32be(phase_tag) || uvar(byte_length(canonical_phase_input_output)) || "
             "canonical_phase_input_output"
         ),
         "candidate_id=None",
         "exactly fourteen ordered `PhaseResult` records",
         "A candidate root is present exactly for `VALID`",
+        "The primary diagnostic is exactly list element zero",
         "no caller-supplied phase outcome",
         "S20-390 remains the first package allowed to perform durable commit",
     ):
@@ -107,9 +108,24 @@ def main() -> int:
         marker = f"| {numeric} | `CANDIDATE_VALIDATION_{decision}` |"
         if errors.count(marker) != 1:
             problems.append(f"candidate-result-error-drift:{numeric}:{decision}")
+    integrity_symbols = (
+        "FORMAT_VERSION",
+        "PROFILE_INVALID",
+        "PHASE_SHAPE",
+        "DECISION_PHASE_MISMATCH",
+        "DIAGNOSTIC_INVALID",
+        "SET_INVALID",
+        "CANDIDATE_ID_SHAPE",
+        "ROOT_SHAPE",
+    )
+    for numeric, symbol in enumerate(integrity_symbols, start=36_100):
+        marker = f"| {numeric} | `CANDIDATE_RESULT_{symbol}` |"
+        if errors.count(marker) != 1:
+            problems.append(f"candidate-result-integrity-error-drift:{numeric}:{symbol}")
 
     result = {
         "candidate_authority": False,
+        "candidate_result_codec_implemented": True,
         "candidate_result_implemented": False,
         "contract": "s20-360-candidate-result-contract-freeze-v1",
         "decisions": len(DECISIONS),

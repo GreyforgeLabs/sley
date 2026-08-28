@@ -1,7 +1,8 @@
 # sley-policy
 
-`sley-policy` implements the S20-370 protected policy-root contract and the
-S20-380 narrow local capability-token profile.
+`sley-policy` implements the S20-370 protected policy-root contract, the
+S20-380 narrow local capability-token profile, and the non-authoritative
+canonical S20-360 candidate-result importer/shape codec.
 
 The crate constructs and strictly imports immutable `PolicyRoot` records through
 an exact schema registry and preserved decoder. A policy root can name opaque
@@ -13,6 +14,10 @@ host-supplied keyed BLAKE3 secret, and owns the deterministic caller-owned
 replay/budget ledger used by runtime enforcement.
 Policy-root records do not embed capability tokens or authenticators; S20-370
 root serialization and S20-380 token serialization remain separate contracts.
+Candidate-result import verifies exact bytes, its digest trailer, all fourteen
+monotonic phase records, diagnostic bounds, set order, and candidate/root
+presence rules. Import does not prove that a phase ran; only the crate-private
+validator construction lane may create validator-owned results.
 
 This crate does not apply mutations, construct candidates, move refs, write
 repositories, read host state, authenticate policy transitions, publish state,

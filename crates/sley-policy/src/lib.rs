@@ -22,6 +22,16 @@ use sley_schema::{
 use sley_ssmc::EffectKind;
 use sley_state_root::AcceptedStateRoot;
 
+mod candidate_result;
+
+pub use candidate_result::{
+    CandidateDecision, CandidateDiagnostic, CandidatePhaseResult, CandidateResultError,
+    CandidateResultErrorCode, CandidateResultRecord, DiagnosticCausalDigest,
+    DiagnosticRetryability, ImportedCandidateResult, PhaseEvidenceDigest, PhaseOutcome,
+    ValidationContextDigest, candidate_attempt_digest, import_candidate_result,
+    phase_evidence_digest, validation_context_digest,
+};
+
 const MAGIC: &[u8; 8] = b"SLEYSCB1";
 const FORMAT_VERSION: u64 = 1;
 const CONTRACT_TAG: u32 = 370;

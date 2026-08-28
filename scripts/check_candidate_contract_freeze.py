@@ -95,7 +95,7 @@ for marker in [
     'b"sley2.capability-summary.v1"', 'b"sley2.validation-profile.v1"',
     "bad9f879f53483061bd181da955a62cb6c758bbd0381ee93630781a074f5fd19",
     "974290a6758c97f547093e707ba18055c3ab73a6a504c3c0514b2a7d4dc7bf11",
-    "const ALL: [Self; 28]",
+    "const ALL: [Self; 29]",
 ]:
     if marker not in identifier_source:
         problems.append(f"identifier-registry:missing:{marker}")
