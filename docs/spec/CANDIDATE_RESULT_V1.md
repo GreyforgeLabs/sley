@@ -1,7 +1,8 @@
 # Candidate Result and Validation Pipeline v1
 
-Status: S20-360 normative contract; canonical result codec and monotonic import
-implemented, validator pipeline integration pending.
+Status: S20-360 normative contract implemented for the operation-free
+restricted conformance epoch. Full-GA operation analysis and S20-390 commit
+remain separate incomplete packages.
 
 ## 1. Boundary and authority
 
@@ -44,6 +45,45 @@ public projection: accepted base transaction/root, schema, policy, principal,
 rebuilt capability-summary digest, trusted time, object-inventory digest,
 tombstone digest, and effective ceilings. Host secrets, token authenticators,
 raw token bytes, ledger memory, paths, and handles are excluded.
+
+The canonical public projection is one exact eleven-field SCB1 Record:
+
+| Tag | Field | Encoding |
+|---:|---|---|
+| 1 | context format | `UInt32`, exactly `1` |
+| 2 | accepted base transaction | exact `TransactionId` bytes |
+| 3 | accepted base state | exact `StateRoot` bytes |
+| 4 | accepted schema epoch | exact `SchemaEpochId` bytes |
+| 5 | accepted policy | exact `PolicyRootId` bytes |
+| 6 | principal | exact `PrincipalId` bytes |
+| 7 | rebuilt capability summary | exact `CapabilitySummaryDigest` bytes |
+| 8 | trusted validation time | `UInt64` milliseconds |
+| 9 | object inventory digest | exact component digest |
+| 10 | tombstone digest | exact component digest |
+| 11 | effective ceilings | exact nine-field limits Record |
+
+The inventory component is a canonical List of two-field Records containing
+`EntityId` and `ObjectId`, sorted by their encoded record bytes. The tombstone
+component is a canonical raw-ID-sorted List of `EntityId` bytes. Their exact
+digests are:
+
+```text
+inventory_digest = BLAKE3-256(
+  "sley2.validation-context-inventory.v1" ||
+  u64be(byte_length(canonical_inventory_list)) || canonical_inventory_list
+)
+tombstone_digest = BLAKE3-256(
+  "sley2.validation-context-tombstones.v1" ||
+  u64be(byte_length(canonical_tombstone_list)) || canonical_tombstone_list
+)
+```
+
+The limits Record contains, in order, maximum operations, preconditions,
+candidate bytes, decoded/change bytes, graph work, selected tests, entities,
+test call depth, and test wall timeout. Values are the effective minima after
+clamping requested local limits to the full-v1 profile, SCB1, policy, and
+implementation hard ceilings. A looser requested limit therefore cannot alter
+authority or produce a different effective context.
 
 The exact digest wrapper is:
 
@@ -241,6 +281,13 @@ phase 14 as executed or passed.
   malformed graph structure from a missing referenced identity.
 - Phases 6 through 8 invoke the owning S20-210/S20-220/S20-230 checkers and
   preserve their exact source code in diagnostics.
+- Present semantic-fingerprint claims on supported TypeDef and Function
+  entities are recomputed only after their owning semantic checker passes.
+  A mismatch is reported at phase 6 for TypeDef or phase 8 for Function while
+  preserving `FINGERPRINT_MISMATCH` as the source symbol. Present claims on an
+  unsupported entity kind fail closed. The restricted conformance epoch allows
+  absent claims; complete production-epoch assembly must require every
+  master-goal-mandatory claim before GA.
 - Phase 9 independently rebuilds and compares the capability summary, verifies
   authenticated token bindings where present, enforces policy mutation-class
   grants and ceilings, and runs protected ordinary-program isolation.
@@ -287,6 +334,16 @@ type/CFG/effect/contract source-code preservation; capability-summary,
 expiry, mutation-grant, policy-isolation, and mandatory-test failures; resource
 ceilings; byte-identical repeated valid results; invalid-state immutability;
 and persistent fuzzing of result import and monotonic phase shape.
+
+The landed conformance slice can produce `VALID` only when the projected SSMC1
+program contains no `Operation` entities. This is an explicit supported subset,
+not an inference that operation semantics are safe. Encountering an operation
+fails phase 12 with `RESOURCE_LIMIT` and source symbol
+`CANDIDATE_OPERATION_ANALYSIS_UNSUPPORTED`. The validator still exercises all
+fourteen phases, all sixteen terminal decision encodings, complete all-18-kind
+reference extraction, native type/CFG/effect/contract owners, capability and
+policy checks, mandatory test planning, in-memory root reconstruction, and
+byte-identical result generation for the supported subset.
 
 S20-360 does not authorize policy transitions, mutate accepted state, consume
 runtime capability budget, execute tests or effects, write objects, commit,

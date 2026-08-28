@@ -1,6 +1,6 @@
 # Property, Fuzz, and Adversarial Results
 
-Status: bounded partial S20-700 evidence with nine scoped persistent libFuzzer
+Status: bounded partial S20-700 evidence with ten scoped persistent libFuzzer
 harnesses. This is not the complete cross-surface suite or a final finding
 register. The 55-threat map remains `docs/THREAT_REGISTER.md`.
 
@@ -58,6 +58,12 @@ Current landed slices:
   Successful record decodes must re-encode byte-identically; successful imports
   must rebuild to the identical record, preimage, candidate ID, and stored
   bytes. The target grants no validation authority or mutation path.
+- Candidate-result persistent libFuzzer target: all sixteen canonical terminal
+  decisions plus four corruption mutations seed the production result importer.
+  Successful imports must repeat identically, rederive their exact digest,
+  retain envelope length/trailer integrity, and preserve the fourteen-phase
+  monotonic result shape. This adjacent result surface grants no candidate,
+  commit, ledger, repository, or runtime authority.
 
 Closed development finding `S20-700-HARNESS-001` retains minimized input `c2`.
 The initial fuzz-only type generator could expand that cyclic one-byte stream
@@ -81,7 +87,7 @@ target. The merge production boundary remains absent; protocol is an adjacent
 future surface but is not one of Section 18.5's eleven minimum surfaces.
 The restricted VM target does not define or execute raw bytecode and does not
 complete S20-270. The adapter target is a conformance-only in-memory fixture,
-not VM integration, live host access, or the authorized S20-380 path. The nine
+not VM integration, live host access, or the authorized S20-380 path. The ten
 persistent targets do not complete S20-700;
 persistent harnesses for the remaining required surfaces remain absent.
 Persistent fuzzing and minimized finding retention remain mandatory before
@@ -143,6 +149,13 @@ The candidate persistent smoke is selected by:
 ```bash
 make mutation-candidate-persistent-fuzz-smoke
 python3 scripts/run_mutation_candidate_persistent_fuzz.py --manual
+```
+
+The candidate-result persistent smoke is selected by:
+
+```bash
+make candidate-result-persistent-fuzz-smoke
+python3 scripts/run_candidate_result_persistent_fuzz.py --manual
 ```
 
 The bounded mutation-value post-commit environment, command durations, results,

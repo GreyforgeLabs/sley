@@ -1,0 +1,122 @@
+{
+  "affected_subsystems": [
+    "S20-360 ordered candidate validation",
+    "S20-360 candidate-result codec and independent oracle",
+    "S20-700 adjacent candidate-result persistent fuzz surface",
+    "S20 local completion frontier"
+  ],
+  "base_commit": "959ba9fab61ed9a2db1733d5f85dfb33ab1f8096",
+  "branch": "main",
+  "commands": [
+    {
+      "command": "cargo test -p sley-policy candidate_validation -- --nocapture",
+      "result": "PASS_11_TESTS"
+    },
+    {
+      "command": "cargo test -p sley-policy candidate_result -- --nocapture",
+      "result": "PASS_6_TESTS_1_EXPLICIT_FIXTURE_HELPER_IGNORED"
+    },
+    {
+      "command": "cargo clippy -p sley-policy --all-targets -- -D warnings",
+      "result": "PASS"
+    },
+    {
+      "command": "cargo +nightly-2026-02-27 clippy --manifest-path fuzz/Cargo.toml --bin candidate_result -- -D warnings",
+      "result": "PASS"
+    },
+    {
+      "command": "python3 scripts/generate_candidate_result_fixtures.py --check",
+      "result": "PASS_16_VECTORS_NO_DRIFT"
+    },
+    {
+      "command": "uv run --project oracle/scb1 --frozen python -m unittest discover -s oracle/scb1/tests -v",
+      "result": "PASS_9_TESTS"
+    },
+    {
+      "command": "uv run --project oracle/scb1 --frozen sley2-scb1-oracle check-candidate-result --accepted conformance/candidate-result/v1/accepted.json --rejected conformance/candidate-result/v1/rejected.json",
+      "result": "PASS_16_ACCEPTED_4_REJECTED"
+    },
+    {
+      "command": "make candidate-result-persistent-fuzz-smoke",
+      "result": "PASS_512_RUNS_25_UNIQUE_SEEDS"
+    },
+    {
+      "command": "make quick",
+      "result": "PASS_AFTER_EXPECTED_FRONTIER_AND_SECRET_SCAN_DRIFT_REFRESH"
+    },
+    {
+      "command": "make core",
+      "result": "PASS"
+    },
+    {
+      "command": "make conformance",
+      "result": "PASS"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+      "result": "PASS"
+    }
+  ],
+  "contract": "s20-360-candidate-validation-closeout-v1",
+  "deterministic_inputs": {
+    "accepted_fixture_sha256": "020676f6ffd1e2ef2de7c23db72382a1849ddd693d84d4fc725492cc741aec0a",
+    "accepted_result_vectors": 16,
+    "candidate_result_id_valid_fixture": "16ad5d91483c8aae6439ca6bcb5c638d49bf8b82ba41cc0ab4f59783a05e08ec",
+    "operation_success_subset": "operation-free",
+    "persistent_fuzz_corpus_seeds": 25,
+    "persistent_fuzz_runs": 512,
+    "rejected_fixture_sha256": "3b920f7638e6b6ee847bcec18ad4061cf6072ad572364172a4a33483c5001410",
+    "rejected_result_mutations": 4,
+    "terminal_decisions": 16,
+    "validation_phases": 14
+  },
+  "environment": {
+    "cargo": "1.93.0 (083ac5135 2025-12-15)",
+    "kernel": "Linux 7.0.0-30-generic x86_64",
+    "python": "3.12.3",
+    "rust_host": "x86_64-unknown-linux-gnu",
+    "rustc": "1.93.0 (254b59607 2026-01-19)",
+    "uv": "0.9.24"
+  },
+  "external_actions": {
+    "deploy": false,
+    "network_runtime": false,
+    "provider": false,
+    "publish": false,
+    "push": false,
+    "sley_1_2_tree_touched": false,
+    "tag": false,
+    "trade": false
+  },
+  "recorded_at": "2026-08-28T01:18:46-04:00",
+  "repository": "<LOCAL_HOME>/sley2",
+  "result": "PASS_RESTRICTED_OPERATION_FREE",
+  "reviews": {
+    "ariadne": "PASS_AFTER_RESOURCE_LIMIT_DECISION_FIX",
+    "codex": "PASS_TARGETED_AND_SUBSYSTEM_VALIDATION",
+    "vulcan": "PASS_P3_CORPUS_BREADTH_CLOSED_NO_OPEN_P0_P1_P2_P3_P4"
+  },
+  "scope": "PURE_RESTRICTED_CANDIDATE_VALIDATION_NO_COMMIT_AUTHORITY",
+  "scope_limits": {
+    "accepted_state_mutation": false,
+    "candidate_authority": false,
+    "capability_ledger_mutation": false,
+    "complete_operation_analysis": false,
+    "full_sley_2_complete": false,
+    "runtime_authority": false,
+    "semantic_validation": true,
+    "transaction_commit": false
+  },
+  "skipped_checks": [
+    {
+      "check": "make v2",
+      "reason": "The authoritative full-product gate intentionally remains fail-closed while later Sley 2 packages and release prerequisites are incomplete."
+    },
+    {
+      "check": "make release-check",
+      "reason": "Release packaging, approved root license, provenance, succession evidence, and release authority remain absent."
+    }
+  ],
+  "validation_tier": "TIER_2_SUBSYSTEM_HANDOFF",
+  "worktree_clean_before_validation": false
+}

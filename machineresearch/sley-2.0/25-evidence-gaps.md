@@ -13,7 +13,8 @@
   S20-280 target now exercises all eight in-memory reference kinds and six
   GenericReplay response schemas.
   The production candidate target now exercises raw record and stored-envelope
-  round trips. The merge surface remains blocked; protocol is an adjacent
+  round trips. An additional production candidate-result target exercises all
+  sixteen decisions, strict import, and monotonic phase shape. The merge surface remains blocked; protocol is an adjacent
   future surface outside Section 18.5's minimum eleven.
 - The typed graph/CFG persistent target is deliberately a fuzz-only structure
   generator. SSMC still has no public canonical graph decoder, and the target
@@ -37,6 +38,15 @@
   preconditions, candidates, and envelope/digest rejection. The production
   candidate target and focused local review pass. Construction grants no
   semantic validity, runtime mutation authority, or commit permission.
+- Restricted S20-360 candidate validation is complete for the explicit
+  operation-free success subset. The validator owns all fourteen ordered
+  phases, recomputes supported semantic fingerprints, invokes native
+  type/CFG/effect/contract owners, verifies policy/capability inputs without
+  ledger mutation, reconstructs the root in memory, and produces canonical
+  results. Sixteen accepted result vectors and four corruptions pass the
+  independent Python oracle. Complete operation analysis, mandatory GA
+  fingerprint coverage, atomic commit/receipt behavior, and runtime authority
+  remain absent.
 - Full-GA S20-240 through S20-270 semantics, adapters, persistent reports, and
   all remaining M2–M6 runtime, query, mutation, policy, repository,
   adversarial, succession, packaging, reproducibility, and independent-review
@@ -47,6 +57,6 @@
 These post-M0 gaps prevent any GA or superiority claim.
 
 The current cross-lane audit is
-`docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md`. It records S20-360 candidate
-validation as the next authority-safe package. This is an active work frontier,
+`docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md`. It records S20-390 atomic
+transaction/receipt work as the next authority-safe package. This is an active work frontier,
 not product completion.

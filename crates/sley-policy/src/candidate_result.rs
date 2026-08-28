@@ -601,6 +601,67 @@ pub(crate) fn build_candidate_result(
     })
 }
 
+/// Encodes the validator-owned phase-14 final-result core without creating a
+/// self-hash cycle.
+///
+/// The caller supplies a draft valid record whose first thirteen phases are
+/// complete and whose phase-14 record is `Passed` with no evidence or terminal
+/// decision. This helper encodes result fields 1 through 6 and 8 through 13,
+/// plus full phase records 1 through 13 and the phase-14 tag/outcome only.
+pub(crate) fn encode_phase14_result_core(
+    record: &CandidateResultRecord,
+) -> Result<Vec<u8>, CandidateResultError> {
+    if record.decision != CandidateDecision::Valid
+        || record.phase_results.len() != PHASE_COUNT
+        || record.phase_results[..13].iter().any(|phase| {
+            phase.outcome != PhaseOutcome::Passed
+                || phase.evidence_digest.is_none()
+                || phase.terminal_decision.is_some()
+        })
+        || record.phase_results[13].phase_tag != 14
+        || record.phase_results[13].outcome != PhaseOutcome::Passed
+        || record.phase_results[13].evidence_digest.is_some()
+        || record.phase_results[13].terminal_decision.is_some()
+    {
+        return Err(result_error(CandidateResultErrorCode::PhaseShape));
+    }
+
+    let mut phase_results = record.phase_results[..13]
+        .iter()
+        .map(encode_phase_result)
+        .collect::<Result<Vec<_>, _>>()?;
+    phase_results.push(encode_record(&[
+        (1, encode_uvar(14)),
+        (2, encode_uvar(u64::from(PhaseOutcome::Passed.tag()))),
+    ])?);
+    let diagnostics = record
+        .diagnostics
+        .iter()
+        .map(encode_diagnostic)
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(encode_record(&[
+        (1, encode_uvar(u64::from(record.format_version))),
+        (2, record.candidate_attempt_digest.as_bytes().to_vec()),
+        (
+            3,
+            encode_option_fixed(record.candidate_id.as_ref().map(CandidateId::as_bytes))?,
+        ),
+        (4, record.validation_profile_id.as_bytes().to_vec()),
+        (5, record.validation_context_digest.as_bytes().to_vec()),
+        (6, encode_uvar(u64::from(record.decision.tag()))),
+        (7, encode_list(&phase_results)?),
+        (8, encode_list(&diagnostics)?),
+        (9, encode_entity_set(&record.affected_closure)?),
+        (10, encode_entity_set(&record.required_capabilities)?),
+        (11, encode_entity_set(&record.selected_tests)?),
+        (
+            12,
+            encode_option_fixed(record.candidate_root.as_ref().map(StateRoot::as_bytes))?,
+        ),
+        (13, encode_uvar(record.validated_at_unix_millis)),
+    ])?)
+}
+
 fn encode_result_record(record: &CandidateResultRecord) -> Result<Vec<u8>, ScbError> {
     let phase_results = record
         .phase_results
@@ -1143,6 +1204,49 @@ mod tests {
         for (decision, phase) in decisions {
             let built = build_candidate_result(&invalid_record(decision, phase)).unwrap();
             assert_eq!(import_candidate_result(&built.stored_bytes).unwrap(), built);
+        }
+    }
+
+    #[test]
+    #[ignore = "explicit conformance fixture refresh helper"]
+    fn emit_candidate_result_vectors_for_fixture_refresh() {
+        use core::fmt::Write as _;
+
+        let decisions = [
+            (CandidateDecision::InvalidEncoding, 1),
+            (CandidateDecision::InvalidSchema, 2),
+            (CandidateDecision::StaleRoot, 3),
+            (CandidateDecision::StaleEntity, 3),
+            (CandidateDecision::InvalidIdentity, 4),
+            (CandidateDecision::InvalidGraph, 5),
+            (CandidateDecision::UnresolvedReference, 5),
+            (CandidateDecision::TypeError, 6),
+            (CandidateDecision::ControlFlowError, 7),
+            (CandidateDecision::EffectError, 8),
+            (CandidateDecision::CapabilityDenied, 9),
+            (CandidateDecision::ContractError, 10),
+            (CandidateDecision::ResourceLimit, 12),
+            (CandidateDecision::TestPlanError, 11),
+            (CandidateDecision::InternalError, 14),
+        ];
+        let mut records = vec![("VALID", 0, build_candidate_result(&valid_record()).unwrap())];
+        records.extend(decisions.into_iter().map(|(decision, phase)| {
+            (
+                decision.symbol(),
+                phase,
+                build_candidate_result(&invalid_record(decision, phase)).unwrap(),
+            )
+        }));
+        for (decision, phase, result) in records {
+            let mut stored = String::with_capacity(result.stored_bytes.len() * 2);
+            for byte in &result.stored_bytes {
+                write!(&mut stored, "{byte:02x}").expect("writing to String cannot fail");
+            }
+            let mut id = String::with_capacity(result.candidate_result_id.as_bytes().len() * 2);
+            for byte in result.candidate_result_id.as_bytes() {
+                write!(&mut id, "{byte:02x}").expect("writing to String cannot fail");
+            }
+            println!("VECTOR|{decision}|{phase}|{id}|{stored}");
         }
     }
 

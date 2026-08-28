@@ -255,6 +255,22 @@ impl EffectKind {
             Self::AdapterCall => 8,
         }
     }
+
+    /// Resolves one exact frozen SSMC1 effect-kind tag.
+    #[must_use]
+    pub const fn from_tag(tag: u32) -> Option<Self> {
+        match tag {
+            1 => Some(Self::StdoutWrite),
+            2 => Some(Self::StderrWrite),
+            3 => Some(Self::FileRead),
+            4 => Some(Self::FileWrite),
+            5 => Some(Self::ClockRead),
+            6 => Some(Self::RandomRead),
+            7 => Some(Self::EnvironmentRead),
+            8 => Some(Self::AdapterCall),
+            _ => None,
+        }
+    }
 }
 
 /// One immutable effect-definition semantic body.
@@ -1021,6 +1037,69 @@ impl Opcode {
             Self::FunctionRef => 194,
         }
     }
+
+    /// Resolves one exact frozen SSMC1 opcode tag.
+    #[must_use]
+    pub const fn from_tag(tag: u32) -> Option<Self> {
+        match tag {
+            1 => Some(Self::ConstantRef),
+            16 => Some(Self::TupleNew),
+            17 => Some(Self::TupleGet),
+            18 => Some(Self::RecordNew),
+            19 => Some(Self::RecordGet),
+            20 => Some(Self::VariantNew),
+            21 => Some(Self::VariantGet),
+            32 => Some(Self::VectorNew),
+            33 => Some(Self::VectorLen),
+            34 => Some(Self::VectorGet),
+            35 => Some(Self::VectorSet),
+            36 => Some(Self::MapNew),
+            37 => Some(Self::MapGet),
+            38 => Some(Self::MapContains),
+            39 => Some(Self::MapInsert),
+            40 => Some(Self::MapRemove),
+            64 => Some(Self::IntAddChecked),
+            65 => Some(Self::IntSubChecked),
+            66 => Some(Self::IntMulChecked),
+            67 => Some(Self::IntDivChecked),
+            68 => Some(Self::IntRemChecked),
+            69 => Some(Self::IntNegChecked),
+            70 => Some(Self::IntShlChecked),
+            71 => Some(Self::IntShrChecked),
+            80 => Some(Self::FloatAdd),
+            81 => Some(Self::FloatSub),
+            82 => Some(Self::FloatMul),
+            83 => Some(Self::FloatDiv),
+            84 => Some(Self::FloatNeg),
+            85 => Some(Self::FloatFma),
+            96 => Some(Self::Equal),
+            97 => Some(Self::NotEqual),
+            98 => Some(Self::LessThan),
+            99 => Some(Self::LessEqual),
+            100 => Some(Self::GreaterThan),
+            101 => Some(Self::GreaterEqual),
+            102 => Some(Self::BoolNot),
+            103 => Some(Self::BoolAnd),
+            104 => Some(Self::BoolOr),
+            112 => Some(Self::CallDirect),
+            128 => Some(Self::OptionSome),
+            129 => Some(Self::OptionNone),
+            130 => Some(Self::ResultOk),
+            131 => Some(Self::ResultErr),
+            144 => Some(Self::ContractAssert),
+            145 => Some(Self::TestObserve),
+            160 => Some(Self::EffectRequest),
+            161 => Some(Self::AdapterInvoke),
+            162 => Some(Self::CapabilityNarrow),
+            176 => Some(Self::CellNew),
+            177 => Some(Self::CellGet),
+            178 => Some(Self::CellSet),
+            192 => Some(Self::ValueHash),
+            193 => Some(Self::GlobalGet),
+            194 => Some(Self::FunctionRef),
+            _ => None,
+        }
+    }
 }
 
 /// One SSMC1 operation entity.
@@ -1372,20 +1451,23 @@ mod tests {
         );
         assert_eq!(TypeDefForm::Record(Vec::new()).tag(), 1);
         assert_eq!(TypeDefForm::Variant(Vec::new()).tag(), 2);
-        assert_eq!(
-            [
-                EffectKind::StdoutWrite,
-                EffectKind::StderrWrite,
-                EffectKind::FileRead,
-                EffectKind::FileWrite,
-                EffectKind::ClockRead,
-                EffectKind::RandomRead,
-                EffectKind::EnvironmentRead,
-                EffectKind::AdapterCall,
-            ]
-            .map(EffectKind::tag),
-            [1, 2, 3, 4, 5, 6, 7, 8]
-        );
+        let effects = [
+            EffectKind::StdoutWrite,
+            EffectKind::StderrWrite,
+            EffectKind::FileRead,
+            EffectKind::FileWrite,
+            EffectKind::ClockRead,
+            EffectKind::RandomRead,
+            EffectKind::EnvironmentRead,
+            EffectKind::AdapterCall,
+        ];
+        let effect_tags = [1, 2, 3, 4, 5, 6, 7, 8];
+        assert_eq!(effects.map(EffectKind::tag), effect_tags);
+        for (effect, tag) in effects.into_iter().zip(effect_tags) {
+            assert_eq!(EffectKind::from_tag(tag), Some(effect));
+        }
+        assert_eq!(EffectKind::from_tag(0), None);
+        assert_eq!(EffectKind::from_tag(9), None);
         assert_eq!(
             [
                 ContractKind::Precondition,
@@ -1546,6 +1628,12 @@ mod tests {
             130, 131, 144, 145, 160, 161, 162, 176, 177, 178, 192, 193, 194,
         ];
         assert_eq!(opcodes.map(Opcode::tag), expected);
+        for (opcode, tag) in opcodes.into_iter().zip(expected) {
+            assert_eq!(Opcode::from_tag(tag), Some(opcode));
+        }
+        assert_eq!(Opcode::from_tag(0), None);
+        assert_eq!(Opcode::from_tag(2), None);
+        assert_eq!(Opcode::from_tag(195), None);
         assert!(expected.windows(2).all(|pair| pair[0] < pair[1]));
     }
 }

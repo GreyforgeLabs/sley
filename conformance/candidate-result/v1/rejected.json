@@ -1,0 +1,25 @@
+{
+  "contract": "s20-360-candidate-result-v1",
+  "mutations": [
+    {
+      "expected_code": "SCB_MAGIC_INVALID",
+      "id": "magic",
+      "operation": "flip-first-byte"
+    },
+    {
+      "expected_code": "SCB_DIGEST_MISMATCH",
+      "id": "digest",
+      "operation": "flip-last-byte"
+    },
+    {
+      "expected_code": "SCB_TRAILING_BYTES",
+      "id": "trailing",
+      "operation": "append-zero"
+    },
+    {
+      "expected_code": "SCB_LENGTH_OVERFLOW",
+      "id": "truncated",
+      "operation": "truncate-half"
+    }
+  ]
+}

@@ -22,7 +22,9 @@ use sley_schema::{
 use sley_ssmc::EffectKind;
 use sley_state_root::AcceptedStateRoot;
 
+mod candidate_program;
 mod candidate_result;
+mod candidate_validation;
 mod capability_summary;
 
 pub use candidate_result::{
@@ -31,6 +33,10 @@ pub use candidate_result::{
     DiagnosticRetryability, ImportedCandidateResult, PhaseEvidenceDigest, PhaseOutcome,
     ValidationContextDigest, candidate_attempt_digest, import_candidate_result,
     phase_evidence_digest, validation_context_digest,
+};
+pub use candidate_validation::{
+    CandidateValidationContext, CandidateValidationError, CandidateValidationLimits,
+    CandidateValidationOutput, TrustedCandidateCapability, validate_candidate_bytes,
 };
 pub use capability_summary::{CapabilitySummaryProjection, build_capability_summary_projection};
 

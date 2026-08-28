@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from .candidate import check_candidate
+from .candidate_result import check_candidate_result
 from .codec import decode_accepted_vector, decode_declared_value, encode_accepted_vector
 from .errors import ScbError
 from .mutation_value import check_mutation_value
@@ -67,12 +68,20 @@ def check(accepted_path: Path, rejected_path: Path) -> dict[str, object]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "command", choices=("check", "check-mutation-value", "check-mutation-candidate")
+        "command",
+        choices=(
+            "check",
+            "check-mutation-value",
+            "check-mutation-candidate",
+            "check-candidate-result",
+        ),
     )
     parser.add_argument("--accepted", required=True, type=Path)
     parser.add_argument("--rejected", required=True, type=Path)
     arguments = parser.parse_args()
-    if arguments.command == "check-mutation-candidate":
+    if arguments.command == "check-candidate-result":
+        result = check_candidate_result(arguments.accepted, arguments.rejected)
+    elif arguments.command == "check-mutation-candidate":
         result = check_candidate(arguments.accepted, arguments.rejected)
     elif arguments.command == "check-mutation-value":
         result = check_mutation_value(arguments.accepted, arguments.rejected)

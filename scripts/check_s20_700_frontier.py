@@ -10,6 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 MUTATION_VALUE = ROOT / "crates/sley-mutate/src/value.rs"
 CANDIDATE = ROOT / "crates/sley-mutate/src/candidate.rs"
 CANDIDATE_FUZZ = ROOT / "fuzz/targets/mutation_candidate.rs"
+RESULT = ROOT / "crates/sley-policy/src/candidate_result.rs"
+RESULT_FUZZ = ROOT / "fuzz/targets/candidate_result.rs"
 MUTATION_MODEL = ROOT / "machineresearch/sley-2.0/09-mutation-and-transaction-model.md"
 REPOSITORY_MODEL = ROOT / "machineresearch/sley-2.0/12-repository-branch-merge-model.md"
 WORK_PACKAGES = ROOT / "docs/WORK_PACKAGES.md"
@@ -49,10 +51,24 @@ for marker in [
     if marker not in candidate_fuzz:
         problems.append(f"candidate-fuzz-boundary-missing:{marker}")
 
+result_source = RESULT.read_text(encoding="utf-8")
+for marker in ["pub fn import_candidate_result", "CandidateResultRecord"]:
+    if marker not in result_source:
+        problems.append(f"candidate-result-boundary-missing:{marker}")
+result_fuzz = RESULT_FUZZ.read_text(encoding="utf-8")
+for marker in [
+    "import_candidate_result(input)",
+    "CandidateResultId::derive(&first.preimage)",
+    "record.phase_results.len(), 14",
+]:
+    if marker not in result_fuzz:
+        problems.append(f"candidate-result-fuzz-boundary-missing:{marker}")
+
 mutation_model = " ".join(MUTATION_MODEL.read_text(encoding="utf-8").split())
 for marker in [
     "S20-350 proposal construction is complete",
-    "S20-360 through S20-390 remain required",
+    "restricted S20-360 candidate validation is complete",
+    "S20-390 commit",
 ]:
     if marker not in mutation_model:
         problems.append(f"mutation-model-marker-missing:{marker}")
@@ -67,8 +83,8 @@ if (ROOT / "crates/sley-txn").exists():
 
 work_packages = WORK_PACKAGES.read_text(encoding="utf-8")
 for marker in [
-    "nine persistent libFuzzer targets",
-    "eight scoped persistent Make smoke gates",
+    "ten persistent libFuzzer targets",
+    "nine scoped persistent Make smoke gates",
     "merge production boundary remains absent",
 ]:
     if marker not in work_packages:
@@ -78,16 +94,20 @@ summary = json.loads(MACHINE_SUMMARY.read_text(encoding="utf-8"))
 frontier = summary.get("s20_700_remaining_surface_audit", {})
 expected = {
     "master_required_surface_count": 11,
-    "scoped_target_count": 9,
-    "scoped_landed_surface_count": 10,
+    "scoped_target_count": 10,
+    "scoped_landed_surface_count": 11,
     "remaining_required_surface_count": 1,
     "mutation_candidate_production_boundary": True,
     "mutation_candidate_persistent_fuzz_target": True,
     "mutation_candidate_independent_conformance": True,
+    "candidate_result_production_boundary": True,
+    "candidate_result_persistent_fuzz_target": True,
+    "candidate_result_required_by_section_18_5": False,
+    "candidate_result_vulcan_review": "PASS_P3_CORPUS_BREADTH_CLOSED_NO_OPEN_P0_P1_P2_P3_P4",
     "merge_engine_production_boundary": False,
     "no_parallel_harness_created": True,
     "full_s20_700_complete": False,
-    "next_dependency_complete_package": "S20-360-CANDIDATE-VALIDATION",
+    "next_dependency_complete_package": "S20-390-ATOMIC-COMMIT-AND-RECEIPTS",
 }
 for key, value in expected.items():
     if frontier.get(key) != value:
@@ -100,10 +120,10 @@ if frontier.get("local_frontier_contract") != "docs/audits/S20_LOCAL_COMPLETION_
     problems.append("machine-summary-local-frontier-drift")
 
 for path, marker in [
-    (RESULTS, "nine scoped persistent libFuzzer"),
+    (RESULTS, "ten scoped persistent libFuzzer"),
     (GAPS, "S20-350 is complete as a proposal-only construction boundary"),
     (AUDIT, "No placeholder merge target is created"),
-    (AUDIT, "S20-360 candidate validation is now the next dependency-complete package"),
+    (AUDIT, "S20-390 is now the next dependency-complete package"),
     (MAKEFILE, "python3 scripts/check_s20_700_frontier.py"),
 ]:
     if marker not in path.read_text(encoding="utf-8"):

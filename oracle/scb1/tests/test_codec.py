@@ -24,6 +24,7 @@ from sley2_scb1_oracle.codec import (
     encode_uvar,
 )
 from sley2_scb1_oracle.candidate import check_candidate
+from sley2_scb1_oracle.candidate_result import check_candidate_result
 from sley2_scb1_oracle.conformance import check
 from sley2_scb1_oracle.errors import ScbError
 
@@ -33,6 +34,8 @@ ACCEPTED = ROOT / "conformance/scb1/v1/accepted.json"
 REJECTED = ROOT / "conformance/scb1/v1/rejected.json"
 CANDIDATE_ACCEPTED = ROOT / "conformance/mutation-candidate/v1/accepted.json"
 CANDIDATE_REJECTED = ROOT / "conformance/mutation-candidate/v1/rejected.json"
+RESULT_ACCEPTED = ROOT / "conformance/candidate-result/v1/accepted.json"
+RESULT_REJECTED = ROOT / "conformance/candidate-result/v1/rejected.json"
 
 
 class OracleTests(unittest.TestCase):
@@ -98,6 +101,12 @@ class OracleTests(unittest.TestCase):
         self.assertEqual(result["candidate_vectors"], 1)
         self.assertEqual(result["rejected_value_vectors"], 4)
         self.assertEqual(result["rejected_candidate_vectors"], 14)
+
+    def test_s20_360_candidate_result_corpus_gate_passes(self) -> None:
+        result = check_candidate_result(RESULT_ACCEPTED, RESULT_REJECTED)
+        self.assertEqual(result["result"], "PASS", result["problems"])
+        self.assertEqual(result["accepted_vectors"], 16)
+        self.assertEqual(result["rejected_vectors"], 4)
 
 
 if __name__ == "__main__":

@@ -58,9 +58,9 @@ def main() -> int:
 
         frontier = summary.get("local_completion_frontier", {})
         expected_frontier = {
-            "status": "S20_350_COMPLETE_S20_360_READY",
+            "status": "S20_360_RESTRICTED_COMPLETE_S20_390_READY",
             "goal_complete": False,
-            "next_authority_safe_package": "S20-360-CANDIDATE-VALIDATION",
+            "next_authority_safe_package": "S20-390-ATOMIC-COMMIT-AND-RECEIPTS",
             "blocked_lane_count": 6,
             "blocked_lanes": [
                 "semantics_and_queries",
@@ -79,6 +79,10 @@ def main() -> int:
             "s20_350_independent_conformance_complete": True,
             "s20_350_implementation_complete": True,
             "s20_350_persistent_fuzz_complete": True,
+            "s20_360_restricted_validation_complete": True,
+            "s20_360_operation_analysis_complete": False,
+            "s20_360_independent_conformance_complete": True,
+            "s20_360_persistent_fuzz_complete": True,
             "session_authority_available": False,
             "transaction_boundary_available": False,
             "protocol_boundary_available": False,
@@ -86,8 +90,8 @@ def main() -> int:
             "real_benchmark_run_authorized": False,
             "root_license_text_approved": False,
             "release_artifact_available": False,
-            "required_specialist_review": "DEFERRED_FORGE_OAUTH_401",
-            "focused_semantic_security_review": "PASS_CODEX_NO_OPEN_REPORT_GRADE_FINDINGS",
+            "required_specialist_review": "PASS_S20_360_ARIADNE_VULCAN",
+            "focused_semantic_security_review": "PASS_NO_OPEN_REPORT_GRADE_FINDINGS",
             "full_v2_eligible": False,
             "release_check_eligible": False,
         }
@@ -136,9 +140,42 @@ def main() -> int:
             summary.get("s20_700_remaining_surface_audit", {}).get(
                 "next_dependency_complete_package"
             ),
-            "S20-360-CANDIDATE-VALIDATION",
+            "S20-390-ATOMIC-COMMIT-AND-RECEIPTS",
             "S20-700 next package",
         )
+        validation = summary.get("s20_360_candidate_validation", {})
+        require_equal(
+            validation.get("status"),
+            "COMPLETE_RESTRICTED_OPERATION_FREE_VALIDATION_BOUNDARY",
+            "S20-360 restricted status",
+        )
+        require_equal(validation.get("validation_phases"), 14, "S20-360 phases")
+        require_equal(validation.get("terminal_decisions"), 16, "S20-360 decisions")
+        require_equal(
+            validation.get("operation_success_subset"),
+            "operation-free",
+            "S20-360 success subset",
+        )
+        require_equal(
+            validation.get("ariadne_review"),
+            "PASS_AFTER_RESOURCE_LIMIT_DECISION_FIX",
+            "S20-360 Ariadne review",
+        )
+        require_equal(
+            validation.get("vulcan_review"),
+            "PASS_P3_CORPUS_BREADTH_CLOSED_NO_OPEN_P0_P1_P2_P3_P4",
+            "S20-360 Vulcan review",
+        )
+        for field in (
+            "accepted_state_mutation",
+            "capability_ledger_mutation",
+            "candidate_authority",
+            "commit_authority",
+            "runtime_authority",
+            "full_ga_operation_analysis_complete",
+            "full_ga_fingerprint_requirement_complete",
+        ):
+            require_equal(validation.get(field), False, f"S20-360 {field}")
         require_equal(
             summary.get("s20_710_pre_release_audit", {}).get("full_s20_710_complete"),
             False,
@@ -193,9 +230,10 @@ def main() -> int:
 
         audit = AUDIT.read_text(encoding="utf-8")
         for marker in (
-            "S20-350 proposal construction is complete",
+            "restricted S20-360 validation is complete",
             "S20-250 remains incomplete",
             "candidate construction is proposal-only",
+            "S20-390 transaction work is next",
         ):
             if marker not in audit:
                 fail(f"frontier audit marker missing: {marker}")
@@ -216,7 +254,7 @@ def main() -> int:
                 "blocked_lanes": 6,
                 "full_gate_run": False,
                 "goal_complete": False,
-                "next_authority_safe_package": "S20-360-CANDIDATE-VALIDATION",
+                "next_authority_safe_package": "S20-390-ATOMIC-COMMIT-AND-RECEIPTS",
                 "result": "PASS",
             },
             indent=2,

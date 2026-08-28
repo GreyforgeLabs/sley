@@ -632,17 +632,7 @@ impl SimpleEnumCodec for EffectKind {
     }
 
     fn from_tag(tag: u32) -> Option<Self> {
-        match tag {
-            1 => Some(Self::StdoutWrite),
-            2 => Some(Self::StderrWrite),
-            3 => Some(Self::FileRead),
-            4 => Some(Self::FileWrite),
-            5 => Some(Self::ClockRead),
-            6 => Some(Self::RandomRead),
-            7 => Some(Self::EnvironmentRead),
-            8 => Some(Self::AdapterCall),
-            _ => None,
-        }
+        EffectKind::from_tag(tag)
     }
 }
 

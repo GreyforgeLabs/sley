@@ -1,8 +1,8 @@
 # sley-policy
 
 `sley-policy` implements the S20-370 protected policy-root contract, the
-S20-380 narrow local capability-token profile, and the non-authoritative
-canonical S20-360 candidate-result importer/shape codec.
+S20-380 narrow local capability-token profile, and the pure ordered S20-360
+candidate validator plus canonical result importer/shape codec.
 
 The crate constructs and strictly imports immutable `PolicyRoot` records through
 an exact schema registry and preserved decoder. A policy root can name opaque
@@ -18,6 +18,14 @@ Candidate-result import verifies exact bytes, its digest trailer, all fourteen
 monotonic phase records, diagnostic bounds, set order, and candidate/root
 presence rules. Import does not prove that a phase ran; only the crate-private
 validator construction lane may create validator-owned results.
+
+The public `validate_candidate_bytes` entry point consumes exact candidate
+bytes and a closed trusted context, then runs the fourteen owning judgments in
+order without mutating accepted state or a capability ledger. The current
+restricted success profile is deliberately operation-free. An SSMC1 Operation
+fails closed at supported resource analysis until complete operation semantics
+are integrated; absent TypeDef/Function fingerprint claims are likewise a
+restricted-epoch allowance rather than GA completeness.
 
 This crate does not apply mutations, construct candidates, move refs, write
 repositories, read host state, authenticate policy transitions, publish state,

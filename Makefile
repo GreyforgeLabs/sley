@@ -1,4 +1,4 @@
-.PHONY: quick core conformance adversarial fuzz-smoke legacy-runner-smoke scb1-persistent-fuzz-smoke schema-persistent-fuzz-smoke pack-persistent-fuzz-smoke semantic-checkers-persistent-fuzz-smoke query-persistent-fuzz-smoke vm-persistent-fuzz-smoke adapter-responses-persistent-fuzz-smoke mutation-candidate-persistent-fuzz-smoke v2 release-check check-changed
+.PHONY: quick core conformance adversarial fuzz-smoke legacy-runner-smoke scb1-persistent-fuzz-smoke schema-persistent-fuzz-smoke pack-persistent-fuzz-smoke semantic-checkers-persistent-fuzz-smoke query-persistent-fuzz-smoke vm-persistent-fuzz-smoke adapter-responses-persistent-fuzz-smoke mutation-candidate-persistent-fuzz-smoke candidate-result-persistent-fuzz-smoke v2 release-check check-changed
 
 quick:
 	python3 scripts/check_m0.py
@@ -35,6 +35,8 @@ quick:
 	python3 scripts/check_local_completion_frontier.py
 	python3 scripts/check_candidate_contract_freeze.py
 	python3 scripts/check_candidate_result_contract.py
+	python3 scripts/generate_candidate_result_fixtures.py --check
+	python3 scripts/check_candidate_result_persistent_fuzz_slice.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked
@@ -55,6 +57,7 @@ conformance:
 	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check --accepted conformance/scb1/v1/accepted.json --rejected conformance/scb1/v1/rejected.json
 	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check-mutation-value --accepted conformance/mutation-value/v1/accepted.json --rejected conformance/mutation-value/v1/rejected.json
 	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check-mutation-candidate --accepted conformance/mutation-candidate/v1/accepted.json --rejected conformance/mutation-candidate/v1/rejected.json
+	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check-candidate-result --accepted conformance/candidate-result/v1/accepted.json --rejected conformance/candidate-result/v1/rejected.json
 	uv run --project oracle/scb1 --frozen python scripts/check_schema_epoch_vector.py
 	uv run --project oracle/scb1 --frozen python scripts/check_state_root_vector.py
 	uv run --project oracle/scb1 --frozen python scripts/check_repository_pack_vector.py
@@ -108,6 +111,10 @@ adapter-responses-persistent-fuzz-smoke:
 mutation-candidate-persistent-fuzz-smoke:
 	python3 scripts/check_mutation_candidate_persistent_fuzz_slice.py
 	python3 scripts/run_mutation_candidate_persistent_fuzz.py
+
+candidate-result-persistent-fuzz-smoke:
+	python3 scripts/check_candidate_result_persistent_fuzz_slice.py
+	python3 scripts/run_candidate_result_persistent_fuzz.py
 
 check-changed: quick core conformance adversarial fuzz-smoke
 	@python3 scripts/check_changed.py

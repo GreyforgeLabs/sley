@@ -1,7 +1,8 @@
 # Candidate Validation Profile v1
 
-Status: S20-345 identity contract; S20-360 result/pipeline contract frozen;
-validator implementation pending.
+Status: S20-345 identity contract frozen; S20-360 pipeline implemented for the
+operation-free restricted conformance epoch. Full-GA operation analysis and
+S20-390 commit remain incomplete.
 
 The validation profile is immutable policy-independent data naming the phases
 and hard work ceilings a candidate requests. It cannot skip a mandatory phase
@@ -40,3 +41,9 @@ phase evidence under S20-360.
 older master-goal and M0-draft prose to these exact fourteen phases, retains
 separate graph/reference and type/CFG terminal decisions, and forbids
 caller-asserted phase success.
+
+The implementation executes every phase in order and returns one canonical
+monotonic result. Its current supported success subset contains no SSMC1
+`Operation` entities. Operation-bearing projected programs fail closed during
+supported resource analysis; this profile identity does not imply complete GA
+operation coverage, commit authority, or runtime authority.

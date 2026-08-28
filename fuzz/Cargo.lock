@@ -88,6 +88,7 @@ dependencies = [
  "sley-check",
  "sley-id",
  "sley-mutate",
+ "sley-policy",
  "sley-query",
  "sley-repo",
  "sley-scb1",

@@ -2,7 +2,8 @@
 
 Status: S20-340 immutable mutation-schema generation and S20-345 candidate
 contract/identity freeze complete; S20-350 proposal construction is complete;
-S20-360 through S20-390 remain required and have no implementation.
+restricted S20-360 candidate validation is complete; S20-390 commit and
+receipt work remains required and has no implementation.
 
 The refined DAG makes the complete validator depend on protected policy and
 capability work. S20-340 through S20-390 must prove exact preimages, monotonic
@@ -17,12 +18,15 @@ The generator applies only the explicit syntactic eligibility rules frozen in
 `docs/spec/MUTATION_SCHEMA_V1.md`, and the routine gate requires exact
 regeneration.
 
-The native S20-350 layer now has manifest-selected operation-value codecs,
-bound precondition records, and an exact candidate builder/importer. It remains
-proposal data, not mutation authority. There is no mutation applier, repository
-write, workspace/root/session authority, policy/capability judgment,
-transaction, receipt, or CAS surface. S20-360 through S20-390 remain required
-before M3/M4 or accepted-state changes.
+The native S20-350 layer has manifest-selected operation-value codecs, bound
+precondition records, and an exact candidate builder/importer. It remains
+proposal data, not mutation authority. S20-360 now uses the pure in-memory
+candidate applier plus the owning semantic, policy, capability, contract, test,
+and root builders to issue a canonical monotonic result for an explicit
+operation-free success subset. There is no repository write,
+workspace/root/session authority, transaction, receipt, ref CAS, or durable
+accepted-state mutation surface. S20-390 remains required before M3/M4 or any
+accepted-state change.
 
 S20-350 native construction binds workspace, roots, principal, capability
 summary, expiry, all sixteen mutation payload classes, and exact preconditions
@@ -41,8 +45,9 @@ all-entity typed mutation value codecs, bound precondition payloads,
 digest contract, and proposal-versus-authority boundary were frozen. S20-345
 froze those surfaces, and ADR-0019 then removed the remaining generic
 `Option<T>` contradiction without changing a production epoch or accepted
-root. S20-350 is therefore complete as construction, while every semantic
-authority and state-transition boundary remains deferred.
+root. S20-350 is therefore complete as construction. Restricted semantic
+validation now exists under S20-360, while every durable state-transition
+boundary remains deferred.
 
 S20-345 now freezes those proposal contracts in six normative specs and
 ADR-0017. The candidate has thirteen digest-bound fields; operations select
@@ -50,13 +55,16 @@ manifest-generated typed codecs for all eighteen entity kinds; preconditions
 use only absence/exact-entity/exact-container payloads; capability summaries
 are unauthoritative projections; validation profiles require all fourteen
 phases; and expiry uses explicit Unix milliseconds without ambient clock
-access. The native builder and decoder now exist. No apply path, root
-construction, semantic validation, session authority, capability consumption,
-transaction, receipt, or CAS exists.
+access. The native builder and decoder now exist. S20-360 supplies pure
+in-memory apply, root construction, and restricted semantic validation. No
+session authority, capability consumption, transaction, receipt, repository
+write, or CAS exists.
 
 S20-345 also adds identifier-domain types and fixed vectors for
 capability-summary and validation-profile identities. Nabu and Vulcan found no
 open P0, P1, or P2 issue in the freeze. S20-350's independent conformance,
-production candidate fuzz smoke, and focused local security review now pass.
-No candidate authority exists; S20-360 must produce the separate monotonic
-validation result before S20-390 can ever commit.
+production candidate fuzz smoke, and focused local security review pass.
+S20-360 now produces the separate monotonic validation result, but that result
+is evidence rather than commit authority. S20-390 must recheck the exact
+candidate, accepted base, policy/context, and result before it can atomically
+commit or issue a receipt.
