@@ -42,3 +42,8 @@
   decision.
 
 These post-M0 gaps prevent any GA or superiority claim.
+
+The current cross-lane audit is
+`docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md`. It records no
+authority-safe next package under the present contract, canon, review, and
+operator-approval state. This is a blocker frontier, not product completion.

@@ -938,7 +938,8 @@
     "no_parallel_harness_created": true,
     "full_s20_700_complete": false,
     "vulcan_review": "DEFERRED_FORGE_OAUTH_401",
-    "next_dependency_complete_package": "S20-600"
+    "next_dependency_complete_package": null,
+    "local_frontier_contract": "docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md"
   },
   "candidate_contract_freeze": {
     "status": "S20_345_CONTRACT_AND_IDENTITY_FREEZE_COMPLETE",
@@ -1057,6 +1058,36 @@
     "final_argus_disposition": "DEFERRED_FORGE_OAUTH_401",
     "final_vulcan_disposition": "DEFERRED_FORGE_OAUTH_401",
     "publication_authorized": false
+  },
+  "local_completion_frontier": {
+    "status": "NO_AUTHORITY_SAFE_LOCAL_PACKAGE",
+    "goal_complete": false,
+    "next_authority_safe_package": null,
+    "blocked_lane_count": 7,
+    "blocked_lanes": [
+      "semantics_and_queries",
+      "sessions_and_protocol",
+      "mutation_and_transactions",
+      "repository",
+      "succession_benchmark",
+      "adversarial",
+      "supply_chain_and_release"
+    ],
+    "p0_package_ready": false,
+    "s20_250_schema_bodies_frozen": true,
+    "s20_250_impact_semantics_frozen": false,
+    "locked_option_canon_resolved": false,
+    "const_value_canon_resolved": false,
+    "session_authority_available": false,
+    "transaction_boundary_available": false,
+    "protocol_boundary_available": false,
+    "merge_boundary_available": false,
+    "real_benchmark_run_authorized": false,
+    "root_license_text_approved": false,
+    "release_artifact_available": false,
+    "required_specialist_review": "DEFERRED_FORGE_OAUTH_401",
+    "full_v2_eligible": false,
+    "release_check_eligible": false
   },
   "succession": {
     "corpus_version": 1,

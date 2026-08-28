@@ -66,6 +66,7 @@ print(
                 "S20-610 offline raw baseline manifest and unverified digest-claim chain",
                 "S20-650 optional external comparison explicit-unavailability record",
                 "S20-710 bounded pre-release dependency and high-confidence secret audit",
+                "cross-lane local completion frontier and fail-closed terminal gates",
             ],
             "selected_checks": [
                 "scripts/check_m0.py",
@@ -94,6 +95,7 @@ print(
                 "scripts/check_policy_root.py",
                 "scripts/check_legacy_runner.py",
                 "scripts/check_external_comparison_availability.py",
+                "scripts/check_local_completion_frontier.py",
                 "cargo fmt --check",
                 "cargo check --workspace --locked",
                 "cargo test --workspace --locked",

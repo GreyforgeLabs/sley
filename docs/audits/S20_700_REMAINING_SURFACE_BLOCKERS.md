@@ -31,9 +31,10 @@ minimum persistent surfaces listed in Section 18.5 and S20-410 is not landed.
 
 No placeholder target is created for any absent boundary. S20-700 remains
 incomplete, the complete finding register and independent review remain
-deferred, and `make v2` remains a release-boundary gate. S20-600 is the next
-dependency-complete Codex-owned package because S20-000 and S20-040 already
-have committed acceptance evidence.
+deferred, and `make v2` remains a release-boundary gate. The scoped S20-600 and
+S20-610 mechanics, S20-650 unavailable disposition, and bounded S20-710 audit
+have since landed. No next authority-safe package is registered; the current
+cross-lane result is `docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md`.
 
 Focused validation:
 

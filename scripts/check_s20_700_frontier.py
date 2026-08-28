@@ -65,7 +65,7 @@ expected = {
     "merge_engine_production_boundary": False,
     "no_parallel_harness_created": True,
     "full_s20_700_complete": False,
-    "next_dependency_complete_package": "S20-600",
+    "next_dependency_complete_package": None,
 }
 for key, value in expected.items():
     if frontier.get(key) != value:
@@ -77,12 +77,15 @@ if frontier.get("remaining_required_surfaces") != [
     problems.append("machine-summary-remaining-surface-drift")
 if frontier.get("vulcan_review") != "DEFERRED_FORGE_OAUTH_401":
     problems.append("machine-summary-vulcan-review-drift")
+if frontier.get("local_frontier_contract") != "docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md":
+    problems.append("machine-summary-local-frontier-drift")
 
 for path, marker in [
     (RESULTS, "eight scoped persistent libFuzzer"),
     (GAPS, "persistent targets are still absent"),
     (GAPS, "S20-350 candidate construction remains blocked"),
     (AUDIT, "No placeholder target is created"),
+    (AUDIT, "No next authority-safe package is registered"),
     (MAKEFILE, "python3 scripts/check_s20_700_frontier.py"),
 ]:
     if marker not in path.read_text(encoding="utf-8"):

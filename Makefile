@@ -31,6 +31,7 @@ quick:
 	python3 scripts/check_supply_chain_audit.py
 	python3 scripts/check_schema_fuzz_slice.py
 	python3 scripts/check_s20_700_frontier.py
+	python3 scripts/check_local_completion_frontier.py
 	python3 scripts/check_candidate_contract_freeze.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
