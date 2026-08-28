@@ -40,6 +40,7 @@ and ambiguity are failures, never success.
 - `TEST_PLAN_*`: canonical test-entity validation and provisional selection.
 - `VM_*`, `TEST_*`: execution, cancellation, determinism, and oracle.
 - `PACK_*`, `GC_*`, `MERGE_*`: repository operations.
+- `MUTATION_CANDIDATE_*`: proposal-record structure and descriptor binding.
 
 S20-170 freezes these repository-pack codes:
 
@@ -179,6 +180,29 @@ noncontinuable status, and bounded record construction only. They do not
 implement the master context capsule, use `ContextCapsuleId`, establish
 workspace/root/session provenance, authorize continuation/import, or unblock
 S20-330, S20-400, S20-620, M3, M5, or GA.
+
+S20-350 freezes numeric codes 35000 through 35010 for candidate-specific
+proposal-construction failures:
+
+| Numeric | Symbolic |
+|---:|---|
+| 35000 | `MUTATION_CANDIDATE_FORMAT_VERSION` |
+| 35001 | `MUTATION_CANDIDATE_EXPIRY_INVALID` |
+| 35002 | `MUTATION_CANDIDATE_EMPTY_OPERATIONS` |
+| 35003 | `MUTATION_CANDIDATE_OPERATION_ORDINAL` |
+| 35004 | `MUTATION_CANDIDATE_OPERATION_PRECONDITION_ORDINAL` |
+| 35005 | `MUTATION_CANDIDATE_PRECONDITION_COUNT` |
+| 35006 | `MUTATION_CANDIDATE_PRECONDITION_MISMATCH` |
+| 35007 | `MUTATION_CANDIDATE_DESCRIPTOR_UNKNOWN` |
+| 35008 | `MUTATION_CANDIDATE_PAYLOAD_KIND` |
+| 35009 | `MUTATION_CANDIDATE_TARGET_ENTITY` |
+| 35010 | `MUTATION_CANDIDATE_VALIDATION_PROFILE` |
+
+These codes cover canonical proposal structure only. Strict encoding,
+canonicality, envelope, digest, and resource failures preserve their exact
+`SCB_*` code instead of being collapsed into this range. Neither namespace
+claims semantic validity, authority, freshness against trusted host time, or
+permission to mutate accepted state.
 
 S20-370 freezes numeric codes 37000 through 37018 for the exact `POLICY_*`
 failures listed in `POLICY_ROOT_V1.md`. They cover protected policy-record

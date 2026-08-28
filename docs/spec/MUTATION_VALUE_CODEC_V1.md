@@ -1,9 +1,7 @@
 # Mutation Value Codec v1
 
-Status: S20-345 normative contract freeze; S20-350a closed host model and
-S20-350b typed descriptor bindings implemented; S20-350c low-level SCB cursor
-foundation, S20-350d private leaf/collection codec, and S20-350e private
-`TypeExpr` codec implemented; complete binary codecs deferred.
+Status: S20-350 complete as a proposal-only construction boundary; semantic
+validation, authority, apply, and commit remain later packages.
 
 ## Exact schema source
 
@@ -67,6 +65,25 @@ depth and cumulative allocation limits remain shared with the leaf foundation.
 `ConstValue`, CFG, contract/test, body/field, precondition, and candidate
 families remain later gates.
 
+The current native closeout implements those later structural gates: both
+terminator layers, the complete recursive `ConstValue` family, type-definition
+and contract/test aggregates, all eighteen entity bodies, direct encoding for
+all seventy-five descriptor-selected fields, three bound-precondition forms,
+the exact full-v1 validation profile, and the thirteen-field candidate record
+and `SLEYCAN1` envelope. Candidate construction is proposal-only. It performs
+no graph/type/effect/policy/capability/contract/test judgment, reads no clock,
+and exposes no apply, commit, repository, filesystem, process, network, or
+provider path.
+
+The implementation-independent corpus retains the earlier partial 126-accepted
+and 18-rejected set and adds 44 accepted plus 4 rejected value vectors and one
+accepted plus 14 rejected candidate vectors. The combined corpus covers all 18
+bodies, all 75 fields, 16 constant-data variants, five terminators, all 16
+mutation classes, all three precondition shapes, the 13-field record, the
+`SLEYCAN1` envelope, and digest failures. The exact full-v1 validation profile
+identity is
+`7d8ffff97a3fdafc49b4329d47b0b12f04759c3124274024016483a263265d54`.
+
 ## Canonical rules
 
 - Record fields and union/enum tags use exact manifest tags.
@@ -83,11 +100,13 @@ families remain later gates.
 
 ## Completeness gate
 
-Generation must emit a manifest-derived inventory proving 18 entity bodies,
-75 fields, and one exact codec binding for each of S20-340's 179 descriptors.
-Drift checking must regenerate committed artifacts byte-for-byte. S20-350 may
-not land a candidate builder until cross-language or structurally independent
-fixtures cover every entity kind and every field type family.
+Generation emits a manifest-derived inventory proving 18 entity bodies, 75
+fields, and one exact codec binding for each of S20-340's 179 descriptors.
+Drift checking regenerates committed artifacts byte-for-byte. The independent
+Python oracle, Rust corpus consumer, exact rejection matrix, production
+record/envelope libFuzzer target, and focused semantic/security review satisfy
+the S20-350 completeness gate. S20-360 may consume this proposal boundary but
+must not treat construction or hashing as semantic validity or authority.
 
 These codecs represent proposal values only. They perform no graph, type,
 effect, policy, capability, contract, test, root, or commit judgment.

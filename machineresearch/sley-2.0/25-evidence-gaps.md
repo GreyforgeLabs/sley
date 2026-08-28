@@ -12,8 +12,9 @@
   opcodes under bounded canonical and mismatched inputs. A restricted typed
   S20-280 target now exercises all eight in-memory reference kinds and six
   GenericReplay response schemas.
-  The persistent targets are still absent across blocked mutation-family,
-  merge, and protocol surfaces.
+  The production candidate target now exercises raw record and stored-envelope
+  round trips. The merge surface remains blocked; protocol is an adjacent
+  future surface outside Section 18.5's minimum eleven.
 - The typed graph/CFG persistent target is deliberately a fuzz-only structure
   generator. SSMC still has no public canonical graph decoder, and the target
   neither exposes the crate-private partial mutation codec nor claims a
@@ -30,11 +31,12 @@
   request-owned memory. It does not cover the authorized S20-380 wrapper, VM
   adapter opcodes, live host confinement, handle cleanup, or persistent
   execution and replay reports.
-- S20-350 candidate construction is now implementation-ready after ADR-0019
-  aligned generic `Option<T>` with SCB1 and review confirmed the already-frozen
-  `ConstValue` contract. The current crate-private codec and fixture foundation
-  still does not provide the remaining bodies/fields, aggregates,
-  preconditions, candidate construction, or runtime mutation authority.
+- S20-350 is complete as a proposal-only construction boundary after ADR-0019
+  aligned generic `Option<T>` with SCB1. Combined independent fixtures cover
+  all eighteen bodies, seventy-five fields, recursive aggregates,
+  preconditions, candidates, and envelope/digest rejection. The production
+  candidate target and focused local review pass. Construction grants no
+  semantic validity, runtime mutation authority, or commit permission.
 - Full-GA S20-240 through S20-270 semantics, adapters, persistent reports, and
   all remaining M2–M6 runtime, query, mutation, policy, repository,
   adversarial, succession, packaging, reproducibility, and independent-review
@@ -45,6 +47,6 @@
 These post-M0 gaps prevent any GA or superiority claim.
 
 The current cross-lane audit is
-`docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md`. It records S20-350 as the next
-authority-safe implementation package. This is an active work frontier, not
-product completion.
+`docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md`. It records S20-360 candidate
+validation as the next authority-safe package. This is an active work frontier,
+not product completion.

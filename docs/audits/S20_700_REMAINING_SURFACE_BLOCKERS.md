@@ -1,24 +1,19 @@
 # S20-700 Remaining-Surface Blockers
 
-Status: **two required production surfaces absent; full S20-700 remains incomplete**
+Status: **merge boundary absent; full S20-700 remains incomplete**
 
-Section 18.5 names eleven required persistent-fuzz surfaces. Eight landed
-libFuzzer binaries currently exercise nine scoped surfaces because the single
-`ssmc_graph_cfg_checker` target covers both graph and CFG judgments. The two
-required surfaces without production boundaries are mutation candidates and
-the merge engine.
+Section 18.5 names eleven required persistent-fuzz surfaces. Nine landed
+libFuzzer binaries exercise ten scoped surfaces because the single
+`ssmc_graph_cfg_checker` target covers both graph and CFG judgments. The only
+remaining required gap is the merge engine.
 
 ## Mutation candidates
 
-S20-340 exposes immutable descriptors. The partial S20-350 foundation exposes
-closed proposal host values, descriptor-to-value admission, and crate-private
-leaf/body codecs. It explicitly provides no aggregate candidate codec,
-candidate constructor, precondition evaluator, validation authority, mutation
-application, or state transition. ADR-0019 resolves generic `Option<T>` and the
-S20-345 `ConstValue` contract is frozen, making S20-350 implementation-ready.
-Until the aggregate codecs and candidate constructor land, a persistent target
-would still fuzz a parallel constructor rather than production candidate
-behavior.
+S20-350 exposes the production proposal-only record/envelope boundary with
+complete native structural codecs, bound preconditions, digest verification,
+and deterministic creation IDs. The `mutation_candidate` target drives the
+real build/import and decode/encode APIs and passed its fixture-seeded smoke. It
+exposes no validation authority, mutation application, or state transition.
 
 ## Merge engine
 
@@ -31,12 +26,13 @@ define semantics outside the frozen dependency graph.
 Protocol remains an adjacent future fuzz gap, but it is not one of the eleven
 minimum persistent surfaces listed in Section 18.5 and S20-410 is not landed.
 
-No placeholder target is created for any absent boundary. S20-700 remains
+No placeholder merge target is created for the absent boundary. S20-700 remains
 incomplete, the complete finding register and independent review remain
 deferred, and `make v2` remains a release-boundary gate. The scoped S20-600 and
 S20-610 mechanics, S20-650 unavailable disposition, and bounded S20-710 audit
-have since landed. S20-350 is now the next dependency-complete package; the
-current cross-lane result is `docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md`.
+have since landed. S20-360 candidate validation is now the next dependency-complete package;
+the current cross-lane result is
+`docs/audits/S20_LOCAL_COMPLETION_FRONTIER.md`.
 
 Focused validation:
 

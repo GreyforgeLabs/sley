@@ -58,9 +58,9 @@ def main() -> int:
 
         frontier = summary.get("local_completion_frontier", {})
         expected_frontier = {
-            "status": "S20_350_READY_AFTER_EPOCH1_REANCHOR",
+            "status": "S20_350_COMPLETE_S20_360_READY",
             "goal_complete": False,
-            "next_authority_safe_package": "S20-350",
+            "next_authority_safe_package": "S20-360-CANDIDATE-VALIDATION",
             "blocked_lane_count": 6,
             "blocked_lanes": [
                 "semantics_and_queries",
@@ -75,7 +75,10 @@ def main() -> int:
             "s20_250_impact_semantics_frozen": False,
             "locked_option_canon_resolved": True,
             "const_value_canon_resolved": True,
-            "s20_350_implementation_complete": False,
+            "s20_350_native_implementation_complete": True,
+            "s20_350_independent_conformance_complete": True,
+            "s20_350_implementation_complete": True,
+            "s20_350_persistent_fuzz_complete": True,
             "session_authority_available": False,
             "transaction_boundary_available": False,
             "protocol_boundary_available": False,
@@ -83,7 +86,8 @@ def main() -> int:
             "real_benchmark_run_authorized": False,
             "root_license_text_approved": False,
             "release_artifact_available": False,
-            "required_specialist_review": "PASS_AFTER_P2_VECTOR_REANCHOR",
+            "required_specialist_review": "DEFERRED_FORGE_OAUTH_401",
+            "focused_semantic_security_review": "PASS_CODEX_NO_OPEN_REPORT_GRADE_FINDINGS",
             "full_v2_eligible": False,
             "release_check_eligible": False,
         }
@@ -95,18 +99,22 @@ def main() -> int:
             session.get("unblocked_by_restricted_s20_320"), False, "S20-330 authority"
         )
         mutation = summary.get("mutation_value_profile", {})
+        for field in ("aggregate_codecs", "candidate_construction"):
+            require_equal(mutation.get(field), True, f"S20-350 {field}")
+        for field in ("candidate_authority", "runtime_mutation"):
+            require_equal(mutation.get(field), False, f"S20-350 {field}")
         for field in (
-            "aggregate_codecs",
-            "candidate_construction",
-            "runtime_mutation",
+            "native_s20_350_implementation_complete",
+            "independent_conformance_complete",
+            "persistent_candidate_fuzz_harness",
             "full_s20_350_complete",
         ):
-            require_equal(mutation.get(field), False, f"S20-350 {field}")
+            require_equal(mutation.get(field), True, f"S20-350 {field}")
         for field in ("generic_option_canon_resolved", "const_value_canon_resolved"):
             require_equal(mutation.get(field), True, f"S20-350 {field}")
         require_equal(
             mutation.get("nabu_review"),
-            "S20_350_IS_NEXT_DEPENDENCY_SAFE_PACKAGE",
+            "PASS_FROZEN_ARCHITECTURE_INTEGRATED",
             "S20-350 review",
         )
         require_equal(
@@ -128,7 +136,7 @@ def main() -> int:
             summary.get("s20_700_remaining_surface_audit", {}).get(
                 "next_dependency_complete_package"
             ),
-            "S20-350",
+            "S20-360-CANDIDATE-VALIDATION",
             "S20-700 next package",
         )
         require_equal(
@@ -185,9 +193,9 @@ def main() -> int:
 
         audit = AUDIT.read_text(encoding="utf-8")
         for marker in (
-            "S20-350 is the next authority-safe package",
+            "S20-350 proposal construction is complete",
             "S20-250 remains incomplete",
-            "candidate construction is still absent",
+            "candidate construction is proposal-only",
         ):
             if marker not in audit:
                 fail(f"frontier audit marker missing: {marker}")
@@ -208,7 +216,7 @@ def main() -> int:
                 "blocked_lanes": 6,
                 "full_gate_run": False,
                 "goal_complete": False,
-                "next_authority_safe_package": "S20-350",
+                "next_authority_safe_package": "S20-360-CANDIDATE-VALIDATION",
                 "result": "PASS",
             },
             indent=2,

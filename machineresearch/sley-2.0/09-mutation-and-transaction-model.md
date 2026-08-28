@@ -1,9 +1,8 @@
 # Mutation and Transaction Model
 
 Status: S20-340 immutable mutation-schema generation and S20-345 candidate
-contract/identity freeze complete; S20-350 has a partial private codec
-foundation and is the next implementation package; S20-360 through S20-390
-have no implementation.
+contract/identity freeze complete; S20-350 proposal construction is complete;
+S20-360 through S20-390 remain required and have no implementation.
 
 The refined DAG makes the complete validator depend on protected policy and
 capability work. S20-340 through S20-390 must prove exact preimages, monotonic
@@ -18,27 +17,32 @@ The generator applies only the explicit syntactic eligibility rules frozen in
 `docs/spec/MUTATION_SCHEMA_V1.md`, and the routine gate requires exact
 regeneration.
 
-This is metadata, not mutation authority. There is no operation-value decoder,
-candidate builder, precondition evaluator, mutation applier, repository write,
-workspace/root/session authority, policy/capability judgment, transaction,
-receipt, or CAS surface. S20-350 must construct actual fully bound candidates;
-S20-360 through S20-390 remain required before M3/M4 or accepted-state changes.
+The native S20-350 layer now has manifest-selected operation-value codecs,
+bound precondition records, and an exact candidate builder/importer. It remains
+proposal data, not mutation authority. There is no mutation applier, repository
+write, workspace/root/session authority, policy/capability judgment,
+transaction, receipt, or CAS surface. S20-360 through S20-390 remain required
+before M3/M4 or accepted-state changes.
 
-S20-350 was explicitly deferred after architecture review. Hashing caller claims
-for workspace, roots, principal, capability summary, and expiry would be
-possible, but would not make a candidate schema-typed. The current descriptors
-provide canonical type names and eligibility only; they are not codecs or value
-models for all eighteen entity kinds. Opaque bytes, type-name strings, or the
-twelve restricted runtime bodies are forbidden substitutes.
+S20-350 native construction binds workspace, roots, principal, capability
+summary, expiry, all sixteen mutation payload classes, and exact preconditions
+into schema-typed bytes. Opaque bytes, type-name strings, or the twelve
+restricted runtime bodies remain forbidden substitutes. Construction proves
+only canonical proposal structure; caller fields are not authenticated facts.
+The retained and supplemental independent corpora jointly cover all eighteen
+bodies, seventy-five fields, recursive constant/terminator families,
+preconditions, all mutation classes, the candidate record, and envelope/digest
+failures. The production persistent target asserts byte-identical record
+round trips and exact stored-candidate import/rebuild behavior.
 
-Implementation could resume only after the full candidate record/digest preimage,
+Implementation resumed only after the full candidate record/digest preimage,
 all-entity typed mutation value codecs, bound precondition payloads,
 `Principal`, validation profile, expiry representation, capability-summary
 digest contract, and proposal-versus-authority boundary were frozen. S20-345
 froze those surfaces, and ADR-0019 then removed the remaining generic
 `Option<T>` contradiction without changing a production epoch or accepted
-root. S20-350 is therefore implementation-ready, while every authority and
-state-transition boundary remains deferred.
+root. S20-350 is therefore complete as construction, while every semantic
+authority and state-transition boundary remains deferred.
 
 S20-345 now freezes those proposal contracts in six normative specs and
 ADR-0017. The candidate has thirteen digest-bound fields; operations select
@@ -46,12 +50,13 @@ manifest-generated typed codecs for all eighteen entity kinds; preconditions
 use only absence/exact-entity/exact-container payloads; capability summaries
 are unauthoritative projections; validation profiles require all fourteen
 phases; and expiry uses explicit Unix milliseconds without ambient clock
-access. No builder, decoder, apply path, root construction, validation, session
-authority, capability consumption, transaction, receipt, or CAS exists.
+access. The native builder and decoder now exist. No apply path, root
+construction, semantic validation, session authority, capability consumption,
+transaction, receipt, or CAS exists.
 
 S20-345 also adds identifier-domain types and fixed vectors for
 capability-summary and validation-profile identities. Nabu and Vulcan found no
-open P0, P1, or P2 issue in the freeze. S20-350 remains a separate
-implementation package. It is now unblocked for local implementation, but no
-aggregate codec, precondition codec, candidate record codec, builder, or
-candidate authority exists yet.
+open P0, P1, or P2 issue in the freeze. S20-350's independent conformance,
+production candidate fuzz smoke, and focused local security review now pass.
+No candidate authority exists; S20-360 must produce the separate monotonic
+validation result before S20-390 can ever commit.

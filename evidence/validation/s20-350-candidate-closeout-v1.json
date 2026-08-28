@@ -1,0 +1,107 @@
+{
+  "contract": "s20-350-candidate-closeout-validation-v1",
+  "recorded_at": "2026-08-27T23:14:37-04:00",
+  "repository": "<LOCAL_HOME>/sley2",
+  "branch": "main",
+  "implementation_commit": "e9b32f1b2b3d23378b432728619f13cc9af815bc",
+  "worktree_clean_before_validation": false,
+  "validation_tier": "TIER_2_SUBSYSTEM_HANDOFF",
+  "scope": "PROPOSAL_ONLY_CANDIDATE_CONSTRUCTION",
+  "affected_subsystems": [
+    "S20-350 mutation value codecs",
+    "S20-350 proposal-only candidate construction and import",
+    "independent Python mutation-candidate oracle and corpus",
+    "S20-700 persistent mutation-candidate fuzz surface"
+  ],
+  "environment": {
+    "kernel": "Linux 7.0.0-30-generic x86_64",
+    "rustc": "1.93.0 (254b59607 2026-01-19)",
+    "rust_host": "x86_64-unknown-linux-gnu",
+    "llvm": "21.1.8",
+    "cargo": "1.93.0 (083ac5135 2025-12-15)",
+    "python": "3.12.3",
+    "uv": "0.9.24"
+  },
+  "deterministic_inputs": {
+    "randomness": false,
+    "source_schema_blake3": "1983bc8d6ad9ac3cb5390853f43959cf2c3dc0ae8e0ca18ca8264ca4960133ae",
+    "validation_profile_id": "7d8ffff97a3fdafc49b4329d47b0b12f04759c3124274024016483a263265d54",
+    "supplement_accepted_sha256": "736668bae748a0d7c5aae16c6ed6e745cce66a7b829e009ac93171eec619b360",
+    "supplement_rejected_sha256": "526f275816b6fbf2b58c08a899909356350da3e12fb6abafc0ea8fed50f65f07",
+    "combined_accepted_value_vectors": 170,
+    "combined_rejected_value_vectors": 22,
+    "accepted_candidate_vectors": 1,
+    "rejected_candidate_vectors": 14,
+    "persistent_fuzz_corpus_seeds": 26,
+    "persistent_fuzz_runs": 512
+  },
+  "commands": [
+    {
+      "command": "python3 scripts/check_mutation_value_codecs.py",
+      "result": "PASS"
+    },
+    {
+      "command": "cargo test -p sley-mutate --locked",
+      "result": "PASS_52_TESTS"
+    },
+    {
+      "command": "cargo clippy -p sley-mutate --all-targets --locked -- -D warnings",
+      "result": "PASS"
+    },
+    {
+      "command": "cargo clippy --manifest-path fuzz/Cargo.toml --bin mutation_candidate --locked -- -D warnings",
+      "result": "PASS"
+    },
+    {
+      "command": "make mutation-candidate-persistent-fuzz-smoke",
+      "wall_seconds": 3.58,
+      "result": "PASS_512_RUNS_26_SEEDS"
+    },
+    {
+      "command": "make conformance",
+      "wall_seconds": 0.98,
+      "result": "PASS"
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets --locked -- -D warnings",
+      "wall_seconds": 1.64,
+      "result": "PASS"
+    },
+    {
+      "command": "make quick",
+      "result": "PASS_WITH_S20_710_DEFERRED"
+    }
+  ],
+  "reviews": {
+    "codex_focused_security_review": "PASS_NO_REPORT_GRADE_FINDINGS",
+    "vulcan_independent_review": "DEFERRED_FORGE_OAUTH_401"
+  },
+  "skipped_checks": [
+    {
+      "check": "make v2",
+      "reason": "The authoritative full-product gate intentionally remains NOT_IMPLEMENTED while later Sley 2 packages and release prerequisites are incomplete."
+    },
+    {
+      "check": "make release-check",
+      "reason": "Release packaging, approved root license, standards SBOM, provenance, and release authority remain absent."
+    }
+  ],
+  "scope_limits": {
+    "candidate_construction": true,
+    "candidate_authority": false,
+    "semantic_validation": false,
+    "runtime_mutation": false,
+    "full_sley_2_complete": false
+  },
+  "external_actions": {
+    "network": false,
+    "provider": false,
+    "push": false,
+    "tag": false,
+    "deploy": false,
+    "publish": false,
+    "trade": false,
+    "sley_1_2_tree_touched": false
+  },
+  "result": "PASS_PROPOSAL_ONLY"
+}

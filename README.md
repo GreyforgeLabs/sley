@@ -73,23 +73,26 @@ non-Option terminator records, and the dependency-closed `TypeParameterDef`,
 six-field `OperationBody` record. A second dependency-closed body slice covers
 `WorkspaceBody`, `PackageBody`, `FunctionBody`, `ParameterBody`,
 `GlobalValueBody`, `EffectDefBody`, `AdapterImportBody`, `EntryPointBody`,
-`PolicyBindingBody`, and `DependencyBindingBody`, still without exposing a body
-or field aggregate codec. An explicitly partial, implementation-independent
-mutation-value corpus now pins 126 accepted and 18 rejected vectors across the
-landed unambiguous families, including all twenty `TypeExpr` variants, all
-eleven closed body records, and exact declared-value coverage for 65 of the 75
-manifest fields. Its Python oracle derives and checks exact bytes
-without importing, executing, or inspecting the Rust codec; private Rust tests
-consume the committed expected bytes and exact rejection codes. This is not
-complete 18-body or 75-field conformance: the ten fields that depend on generic
-`Option<T>`, `ConstValue`, `Terminator`, or deferred contract/test unions, the
-seven deferred bodies, aggregates, preconditions, candidate records, and runtime
-surfaces remain explicitly excluded. `TrapTerminator` and the enclosing
-`Terminator` union remain unimplemented, but ADR-0019 has resolved their former
-SCB1/manifest `Option<T>` tag conflict. The `ConstValue` contract is frozen;
-its codec, complete CFG/body/field codecs,
-contract/test families, preconditions, candidate records, and candidate
-construction remain deferred. S20-370 now
+`PolicyBindingBody`, and `DependencyBindingBody`. The native S20-350 codec now
+closes the remaining seven bodies, all seventy-five descriptor-selected fields,
+generic `Option<T>`, both terminator layers, `ConstValue`, the contract/test
+families, aggregate entity values, bound preconditions, the exact validation
+profile, and the thirteen-field candidate record. Its public proposal API can
+build and import a digest-trailed `SLEYCAN1` candidate while checking contiguous
+ordinals, exact generated descriptor selection, same-ordinal preconditions,
+deterministic creation IDs, expiry shape, and the frozen validation-profile ID.
+It performs no semantic validation, authority judgment, state mutation, commit,
+I/O, or clock read.
+
+Independent conformance now combines the retained 126-accepted/18-rejected
+mutation-value corpus with a supplemental 44-accepted/4-rejected value corpus
+and 1-accepted/14-rejected candidate corpus. Together they cover all eighteen
+bodies, all seventy-five fields, all sixteen `ConstData` variants, all five
+terminators, all sixteen mutation classes, preconditions, the candidate record,
+the envelope, and digest rejection. Rust consumes the Python-produced bytes and
+exact error codes. A two-lane production libFuzzer target independently drives
+raw record decode/re-encode and stored candidate import/rebuild. S20-350 is
+complete as a proposal-only construction boundary. S20-370 now
 adds a separately registry-authorized protected policy root with exact opaque
 principals, principal-specific grants, protected entity bindings, and mandatory
 test/contract finalization. It has no authenticated policy-transition,
@@ -99,11 +102,11 @@ binding, keyed BLAKE3 authentication, caller-owned replay/budget ledger
 judgment, and an authorized reference-adapter wrapper. VM adapter opcodes,
 candidate admission, commit, sessions, live host confinement, policy
 transitions, providers, deployment, and GA remain explicit gaps.
-S20-345 now freezes the missing candidate/value/precondition/capability-summary/
-validation-profile/expiry contracts as proposal-only specifications. It adds
-no builder, decoder, validation, authority, root construction, or commit path;
-its identifier domains/vectors and independent Nabu/Vulcan reviews now pass.
-S20-350 remains incomplete and cannot yet construct a candidate.
+S20-345 froze the candidate/value/precondition/capability-summary/validation-
+profile/expiry contracts as proposal-only specifications. The freeze itself
+added no builder or authority; S20-350 now implements the conforming builder
+and decoder. It still adds no semantic validation, root construction, state
+mutation, or commit path.
 S20-710 now has a deterministic offline pre-release dependency inventory and a
 bounded high-confidence secret scan. Those local checks do not complete the
 package: operator-approved proprietary root license text, a standards SBOM,
@@ -118,13 +121,14 @@ fan-out directories across put, read, and recovery without writing outside the
 store. A fourth bounded mutation-value slice exercises all 126 currently
 supported accepted fixtures through 252 trailing-byte and 446 distinct proper-
 prefix mutations with panic containment and deterministic errors, while the 18
-committed rejection vectors retain exact codes. It does not cover the
-`ConstValue` codec, aggregate, candidate, or runtime surfaces. These
-slices do not complete the required cross-surface adversarial suite. Six
-honest persistent targets now cover the SCB1 decoder, direct `SLEYEP01` schema
-bootstrap importer, S20-170 repository-pack importer, public typed S20-210 type
-checker, public typed S20-220 graph/CFG validator, and the four restricted typed
-S20-310 query kinds. The pack target has a direct-input lane and a
+committed rejection vectors retain exact codes. That older bounded slice stays
+as regression evidence; the independent supplemental corpus and candidate
+target cover the newly completed proposal surface. These slices do not complete
+the required cross-surface adversarial suite. Nine honest persistent targets
+now exercise ten required surfaces: SCB1, schema bootstrap, repository-pack
+import, typed S20-210, typed graph and CFG judgments, restricted queries,
+restricted VM inputs, restricted adapter responses, and mutation candidates.
+The pack target has a direct-input lane and a
 rehashed-trailer lane that reaches beyond the outer digest check while
 preserving failed-preflight no-write assertions. The typed semantic and query
 targets use bounded fuzz-only constructors, not parallel canonical decoders or

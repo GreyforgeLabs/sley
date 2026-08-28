@@ -1,15 +1,15 @@
 # Candidate Record v1
 
-Status: S20-345 normative contract freeze; S20-350 implementation unblocked;
-no candidate implementation or authority.
+Status: S20-345 normative contract freeze; S20-350 proposal-only construction
+implemented and independently conformant; no candidate authority.
 
 ## Boundary
 
 A candidate is an immutable, canonical proposal to transform one exact state.
 Possessing, constructing, hashing, or decoding it grants no authority and
-changes no state. S20-350 may construct this record only after implementing the
-typed codecs frozen here. S20-360 must independently validate it; S20-390 alone
-may durably commit a `VALID` result.
+changes no state. S20-350 constructs this record with the typed codecs frozen
+here. S20-360 must independently validate it; S20-390 alone may durably commit
+a `VALID` result.
 
 No field may contain source text, a path, a label used as identity, a session
 handle, an opaque mutation payload, a Rust type name, a caller-asserted pass, a
@@ -111,7 +111,7 @@ add/replace payload carries a body, never nested standalone-object bytes.
 - decode/import/build APIs expose no apply, commit, receipt, CAS, session,
   provider, network, process, or filesystem operation.
 
-S20-345 freezes this record only. ADR-0019 and independent review resolved the
-remaining generic `Option<T>` contradiction, so S20-350 may implement the
-referenced codecs and record. Construction still grants no authority and must
-remain separate from S20-360 validation and S20-390 commit.
+S20-345 froze this record only. ADR-0019 and independent review resolved the
+generic `Option<T>` contradiction, and S20-350 now implements the referenced
+codecs and record. Construction still grants no authority and remains separate
+from S20-360 validation and S20-390 commit.

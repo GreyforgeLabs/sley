@@ -1,6 +1,6 @@
 # Property, Fuzz, and Adversarial Results
 
-Status: bounded partial S20-700 evidence with eight scoped persistent libFuzzer
+Status: bounded partial S20-700 evidence with nine scoped persistent libFuzzer
 harnesses. This is not the complete cross-surface suite or a final finding
 register. The 55-threat map remains `docs/THREAT_REGISTER.md`.
 
@@ -53,6 +53,11 @@ Current landed slices:
   varies success and declared-failure values across six structural schemas.
   Equal inputs must repeat, rejection must be atomic, successful receipts must
   bind their state and response type, and transcripts must bind `StateRoot`.
+- Mutation-candidate persistent libFuzzer target: fixture-seeded arbitrary
+  bytes drive the production proposal-only raw record and stored-envelope APIs.
+  Successful record decodes must re-encode byte-identically; successful imports
+  must rebuild to the identical record, preimage, candidate ID, and stored
+  bytes. The target grants no validation authority or mutation path.
 
 Closed development finding `S20-700-HARNESS-001` retains minimized input `c2`.
 The initial fuzz-only type generator could expand that cyclic one-byte stream
@@ -70,11 +75,13 @@ cargo test -p sley-mutate mutation_value_codec_adversarial --locked
 
 Vulcan's bounded implementation review and Merlin's independent read-only code
 review found no report-grade issue in the earlier landed slices. Generic
-`Option<T>`, `ConstValue`, aggregate, and runtime mutation-candidate codecs, plus
-merge and protocol fuzz targets remain outside these slices.
+`Option<T>`, `ConstValue`, aggregate, and proposal-only candidate codecs now
+have complete independent S20-350 corpus coverage and a production persistent
+target. The merge production boundary remains absent; protocol is an adjacent
+future surface but is not one of Section 18.5's eleven minimum surfaces.
 The restricted VM target does not define or execute raw bytecode and does not
 complete S20-270. The adapter target is a conformance-only in-memory fixture,
-not VM integration, live host access, or the authorized S20-380 path. The eight
+not VM integration, live host access, or the authorized S20-380 path. The nine
 persistent targets do not complete S20-700;
 persistent harnesses for the remaining required surfaces remain absent.
 Persistent fuzzing and minimized finding retention remain mandatory before
@@ -129,6 +136,13 @@ The adapter-response persistent smoke is selected by:
 ```bash
 make adapter-responses-persistent-fuzz-smoke
 python3 scripts/run_adapter_responses_persistent_fuzz.py --manual
+```
+
+The candidate persistent smoke is selected by:
+
+```bash
+make mutation-candidate-persistent-fuzz-smoke
+python3 scripts/run_mutation_candidate_persistent_fuzz.py --manual
 ```
 
 The bounded mutation-value post-commit environment, command durations, results,

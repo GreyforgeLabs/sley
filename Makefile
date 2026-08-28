@@ -1,4 +1,4 @@
-.PHONY: quick core conformance adversarial fuzz-smoke legacy-runner-smoke scb1-persistent-fuzz-smoke schema-persistent-fuzz-smoke pack-persistent-fuzz-smoke semantic-checkers-persistent-fuzz-smoke query-persistent-fuzz-smoke vm-persistent-fuzz-smoke adapter-responses-persistent-fuzz-smoke v2 release-check check-changed
+.PHONY: quick core conformance adversarial fuzz-smoke legacy-runner-smoke scb1-persistent-fuzz-smoke schema-persistent-fuzz-smoke pack-persistent-fuzz-smoke semantic-checkers-persistent-fuzz-smoke query-persistent-fuzz-smoke vm-persistent-fuzz-smoke adapter-responses-persistent-fuzz-smoke mutation-candidate-persistent-fuzz-smoke v2 release-check check-changed
 
 quick:
 	python3 scripts/check_m0.py
@@ -23,6 +23,7 @@ quick:
 	python3 scripts/check_restricted_query_capsule_profile.py
 	python3 scripts/check_mutation_schema.py
 	python3 scripts/check_mutation_value_codecs.py
+	python3 scripts/check_mutation_candidate_persistent_fuzz_slice.py
 	python3 scripts/check_policy_root.py
 	python3 scripts/check_capability_token.py
 	python3 scripts/check_legacy_runner.py
@@ -52,6 +53,7 @@ conformance:
 	uv run --project oracle/scb1 --frozen python -m unittest discover -s oracle/scb1/tests -v
 	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check --accepted conformance/scb1/v1/accepted.json --rejected conformance/scb1/v1/rejected.json
 	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check-mutation-value --accepted conformance/mutation-value/v1/accepted.json --rejected conformance/mutation-value/v1/rejected.json
+	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check-mutation-candidate --accepted conformance/mutation-candidate/v1/accepted.json --rejected conformance/mutation-candidate/v1/rejected.json
 	uv run --project oracle/scb1 --frozen python scripts/check_schema_epoch_vector.py
 	uv run --project oracle/scb1 --frozen python scripts/check_state_root_vector.py
 	uv run --project oracle/scb1 --frozen python scripts/check_repository_pack_vector.py
@@ -101,6 +103,10 @@ vm-persistent-fuzz-smoke:
 adapter-responses-persistent-fuzz-smoke:
 	python3 scripts/check_adapter_responses_persistent_fuzz_slice.py
 	python3 scripts/run_adapter_responses_persistent_fuzz.py
+
+mutation-candidate-persistent-fuzz-smoke:
+	python3 scripts/check_mutation_candidate_persistent_fuzz_slice.py
+	python3 scripts/run_mutation_candidate_persistent_fuzz.py
 
 check-changed: quick core conformance adversarial fuzz-smoke
 	@python3 scripts/check_changed.py
