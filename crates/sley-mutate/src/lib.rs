@@ -179,10 +179,12 @@ pub struct MutationOperationDescriptor {
 
 include!("generated.rs");
 
+mod apply;
 mod candidate;
 mod codec;
 mod object;
 
+pub use apply::{CandidateApplyError, ProposedEntityState, apply_candidate_to_snapshot};
 pub use candidate::{
     BoundPrecondition, CandidateError, CandidateExpiry, CandidateRecord, ExactContainerVersion,
     ExactEntityVersion, ExpectedIdentityAbsent, ImportedCandidate, MutationOperation,

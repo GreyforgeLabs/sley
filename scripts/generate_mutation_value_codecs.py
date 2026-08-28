@@ -375,6 +375,96 @@ def render(entities: list[Entity], operations) -> str:
             "    },",
         ])
     lines.extend(["];", ""])
+
+    lines.extend([
+        "impl EntityBodyValue {",
+        "    /// Replaces one exact generated body field without interpreting its value.",
+        "    #[allow(clippy::too_many_lines, reason = \"closed generated 75-field dispatch\")]",
+        "    pub(crate) fn replace_field(&mut self, value: FieldValue) -> bool {",
+        "        match (self, value) {",
+    ])
+    for entity in entities:
+        for field in entity.fields:
+            variant = f"{entity.name}{pascal(field.name)}"
+            lines.extend([
+                (
+                    f"            (Self::{entity.name}(body), "
+                    f"FieldValue::{variant}(value)) => {{"
+                ),
+                f"                body.{field.name} = value;",
+                "                true",
+                "            }",
+            ])
+    lines.extend([
+        "            _ => false,",
+        "        }",
+        "    }",
+        "",
+        "    /// Replaces one descriptor-admitted direct `EntityId` field.",
+        "    pub(crate) fn replace_direct_reference(",
+        "        &mut self,",
+        "        field_tag: u16,",
+        "        target: EntityId,",
+        "    ) -> bool {",
+        "        match (self, field_tag) {",
+    ])
+    for entity in entities:
+        for field in entity.fields:
+            if field.value_type == "EntityId":
+                lines.extend([
+                    f"            (Self::{entity.name}(body), {field.tag}) => {{",
+                    f"                body.{field.name} = target;",
+                    "                true",
+                    "            }",
+                ])
+    lines.extend([
+        "            _ => false,",
+        "        }",
+        "    }",
+        "",
+        "    /// Replaces one descriptor-admitted optional `EntityId` field.",
+        "    pub(crate) fn replace_optional_reference(",
+        "        &mut self,",
+        "        field_tag: u16,",
+        "        target: Option<EntityId>,",
+        "    ) -> bool {",
+        "        match (self, field_tag) {",
+    ])
+    for entity in entities:
+        for field in entity.fields:
+            if field.value_type == "Option<EntityId>":
+                lines.extend([
+                    f"            (Self::{entity.name}(body), {field.tag}) => {{",
+                    f"                body.{field.name} = target;",
+                    "                true",
+                    "            }",
+                ])
+    lines.extend([
+        "            _ => false,",
+        "        }",
+        "    }",
+        "",
+        "    /// Borrows one descriptor-admitted ordered `List<EntityId>` field.",
+        "    pub(crate) fn ordered_entity_children_mut(",
+        "        &mut self,",
+        "        field_tag: u16,",
+        "    ) -> Option<&mut Vec<EntityId>> {",
+        "        match (self, field_tag) {",
+    ])
+    for entity in entities:
+        for field in entity.fields:
+            if field.value_type == "List<EntityId>":
+                lines.append(
+                    f"            (Self::{entity.name}(body), {field.tag}) => "
+                    f"Some(&mut body.{field.name}),"
+                )
+    lines.extend([
+        "            _ => None,",
+        "        }",
+        "    }",
+        "}",
+        "",
+    ])
     return "\n".join(lines)
 
 

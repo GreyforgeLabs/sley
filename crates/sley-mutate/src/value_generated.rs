@@ -2000,3 +2000,417 @@ pub const TYPED_VALUE_BINDINGS: &[TypedValueBinding] = &[
         value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::DependencyBinding),
     },
 ];
+
+impl EntityBodyValue {
+    /// Replaces one exact generated body field without interpreting its value.
+    #[allow(clippy::too_many_lines, reason = "closed generated 75-field dispatch")]
+    pub(crate) fn replace_field(&mut self, value: FieldValue) -> bool {
+        match (self, value) {
+            (Self::Workspace(body), FieldValue::WorkspacePackages(value)) => {
+                body.packages = value;
+                true
+            }
+            (Self::Workspace(body), FieldValue::WorkspaceRootNamespace(value)) => {
+                body.root_namespace = value;
+                true
+            }
+            (Self::Workspace(body), FieldValue::WorkspaceCapabilityRequirements(value)) => {
+                body.capability_requirements = value;
+                true
+            }
+            (Self::Workspace(body), FieldValue::WorkspaceContracts(value)) => {
+                body.contracts = value;
+                true
+            }
+            (Self::Workspace(body), FieldValue::WorkspaceTests(value)) => {
+                body.tests = value;
+                true
+            }
+            (Self::Package(body), FieldValue::PackageWorkspace(value)) => {
+                body.workspace = value;
+                true
+            }
+            (Self::Package(body), FieldValue::PackageRootNamespace(value)) => {
+                body.root_namespace = value;
+                true
+            }
+            (Self::Package(body), FieldValue::PackageDependencies(value)) => {
+                body.dependencies = value;
+                true
+            }
+            (Self::Package(body), FieldValue::PackageExports(value)) => {
+                body.exports = value;
+                true
+            }
+            (Self::Namespace(body), FieldValue::NamespaceParent(value)) => {
+                body.parent = value;
+                true
+            }
+            (Self::Namespace(body), FieldValue::NamespaceMembers(value)) => {
+                body.members = value;
+                true
+            }
+            (Self::TypeDef(body), FieldValue::TypeDefTypeParameters(value)) => {
+                body.type_parameters = value;
+                true
+            }
+            (Self::TypeDef(body), FieldValue::TypeDefForm(value)) => {
+                body.form = value;
+                true
+            }
+            (Self::TypeDef(body), FieldValue::TypeDefInvariants(value)) => {
+                body.invariants = value;
+                true
+            }
+            (Self::TypeDef(body), FieldValue::TypeDefVisibility(value)) => {
+                body.visibility = value;
+                true
+            }
+            (Self::Function(body), FieldValue::FunctionTypeParameters(value)) => {
+                body.type_parameters = value;
+                true
+            }
+            (Self::Function(body), FieldValue::FunctionParameters(value)) => {
+                body.parameters = value;
+                true
+            }
+            (Self::Function(body), FieldValue::FunctionResultType(value)) => {
+                body.result_type = value;
+                true
+            }
+            (Self::Function(body), FieldValue::FunctionEffects(value)) => {
+                body.effects = value;
+                true
+            }
+            (Self::Function(body), FieldValue::FunctionEntryBlock(value)) => {
+                body.entry_block = value;
+                true
+            }
+            (Self::Function(body), FieldValue::FunctionBlocks(value)) => {
+                body.blocks = value;
+                true
+            }
+            (Self::Function(body), FieldValue::FunctionContracts(value)) => {
+                body.contracts = value;
+                true
+            }
+            (Self::Function(body), FieldValue::FunctionVisibility(value)) => {
+                body.visibility = value;
+                true
+            }
+            (Self::Parameter(body), FieldValue::ParameterOwner(value)) => {
+                body.owner = value;
+                true
+            }
+            (Self::Parameter(body), FieldValue::ParameterRole(value)) => {
+                body.role = value;
+                true
+            }
+            (Self::Parameter(body), FieldValue::ParameterOrdinal(value)) => {
+                body.ordinal = value;
+                true
+            }
+            (Self::Parameter(body), FieldValue::ParameterValueType(value)) => {
+                body.value_type = value;
+                true
+            }
+            (Self::Block(body), FieldValue::BlockFunction(value)) => {
+                body.function = value;
+                true
+            }
+            (Self::Block(body), FieldValue::BlockParameters(value)) => {
+                body.parameters = value;
+                true
+            }
+            (Self::Block(body), FieldValue::BlockOperations(value)) => {
+                body.operations = value;
+                true
+            }
+            (Self::Block(body), FieldValue::BlockTerminator(value)) => {
+                body.terminator = value;
+                true
+            }
+            (Self::Block(body), FieldValue::BlockReachability(value)) => {
+                body.reachability = value;
+                true
+            }
+            (Self::Operation(body), FieldValue::OperationBlock(value)) => {
+                body.block = value;
+                true
+            }
+            (Self::Operation(body), FieldValue::OperationOrdinal(value)) => {
+                body.ordinal = value;
+                true
+            }
+            (Self::Operation(body), FieldValue::OperationOpcode(value)) => {
+                body.opcode = value;
+                true
+            }
+            (Self::Operation(body), FieldValue::OperationOperands(value)) => {
+                body.operands = value;
+                true
+            }
+            (Self::Operation(body), FieldValue::OperationResultTypes(value)) => {
+                body.result_types = value;
+                true
+            }
+            (Self::Operation(body), FieldValue::OperationImmediate(value)) => {
+                body.immediate = value;
+                true
+            }
+            (Self::Constant(body), FieldValue::ConstantValue(value)) => {
+                body.value = value;
+                true
+            }
+            (Self::GlobalValue(body), FieldValue::GlobalValueValueType(value)) => {
+                body.value_type = value;
+                true
+            }
+            (Self::GlobalValue(body), FieldValue::GlobalValueInitializer(value)) => {
+                body.initializer = value;
+                true
+            }
+            (Self::GlobalValue(body), FieldValue::GlobalValueVisibility(value)) => {
+                body.visibility = value;
+                true
+            }
+            (Self::EffectDef(body), FieldValue::EffectDefEffectKind(value)) => {
+                body.effect_kind = value;
+                true
+            }
+            (Self::EffectDef(body), FieldValue::EffectDefScopeType(value)) => {
+                body.scope_type = value;
+                true
+            }
+            (Self::EffectDef(body), FieldValue::EffectDefRequestType(value)) => {
+                body.request_type = value;
+                true
+            }
+            (Self::EffectDef(body), FieldValue::EffectDefResponseType(value)) => {
+                body.response_type = value;
+                true
+            }
+            (Self::EffectDef(body), FieldValue::EffectDefFailureType(value)) => {
+                body.failure_type = value;
+                true
+            }
+            (Self::EffectDef(body), FieldValue::EffectDefVisibility(value)) => {
+                body.visibility = value;
+                true
+            }
+            (Self::CapabilityRequirement(body), FieldValue::CapabilityRequirementEffect(value)) => {
+                body.effect = value;
+                true
+            }
+            (Self::CapabilityRequirement(body), FieldValue::CapabilityRequirementAllowedScopes(value)) => {
+                body.allowed_scopes = value;
+                true
+            }
+            (Self::CapabilityRequirement(body), FieldValue::CapabilityRequirementConstraintContracts(value)) => {
+                body.constraint_contracts = value;
+                true
+            }
+            (Self::Contract(body), FieldValue::ContractTarget(value)) => {
+                body.target = value;
+                true
+            }
+            (Self::Contract(body), FieldValue::ContractContractKind(value)) => {
+                body.contract_kind = value;
+                true
+            }
+            (Self::Contract(body), FieldValue::ContractPredicate(value)) => {
+                body.predicate = value;
+                true
+            }
+            (Self::Contract(body), FieldValue::ContractBindings(value)) => {
+                body.bindings = value;
+                true
+            }
+            (Self::Contract(body), FieldValue::ContractResourceLimits(value)) => {
+                body.resource_limits = value;
+                true
+            }
+            (Self::TestCase(body), FieldValue::TestCaseTarget(value)) => {
+                body.target = value;
+                true
+            }
+            (Self::TestCase(body), FieldValue::TestCaseInputs(value)) => {
+                body.inputs = value;
+                true
+            }
+            (Self::TestCase(body), FieldValue::TestCaseEffectEnvironment(value)) => {
+                body.effect_environment = value;
+                true
+            }
+            (Self::TestCase(body), FieldValue::TestCaseExpected(value)) => {
+                body.expected = value;
+                true
+            }
+            (Self::TestCase(body), FieldValue::TestCaseObservations(value)) => {
+                body.observations = value;
+                true
+            }
+            (Self::TestCase(body), FieldValue::TestCaseResourceLimits(value)) => {
+                body.resource_limits = value;
+                true
+            }
+            (Self::AdapterImport(body), FieldValue::AdapterImportAdapterId(value)) => {
+                body.adapter_id = value;
+                true
+            }
+            (Self::AdapterImport(body), FieldValue::AdapterImportAbiVersion(value)) => {
+                body.abi_version = value;
+                true
+            }
+            (Self::AdapterImport(body), FieldValue::AdapterImportRequestType(value)) => {
+                body.request_type = value;
+                true
+            }
+            (Self::AdapterImport(body), FieldValue::AdapterImportResponseType(value)) => {
+                body.response_type = value;
+                true
+            }
+            (Self::AdapterImport(body), FieldValue::AdapterImportFailureType(value)) => {
+                body.failure_type = value;
+                true
+            }
+            (Self::AdapterImport(body), FieldValue::AdapterImportEffects(value)) => {
+                body.effects = value;
+                true
+            }
+            (Self::EntryPoint(body), FieldValue::EntryPointFunction(value)) => {
+                body.function = value;
+                true
+            }
+            (Self::EntryPoint(body), FieldValue::EntryPointExposure(value)) => {
+                body.exposure = value;
+                true
+            }
+            (Self::PolicyBinding(body), FieldValue::PolicyBindingSubject(value)) => {
+                body.subject = value;
+                true
+            }
+            (Self::PolicyBinding(body), FieldValue::PolicyBindingRequirements(value)) => {
+                body.requirements = value;
+                true
+            }
+            (Self::DependencyBinding(body), FieldValue::DependencyBindingDependencyRoot(value)) => {
+                body.dependency_root = value;
+                true
+            }
+            (Self::DependencyBinding(body), FieldValue::DependencyBindingExternalPackage(value)) => {
+                body.external_package = value;
+                true
+            }
+            (Self::DependencyBinding(body), FieldValue::DependencyBindingLocalNamespace(value)) => {
+                body.local_namespace = value;
+                true
+            }
+            _ => false,
+        }
+    }
+
+    /// Replaces one descriptor-admitted direct `EntityId` field.
+    pub(crate) fn replace_direct_reference(
+        &mut self,
+        field_tag: u16,
+        target: EntityId,
+    ) -> bool {
+        match (self, field_tag) {
+            (Self::Workspace(body), 2) => {
+                body.root_namespace = target;
+                true
+            }
+            (Self::Package(body), 1) => {
+                body.workspace = target;
+                true
+            }
+            (Self::Package(body), 2) => {
+                body.root_namespace = target;
+                true
+            }
+            (Self::Function(body), 5) => {
+                body.entry_block = target;
+                true
+            }
+            (Self::Parameter(body), 1) => {
+                body.owner = target;
+                true
+            }
+            (Self::Block(body), 1) => {
+                body.function = target;
+                true
+            }
+            (Self::Operation(body), 1) => {
+                body.block = target;
+                true
+            }
+            (Self::GlobalValue(body), 2) => {
+                body.initializer = target;
+                true
+            }
+            (Self::CapabilityRequirement(body), 1) => {
+                body.effect = target;
+                true
+            }
+            (Self::Contract(body), 1) => {
+                body.target = target;
+                true
+            }
+            (Self::Contract(body), 3) => {
+                body.predicate = target;
+                true
+            }
+            (Self::TestCase(body), 1) => {
+                body.target = target;
+                true
+            }
+            (Self::EntryPoint(body), 1) => {
+                body.function = target;
+                true
+            }
+            (Self::PolicyBinding(body), 1) => {
+                body.subject = target;
+                true
+            }
+            (Self::DependencyBinding(body), 2) => {
+                body.external_package = target;
+                true
+            }
+            (Self::DependencyBinding(body), 3) => {
+                body.local_namespace = target;
+                true
+            }
+            _ => false,
+        }
+    }
+
+    /// Replaces one descriptor-admitted optional `EntityId` field.
+    pub(crate) fn replace_optional_reference(
+        &mut self,
+        field_tag: u16,
+        target: Option<EntityId>,
+    ) -> bool {
+        match (self, field_tag) {
+            (Self::Namespace(body), 1) => {
+                body.parent = target;
+                true
+            }
+            _ => false,
+        }
+    }
+
+    /// Borrows one descriptor-admitted ordered `List<EntityId>` field.
+    pub(crate) fn ordered_entity_children_mut(
+        &mut self,
+        field_tag: u16,
+    ) -> Option<&mut Vec<EntityId>> {
+        match (self, field_tag) {
+            (Self::Function(body), 2) => Some(&mut body.parameters),
+            (Self::Function(body), 6) => Some(&mut body.blocks),
+            (Self::Block(body), 2) => Some(&mut body.parameters),
+            (Self::Block(body), 3) => Some(&mut body.operations),
+            _ => None,
+        }
+    }
+}
