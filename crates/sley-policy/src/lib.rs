@@ -23,6 +23,7 @@ use sley_ssmc::EffectKind;
 use sley_state_root::AcceptedStateRoot;
 
 mod candidate_result;
+mod capability_summary;
 
 pub use candidate_result::{
     CandidateDecision, CandidateDiagnostic, CandidatePhaseResult, CandidateResultError,
@@ -31,6 +32,7 @@ pub use candidate_result::{
     ValidationContextDigest, candidate_attempt_digest, import_candidate_result,
     phase_evidence_digest, validation_context_digest,
 };
+pub use capability_summary::{CapabilitySummaryProjection, build_capability_summary_projection};
 
 const MAGIC: &[u8; 8] = b"SLEYSCB1";
 const FORMAT_VERSION: u64 = 1;
