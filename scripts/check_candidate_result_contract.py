@@ -225,7 +225,7 @@ def main() -> int:
 
     closeout = normalized(CLOSEOUT)
     for marker in (
-        "restricted operation-free validation complete",
+        "restricted executable-program-operation-free validation complete",
         "no commit or runtime authority",
         "Ariadne",
         "Vulcan",
@@ -257,7 +257,7 @@ def main() -> int:
         "contract": "s20-360-restricted-candidate-validation-v1",
         "decisions": len(DECISIONS),
         "durable_commit": False,
-        "operation_success_subset": "operation-free",
+        "operation_success_subset": "executable-program-operation-free",
         "phase_tags": len(PHASES),
         "problems": problems,
         "result": "PASS" if not problems else "FAIL",

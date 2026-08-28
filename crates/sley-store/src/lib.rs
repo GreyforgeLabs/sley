@@ -269,6 +269,13 @@ impl ObjectStore {
     ) -> Result<PutStatus> {
         let existing = bounded_read(final_path)?;
         verify_record(&existing, declared_id, verifier)?;
+        File::open(final_path)
+            .and_then(|file| file.sync_all())
+            .map_err(StoreError::io)?;
+        let final_dir = final_path
+            .parent()
+            .ok_or_else(|| StoreError::new(StoreErrorCode::StoreIo))?;
+        sync_dir(final_dir)?;
         Ok(PutStatus::Present)
     }
 

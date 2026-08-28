@@ -111,11 +111,14 @@ trailer is outside its own preimage. For semantic objects, the trailer equals
 `ObjectId`. Other contract digests equal their corresponding typed identifier.
 
 `StateRoot` excludes ancestry. `TransactionId` includes exact ordered parent
-transaction IDs and therefore binds ancestry. `ReceiptId` independently
+transaction IDs and therefore binds ancestry. ADR-0021 names its preimage the
+canonical parent-bound transaction receipt core. `ReceiptId` independently
 authenticates the complete persisted receipt evidence, including its
-`TransactionId`, validation/test references, capability-use summary, and commit
-metadata. The owning contracts supply exact preimages and canonical parent
-ordering for merges.
+`TransactionId`, exact transaction bytes, validation/test references,
+capability-use summary, state and policy bytes, object manifest, and commit
+metadata. The transaction core excludes both identifiers; the outer receipt
+contains `TransactionId` but excludes `ReceiptId`. The owning contracts supply
+exact preimages and canonical parent ordering for merges.
 
 `canonical_epoch_envelope_preimage` is the fixed, non-SCB standalone
 `SLEYEP01 || uvar(1) || len(epoch_record) || epoch_record` bootstrap preimage

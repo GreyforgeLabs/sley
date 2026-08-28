@@ -19,6 +19,12 @@ Refs map names to `TransactionId` and move only by compare-and-swap. Resolving a
 transaction yields an ancestry-independent `StateRoot`. Branch creation records
 the exact parent transaction/root, epoch, policy, dependencies, and ancestry.
 
+S20-390 first provides one fixed durable `accepted` head as the atomic commit
+visibility primitive. It is owned by `sley-txn`, is not caller-named, and does
+not implement branches. S20-500 owns native named refs, branches, ancestry
+operations, and exchange on top of S20-390 transaction records. `sley-txn`
+does not depend on `sley-repo`.
+
 Root comparison emits typed entity, type, signature, CFG, call, effect,
 capability, contract, test, entry-point, and dependency deltas. Three-way merge
 uses an exact common ancestor and accepts automatic composition only when
@@ -35,7 +41,10 @@ manifest, and protected root and fails closed on malformed references.
 Timestamps never imply reachability.
 
 Recovery accepts exactly the old complete state or the new complete state with
-a valid receipt. Unreachable staged objects are permitted and later collectible.
+a valid receipt. Unreachable staged objects and unreachable complete receipts
+are permitted and later collectible. A visible head that cannot resolve and
+verify its receipt, transaction core, state root, policy root, and object
+closure fails closed and is never silently repaired to a guessed revision.
 
 `GARBAGE_COLLECTION_V1.md` freezes the S20-180 retention snapshot, mark/report,
 and guarded collection profile. The snapshot consumes explicit typed

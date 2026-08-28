@@ -36,7 +36,8 @@ pub use candidate_result::{
 };
 pub use candidate_validation::{
     CandidateValidationContext, CandidateValidationError, CandidateValidationLimits,
-    CandidateValidationOutput, TrustedCandidateCapability, validate_candidate_bytes,
+    CandidateValidationOutput, TrustedCandidateCapability, ValidatedCandidatePlan,
+    validate_candidate_bytes,
 };
 pub use capability_summary::{CapabilitySummaryProjection, build_capability_summary_projection};
 

@@ -22,7 +22,7 @@ use sley_check::{
     },
 };
 use sley_id::{
-    CapabilitySummaryDigest, EntityId, PolicyRootId, PrincipalId, StateRoot, TransactionId,
+    CapabilitySummaryDigest, EntityId, PolicyRootId, PrincipalId, TransactionId,
     ValidationProfileId,
 };
 use sley_mutate::{
@@ -246,11 +246,43 @@ impl<'a> CandidateValidationContext<'a> {
     }
 }
 
+/// Validator-owned material for one fully valid candidate.
+///
+/// Imported candidate or result bytes cannot construct this type. It is pure
+/// in-memory evidence for S20-390 and grants no durable authority by itself.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ValidatedCandidatePlan {
+    candidate: ImportedCandidate,
+    proposed_state: ProposedEntityState,
+    candidate_root: AcceptedStateRoot,
+}
+
+impl ValidatedCandidatePlan {
+    /// Returns the exact strictly imported candidate used by validation.
+    #[must_use]
+    pub const fn candidate(&self) -> &ImportedCandidate {
+        &self.candidate
+    }
+
+    /// Returns the exact immutable proposed entity state used by validation.
+    #[must_use]
+    pub const fn proposed_state(&self) -> &ProposedEntityState {
+        &self.proposed_state
+    }
+
+    /// Returns the registry-authorized candidate root rebuilt in phase 13.
+    #[must_use]
+    pub const fn candidate_root(&self) -> &AcceptedStateRoot {
+        &self.candidate_root
+    }
+}
+
 /// In-process S20-360 decision output. Imported result bytes alone do not
 /// construct this wrapper; only `validate_candidate_bytes` does.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CandidateValidationOutput {
     result: ImportedCandidateResult,
+    plan: Option<ValidatedCandidatePlan>,
 }
 
 impl CandidateValidationOutput {
@@ -260,10 +292,17 @@ impl CandidateValidationOutput {
         &self.result
     }
 
+    /// Returns validator-owned commit material exactly when the decision is
+    /// `VALID`.
+    #[must_use]
+    pub const fn validated_plan(&self) -> Option<&ValidatedCandidatePlan> {
+        self.plan.as_ref()
+    }
+
     /// Returns whether all fourteen validation phases passed.
     #[must_use]
     pub fn is_valid(&self) -> bool {
-        self.result.record.decision == CandidateDecision::Valid
+        self.result.record.decision == CandidateDecision::Valid && self.plan.is_some()
     }
 }
 
@@ -442,14 +481,16 @@ impl ResultRenderer {
         };
         Ok(CandidateValidationOutput {
             result: build_candidate_result(&record)?,
+            plan: None,
         })
     }
 
     fn finish_valid(
         self,
-        candidate_root: StateRoot,
+        plan: ValidatedCandidatePlan,
     ) -> Result<CandidateValidationOutput, CandidateValidationError> {
         debug_assert_eq!(self.passed.len(), 13);
+        let candidate_root = plan.candidate_root.root;
         let mut phases = self.passed;
         phases.push(CandidatePhaseResult {
             phase_tag: 14,
@@ -476,6 +517,7 @@ impl ResultRenderer {
         record.phase_results[13].evidence_digest = Some(phase_evidence_digest(14, &core)?);
         Ok(CandidateValidationOutput {
             result: build_candidate_result(&record)?,
+            plan: Some(plan),
         })
     }
 
@@ -968,7 +1010,11 @@ pub fn validate_candidate_bytes(
     )?;
 
     // Phase 14 is rendered from the exact final-result core by finish_valid.
-    renderer.finish_valid(candidate_root.root)
+    renderer.finish_valid(ValidatedCandidatePlan {
+        candidate,
+        proposed_state: proposed,
+        candidate_root,
+    })
 }
 
 fn validate_phase_two(
@@ -1897,8 +1943,8 @@ fn candidate_result_from_candidate(error: CandidateError) -> CandidateValidation
 #[cfg(test)]
 mod tests {
     use sley_id::{
-        CandidateNonce, ObjectId, PrincipalId, ReferenceAdapterId, TransactionId, ValueHash,
-        WorkspaceId,
+        CandidateNonce, ObjectId, PrincipalId, ReferenceAdapterId, StateRoot, TransactionId,
+        ValueHash, WorkspaceId,
     };
     use sley_mutate::{
         BoundPrecondition, CandidateExpiry, CandidateRecord, EntityObjectRecord,

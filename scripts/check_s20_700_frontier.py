@@ -12,6 +12,8 @@ CANDIDATE = ROOT / "crates/sley-mutate/src/candidate.rs"
 CANDIDATE_FUZZ = ROOT / "fuzz/targets/mutation_candidate.rs"
 RESULT = ROOT / "crates/sley-policy/src/candidate_result.rs"
 RESULT_FUZZ = ROOT / "fuzz/targets/candidate_result.rs"
+TRANSACTION = ROOT / "crates/sley-txn/src/codec.rs"
+TRANSACTION_FUZZ = ROOT / "fuzz/targets/transaction_receipt.rs"
 MUTATION_MODEL = ROOT / "machineresearch/sley-2.0/09-mutation-and-transaction-model.md"
 REPOSITORY_MODEL = ROOT / "machineresearch/sley-2.0/12-repository-branch-merge-model.md"
 WORK_PACKAGES = ROOT / "docs/WORK_PACKAGES.md"
@@ -64,27 +66,38 @@ for marker in [
     if marker not in result_fuzz:
         problems.append(f"candidate-result-fuzz-boundary-missing:{marker}")
 
+transaction_source = TRANSACTION.read_text(encoding="utf-8")
+for marker in ["pub fn import_transaction", "pub fn import_transaction_receipt"]:
+    if marker not in transaction_source:
+        problems.append(f"transaction-boundary-missing:{marker}")
+transaction_fuzz = TRANSACTION_FUZZ.read_text(encoding="utf-8")
+for marker in [
+    "import_transaction(input)",
+    "import_transaction_receipt(input)",
+    "TransactionId::derive(&first.preimage)",
+    "ReceiptId::derive(&first.preimage)",
+]:
+    if marker not in transaction_fuzz:
+        problems.append(f"transaction-fuzz-boundary-missing:{marker}")
+
 mutation_model = " ".join(MUTATION_MODEL.read_text(encoding="utf-8").split())
 for marker in [
     "S20-350 proposal construction is complete",
-    "restricted S20-360 candidate validation is complete",
-    "S20-390 commit",
+    "restricted S20-360 candidate validation and restricted S20-390 atomic commit",
+    "fixed accepted head",
 ]:
     if marker not in mutation_model:
         problems.append(f"mutation-model-marker-missing:{marker}")
 
 repository_model = REPOSITORY_MODEL.read_text(encoding="utf-8")
-if "no native repository implementation" not in repository_model:
+if "fixed accepted-head transaction boundary is implemented" not in repository_model:
     problems.append("repository-merge-model-drift")
 if (ROOT / "crates/sley-repo/src/merge.rs").exists():
     problems.append("merge-production-boundary-now-present:reaudit-required")
-if (ROOT / "crates/sley-txn").exists():
-    problems.append("transaction-production-boundary-now-present:reaudit-required")
-
 work_packages = WORK_PACKAGES.read_text(encoding="utf-8")
 for marker in [
-    "ten persistent libFuzzer targets",
-    "nine scoped persistent Make smoke gates",
+    "eleven persistent libFuzzer targets",
+    "ten scoped persistent Make smoke gates",
     "merge production boundary remains absent",
 ]:
     if marker not in work_packages:
@@ -94,8 +107,8 @@ summary = json.loads(MACHINE_SUMMARY.read_text(encoding="utf-8"))
 frontier = summary.get("s20_700_remaining_surface_audit", {})
 expected = {
     "master_required_surface_count": 11,
-    "scoped_target_count": 10,
-    "scoped_landed_surface_count": 11,
+    "scoped_target_count": 11,
+    "scoped_landed_surface_count": 12,
     "remaining_required_surface_count": 1,
     "mutation_candidate_production_boundary": True,
     "mutation_candidate_persistent_fuzz_target": True,
@@ -104,10 +117,14 @@ expected = {
     "candidate_result_persistent_fuzz_target": True,
     "candidate_result_required_by_section_18_5": False,
     "candidate_result_vulcan_review": "PASS_P3_CORPUS_BREADTH_CLOSED_NO_OPEN_P0_P1_P2_P3_P4",
+    "transaction_receipt_production_boundary": True,
+    "transaction_receipt_persistent_fuzz_target": True,
+    "transaction_receipt_required_by_section_18_5": False,
+    "transaction_receipt_vulcan_review": "PASS_MANIFEST_LENGTH_FINDINGS_CLOSED_NO_OPEN_P0_P1_P2_P3_P4",
     "merge_engine_production_boundary": False,
     "no_parallel_harness_created": True,
     "full_s20_700_complete": False,
-    "next_dependency_complete_package": "S20-390-ATOMIC-COMMIT-AND-RECEIPTS",
+    "next_dependency_complete_package": "S20-500-NATIVE-REFS-AND-BRANCH-MODEL",
 }
 for key, value in expected.items():
     if frontier.get(key) != value:
@@ -120,10 +137,10 @@ if frontier.get("local_frontier_contract") != "docs/audits/S20_LOCAL_COMPLETION_
     problems.append("machine-summary-local-frontier-drift")
 
 for path, marker in [
-    (RESULTS, "ten scoped persistent libFuzzer"),
+    (RESULTS, "eleven scoped persistent libFuzzer"),
     (GAPS, "S20-350 is complete as a proposal-only construction boundary"),
     (AUDIT, "No placeholder merge target is created"),
-    (AUDIT, "S20-390 is now the next dependency-complete package"),
+    (AUDIT, "S20-500 is now"),
     (MAKEFILE, "python3 scripts/check_s20_700_frontier.py"),
 ]:
     if marker not in path.read_text(encoding="utf-8"):

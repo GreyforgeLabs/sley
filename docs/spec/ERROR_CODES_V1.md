@@ -258,6 +258,42 @@ failures are preserved. These codes do not authenticate policy transitions,
 issue capability tokens, establish live scope/expiry/replay/budget authority,
 construct candidates, commit state, or complete M3/M4/GA.
 
+S20-390 freezes numeric codes 39000 through 39021 for transaction-core,
+receipt, fixed accepted-head, and recovery failures:
+
+| Numeric | Symbolic |
+|---:|---|
+| 39000 | `TXN_FORMAT_VERSION` |
+| 39001 | `TXN_KIND_INVALID` |
+| 39002 | `TXN_PARENT_SHAPE` |
+| 39003 | `TXN_FIELD_SHAPE` |
+| 39004 | `TXN_CHANGED_BINDING_INVALID` |
+| 39005 | `TXN_TOMBSTONE_INVALID` |
+| 39006 | `TXN_RESULT_NOT_VALID` |
+| 39007 | `TXN_RESULT_BINDING_MISMATCH` |
+| 39008 | `TXN_TEST_EVIDENCE_UNSUPPORTED` |
+| 39009 | `TXN_OBJECT_INVENTORY_MISMATCH` |
+| 39010 | `TXN_RECEIPT_BINDING_MISMATCH` |
+| 39011 | `TXN_RECEIPT_CONFLICT` |
+| 39012 | `TXN_GENESIS_INVALID` |
+| 39013 | `TXN_ALREADY_INITIALIZED` |
+| 39014 | `REF_HEAD_MISSING` |
+| 39015 | `REF_HEAD_CORRUPT` |
+| 39016 | `REF_CAS_STALE` |
+| 39017 | `RECOVERY_RECEIPT_INCOMPLETE` |
+| 39018 | `RECOVERY_REF_CAS_INCOMPLETE` |
+| 39019 | `TXN_IO` |
+| 39020 | `TXN_INTERNAL_INVARIANT` |
+| 39021 | `TXN_RESOURCE_LIMIT` |
+
+A live-head mismatch exposed by ordinary commit is the existing `STALE_ROOT`
+terminal decision, not last-write-wins. Exact S20-360 `STALE_ENTITY` and all
+earlier source codes are preserved when fresh commit-time validation rejects a
+candidate. `REF_CAS_STALE` is the lower fixed-head primitive failure and cannot
+advance the head. S20-390 codes do not claim S20-500 named refs, S20-530 full
+cross-process recovery, selected-test execution, policy transitions, M3/M4, or
+GA.
+
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum
 (`NEVER`, `AFTER_REQUERY`, `AFTER_CAPABILITY`, `AFTER_LIMIT_CHANGE`,

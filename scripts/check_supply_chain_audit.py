@@ -18,7 +18,7 @@ EXPECTED_BLOCKERS = ["workspace-license-text:missing-operator-approved-root-lice
 EXPECTED_ANCHOR = "51863f7b93271bd7a73f9b7b3b02eeca93447d9a"
 EXPECTED_COUNTS = {
     ("cargo", False): 22,
-    ("cargo", True): 14,
+    ("cargo", True): 15,
     ("pypi", False): 2,
     ("pypi", True): 1,
 }
@@ -178,13 +178,13 @@ def check_machine_summary(summary: dict[str, Any]) -> None:
         "inventory_contract": "s20-710-pre-release-inventory-v1",
         "secret_scan_contract": "s20-710-secret-scan-v1",
         "history_anchor_commit": EXPECTED_ANCHOR,
-        "cargo_lock_sha256": "64e391c06b8d4541a626b7777714d7bd9dc306c965473c00466a2c20ae6b92b0",
+        "cargo_lock_sha256": "acb7945fdd18cad7652883f0a3921b4449a3e34b5e016fce1db14af20423e59a",
         "uv_lock_sha256": "cb9621b8ad4b538672784f022632b4ec554d69b8ff1286992231645eca5cf446",
-        "cargo_workspace_packages": 14,
+        "cargo_workspace_packages": 15,
         "cargo_registry_packages": 22,
         "python_workspace_packages": 1,
         "python_registry_packages": 2,
-        "dependency_relationships": 80,
+        "dependency_relationships": 87,
         "t52_local_lock_inventory": "PASS",
         "t54_high_confidence_scan": "PASS",
         "history_blobs_scanned": 499,

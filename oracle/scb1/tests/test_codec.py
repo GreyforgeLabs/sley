@@ -27,6 +27,7 @@ from sley2_scb1_oracle.candidate import check_candidate
 from sley2_scb1_oracle.candidate_result import check_candidate_result
 from sley2_scb1_oracle.conformance import check
 from sley2_scb1_oracle.errors import ScbError
+from sley2_scb1_oracle.transaction_receipt import check_transaction_receipt
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -36,6 +37,8 @@ CANDIDATE_ACCEPTED = ROOT / "conformance/mutation-candidate/v1/accepted.json"
 CANDIDATE_REJECTED = ROOT / "conformance/mutation-candidate/v1/rejected.json"
 RESULT_ACCEPTED = ROOT / "conformance/candidate-result/v1/accepted.json"
 RESULT_REJECTED = ROOT / "conformance/candidate-result/v1/rejected.json"
+TRANSACTION_ACCEPTED = ROOT / "conformance/transaction-receipt/v1/accepted.json"
+TRANSACTION_REJECTED = ROOT / "conformance/transaction-receipt/v1/rejected.json"
 
 
 class OracleTests(unittest.TestCase):
@@ -107,6 +110,12 @@ class OracleTests(unittest.TestCase):
         self.assertEqual(result["result"], "PASS", result["problems"])
         self.assertEqual(result["accepted_vectors"], 16)
         self.assertEqual(result["rejected_vectors"], 4)
+
+    def test_s20_390_transaction_receipt_corpus_gate_passes(self) -> None:
+        result = check_transaction_receipt(TRANSACTION_ACCEPTED, TRANSACTION_REJECTED)
+        self.assertEqual(result["result"], "PASS", result["problems"])
+        self.assertEqual(result["accepted_vectors"], 2)
+        self.assertEqual(result["rejected_vectors"], 9)
 
 
 if __name__ == "__main__":

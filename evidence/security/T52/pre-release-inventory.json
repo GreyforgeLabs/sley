@@ -2,7 +2,7 @@
   "blockers": [
     "workspace-license-text:missing-operator-approved-root-license"
   ],
-  "cargo_lock_sha256": "64e391c06b8d4541a626b7777714d7bd9dc306c965473c00466a2c20ae6b92b0",
+  "cargo_lock_sha256": "acb7945fdd18cad7652883f0a3921b4449a3e34b5e016fce1db14af20423e59a",
   "contract": "s20-710-pre-release-inventory-v1",
   "full_release_sbom": false,
   "history_anchor_commit": "51863f7b93271bd7a73f9b7b3b02eeca93447d9a",
@@ -394,6 +394,19 @@
       "license_evidence": "cargo-metadata-declared-expression",
       "license_normalized_for_review": "LicenseRef-Proprietary",
       "name": "sley-store",
+      "source": "workspace",
+      "version": "2.0.0-alpha.0",
+      "workspace": true
+    },
+    {
+      "bom_ref": "pkg:cargo/sley-txn@2.0.0-alpha.0?workspace=true",
+      "checksum_sha256": null,
+      "ecosystem": "cargo",
+      "license_declared": "LicenseRef-Proprietary",
+      "license_disposition": "BLOCKED_MISSING_APPROVED_PROPRIETARY_LICENSE_TEXT",
+      "license_evidence": "cargo-metadata-declared-expression",
+      "license_normalized_for_review": "LicenseRef-Proprietary",
+      "name": "sley-txn",
       "source": "workspace",
       "version": "2.0.0-alpha.0",
       "workspace": true
@@ -865,6 +878,34 @@
     {
       "from": "pkg:cargo/sley-store@2.0.0-alpha.0?workspace=true",
       "to": "pkg:cargo/sley-scb1@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-txn@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/blake3@1.8.2"
+    },
+    {
+      "from": "pkg:cargo/sley-txn@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-id@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-txn@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-mutate@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-txn@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-policy@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-txn@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-scb1@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-txn@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-state-root@2.0.0-alpha.0?workspace=true"
+    },
+    {
+      "from": "pkg:cargo/sley-txn@2.0.0-alpha.0?workspace=true",
+      "to": "pkg:cargo/sley-store@2.0.0-alpha.0?workspace=true"
     },
     {
       "from": "pkg:cargo/sley-vm@2.0.0-alpha.0?workspace=true",

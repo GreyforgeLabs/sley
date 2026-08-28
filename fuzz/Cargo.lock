@@ -95,6 +95,7 @@ dependencies = [
  "sley-schema",
  "sley-ssmc",
  "sley-store",
+ "sley-txn",
  "sley-vm",
 ]
 
@@ -189,6 +190,19 @@ version = "2.0.0-alpha.0"
 dependencies = [
  "sley-id",
  "sley-scb1",
+]
+
+[[package]]
+name = "sley-txn"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "blake3",
+ "sley-id",
+ "sley-mutate",
+ "sley-policy",
+ "sley-scb1",
+ "sley-state-root",
+ "sley-store",
 ]
 
 [[package]]

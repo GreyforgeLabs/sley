@@ -269,6 +269,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "sley-txn"
+version = "2.0.0-alpha.0"
+dependencies = [
+ "blake3",
+ "sley-id",
+ "sley-mutate",
+ "sley-policy",
+ "sley-scb1",
+ "sley-state-root",
+ "sley-store",
+]
+
+[[package]]
 name = "sley-vm"
 version = "2.0.0-alpha.0"
 dependencies = [

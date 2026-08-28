@@ -21,8 +21,8 @@ must not be read as passing evidence until the named work package records them.
 | T14 | truncation hides required facts | P0 | sley-query | `QUERY_REQUIRED_FACT_OMITTED` | truncation/validation independence | `evidence/security/T14/` |
 | T15 | handle reuse across roots | P0 | sley-query | `SESSION_STALE_HANDLE` | root/session/epoch matrix | `evidence/security/T15/` |
 | T16 | oversized mutation list | P1 | sley-mutate | `MUTATION_RESOURCE_LIMIT` | count/byte boundary | `evidence/security/T16/` |
-| T17 | stale-root commit | P0 | sley-txn | `STALE_ROOT` | concurrent CAS scenario | `evidence/security/T17/` |
-| T18 | stale-entity commit | P0 | sley-txn | `STALE_ENTITY` | exact preimage mutation | `evidence/security/T18/` |
+| T17 | stale-root commit | P0 | sley-txn | `STALE_ROOT` | concurrent CAS scenario; restricted S20-390 coverage present | `evidence/validation/s20-390-atomic-commit-closeout-v1.json` |
+| T18 | stale-entity commit | P0 | sley-txn | `STALE_ENTITY` | exact preimage mutation; restricted S20-360/S20-390 coverage present | `evidence/validation/s20-390-atomic-commit-closeout-v1.json` |
 | T19 | candidate modifies own policy | P0 | sley-policy | `POLICY_SELF_MODIFICATION` | policy-isolation E2E | `evidence/security/T19/` |
 | T20 | candidate modifies validator epoch | P0 | sley-schema | `SCHEMA_SELF_MODIFICATION` | epoch-isolation E2E | `evidence/security/T20/` |
 | T21 | candidate weakens mandatory tests | P0 | sley-policy | `POLICY_ORACLE_SELF_MODIFICATION` | test-root isolation | `evidence/security/T21/` |
@@ -42,8 +42,8 @@ must not be read as passing evidence until the named work package records them.
 | T35 | cache poisoning | P0 | sley-query | `CACHE_BINDING_MISMATCH` | root/epoch/policy key faults | `evidence/security/T35/` |
 | T36 | derived index treated as canonical | P0 | sley-store | `STORE_DERIVED_INPUT_FORBIDDEN` | corrupt/delete/rebuild cache | `evidence/security/T36/` |
 | T37 | crash during object write | P0 | sley-store | `RECOVERY_STAGED_OBJECT` | interruption matrix | `evidence/security/T37/` |
-| T38 | crash during receipt write | P0 | sley-txn | `RECOVERY_RECEIPT_INCOMPLETE` | interruption matrix | `evidence/security/T38/` |
-| T39 | crash during ref update | P0 | sley-repo | `RECOVERY_REF_CAS_INCOMPLETE` | interruption matrix | `evidence/security/T39/` |
+| T38 | crash during receipt write | P0 | sley-txn | `RECOVERY_RECEIPT_INCOMPLETE` | restricted S20-390 interruption matrix present | `evidence/validation/s20-390-atomic-commit-closeout-v1.json` |
+| T39 | crash during accepted-head or later ref update | P0 | sley-txn, then sley-repo for S20-500 named refs | `RECOVERY_REF_CAS_INCOMPLETE` | restricted fixed-head S20-390 interruption matrix present; named refs pending | `evidence/validation/s20-390-atomic-commit-closeout-v1.json` |
 | T40 | GC deletes reachable object | P0 | sley-store | `GC_REACHABILITY_VIOLATION` | graph/pin/lease property | `evidence/security/T40/` |
 | T41 | malicious pack | P0 | sley-repo | `PACK_INVALID` | importer fuzz/corruption | `evidence/security/T41/` |
 | T42 | decompression bomb | P1 | sley-repo | `PACK_DECOMPRESSION_LIMIT` | ratio/size boundary | `evidence/security/T42/` |

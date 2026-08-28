@@ -1,14 +1,15 @@
 # S20-360 Candidate Validation Closeout
 
-Status: **PASS - restricted operation-free validation complete; no commit or runtime authority**
+Status: **PASS - restricted executable-program-operation-free validation complete; no commit or runtime authority**
 
 ## Scope
 
 This closeout covers the pure ordered candidate validator, closed trusted
 context, complete epoch-1 entity/reference projection, canonical result codec,
 independent result oracle and corpus, and candidate-result persistent fuzz
-target. The success subset is explicitly operation-free. An SSMC1 `Operation`
-fails phase 12 with `RESOURCE_LIMIT` and source symbol
+target. The success subset is explicitly executable-program-operation-free;
+candidate mutation operations remain supported. An SSMC1 semantic `Operation`
+entity fails phase 12 with `RESOURCE_LIMIT` and source symbol
 `CANDIDATE_OPERATION_ANALYSIS_UNSUPPORTED`.
 
 This slice does not cover complete operation semantics, mandatory

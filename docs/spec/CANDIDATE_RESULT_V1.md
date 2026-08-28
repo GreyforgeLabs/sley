@@ -1,8 +1,9 @@
 # Candidate Result and Validation Pipeline v1
 
-Status: S20-360 normative contract implemented for the operation-free
-restricted conformance epoch. Full-GA operation analysis and S20-390 commit
-remain separate incomplete packages.
+Status: S20-360 normative contract implemented for the
+executable-program-operation-free restricted conformance epoch. Full-GA
+operation analysis remains incomplete; restricted S20-390 fixed-head commit is
+implemented as a separate layer.
 
 ## 1. Boundary and authority
 

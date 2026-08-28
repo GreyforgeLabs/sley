@@ -374,10 +374,11 @@ def check_partial_fixtures() -> None:
         "mutation_value_exact_rejection_vectors": 18,
         "mutation_value_panics": 0,
         "persistent_fuzz_harness": False,
-        "persistent_target_count": 10,
-        "persistent_landed_surface_count": 11,
+        "persistent_target_count": 11,
+        "persistent_landed_surface_count": 12,
         "mutation_candidate_persistent_fuzz_smoke": "PASS",
         "candidate_result_persistent_fuzz_smoke": "PASS",
+        "transaction_receipt_persistent_fuzz_smoke": "PASS",
         "full_s20_700_complete": False,
     }
     for key, expected in expected_adversarial_summary.items():
@@ -385,12 +386,13 @@ def check_partial_fixtures() -> None:
             raise SystemExit(f"partial mutation adversarial summary drift: {key}")
     dossier = ADVERSARIAL_DOSSIER.read_text(encoding="utf-8")
     for marker in (
-        "Status: bounded partial S20-700 evidence with ten scoped persistent libFuzzer",
+        "Status: bounded partial S20-700 evidence with eleven scoped persistent libFuzzer",
         "scoped persistent libFuzzer",
         "all 126 accepted fixtures seed 252 trailing-byte and",
         "446 distinct proper-prefix cases, for 698 deterministic derived mutations",
         "Mutation-candidate persistent libFuzzer target",
         "Candidate-result persistent libFuzzer target",
+        "Transaction/receipt persistent libFuzzer target",
         "Persistent fuzzing and minimized finding retention",
     ):
         if dossier.count(marker) != 1:

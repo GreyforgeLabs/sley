@@ -1,0 +1,56 @@
+{
+  "authority": {
+    "deploy": false,
+    "external_runtime_mutation": false,
+    "provider_call": false,
+    "publication": false,
+    "push": false,
+    "spend": false,
+    "trading": false
+  },
+  "claim": "RESTRICTED_EXECUTABLE_PROGRAM_OPERATION_FREE_TEST_FREE",
+  "commands": {
+    "focused": {
+      "cargo_clippy_sley_txn": "PASS",
+      "cargo_test_sley_txn": "PASS_12_ACTIVE_1_IGNORED_GENERATOR",
+      "fixture_drift": "PASS_2_ACCEPTED_9_REJECTED",
+      "independent_oracle": "PASS_2_ACCEPTED_9_REJECTED",
+      "oracle_unittest": "PASS_10",
+      "persistent_fuzz": "PASS_512_RUNS_19_SEEDS"
+    },
+    "tier_1_make_quick": "PASS",
+    "tier_2_make_adversarial": "PASS",
+    "tier_2_make_conformance": "PASS",
+    "tier_2_make_core": "PASS"
+  },
+  "contract": "s20-390-atomic-commit-closeout-v1",
+  "deterministic_inputs": {
+    "accepted_fixture_vectors": 2,
+    "fault_boundaries": 5,
+    "manifest_inventory_rejections": 1,
+    "persistent_fuzz_runs": 512,
+    "persistent_fuzz_seeds": 19,
+    "rejected_fixture_vectors": 9,
+    "transaction_error_codes": 22
+  },
+  "full_gate": {
+    "make_v1": "SKIPPED_NOT_RELEASE_BOUNDARY",
+    "make_v2": "NOT_IMPLEMENTED_FAIL_CLOSED",
+    "release_check": "NOT_IMPLEMENTED_FAIL_CLOSED"
+  },
+  "remaining": {
+    "full_crash_recovery": false,
+    "full_semantic_operation_analysis": false,
+    "named_refs_and_branches": false,
+    "protocol": false,
+    "release": false,
+    "selected_test_execution": false
+  },
+  "result": "PASS_RESTRICTED_OPERATION_FREE_TEST_FREE",
+  "reviews": {
+    "ariadne": "PASS_FINDINGS_CLOSED_NO_OPEN_P0_P1_P2_P3_P4",
+    "nabu": "PASS_NON_CYCLIC_BOUNDARY_AND_FIXED_HEAD_OWNERSHIP",
+    "vulcan": "PASS_MANIFEST_LENGTH_FINDINGS_CLOSED_NO_OPEN_P0_P1_P2_P3_P4"
+  },
+  "validation_tier": "TIER_2_SUBSYSTEM_HANDOFF"
+}

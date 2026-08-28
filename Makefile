@@ -1,4 +1,4 @@
-.PHONY: quick core conformance adversarial fuzz-smoke legacy-runner-smoke scb1-persistent-fuzz-smoke schema-persistent-fuzz-smoke pack-persistent-fuzz-smoke semantic-checkers-persistent-fuzz-smoke query-persistent-fuzz-smoke vm-persistent-fuzz-smoke adapter-responses-persistent-fuzz-smoke mutation-candidate-persistent-fuzz-smoke candidate-result-persistent-fuzz-smoke v2 release-check check-changed
+.PHONY: quick core conformance adversarial fuzz-smoke legacy-runner-smoke scb1-persistent-fuzz-smoke schema-persistent-fuzz-smoke pack-persistent-fuzz-smoke semantic-checkers-persistent-fuzz-smoke query-persistent-fuzz-smoke vm-persistent-fuzz-smoke adapter-responses-persistent-fuzz-smoke mutation-candidate-persistent-fuzz-smoke candidate-result-persistent-fuzz-smoke transaction-receipt-persistent-fuzz-smoke v2 release-check check-changed
 
 quick:
 	python3 scripts/check_m0.py
@@ -37,6 +37,9 @@ quick:
 	python3 scripts/check_candidate_result_contract.py
 	python3 scripts/generate_candidate_result_fixtures.py --check
 	python3 scripts/check_candidate_result_persistent_fuzz_slice.py
+	python3 scripts/generate_transaction_receipt_fixtures.py --check
+	python3 scripts/check_transaction_contract.py
+	python3 scripts/check_transaction_receipt_persistent_fuzz_slice.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked
@@ -53,11 +56,13 @@ conformance:
 	cargo test -p sley-store --locked
 	cargo test -p sley-state-root --locked
 	cargo test -p sley-repo --locked
+	cargo test -p sley-txn --locked
 	uv run --project oracle/scb1 --frozen python -m unittest discover -s oracle/scb1/tests -v
 	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check --accepted conformance/scb1/v1/accepted.json --rejected conformance/scb1/v1/rejected.json
 	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check-mutation-value --accepted conformance/mutation-value/v1/accepted.json --rejected conformance/mutation-value/v1/rejected.json
 	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check-mutation-candidate --accepted conformance/mutation-candidate/v1/accepted.json --rejected conformance/mutation-candidate/v1/rejected.json
 	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check-candidate-result --accepted conformance/candidate-result/v1/accepted.json --rejected conformance/candidate-result/v1/rejected.json
+	uv run --project oracle/scb1 --frozen sley2-scb1-oracle check-transaction-receipt --accepted conformance/transaction-receipt/v1/accepted.json --rejected conformance/transaction-receipt/v1/rejected.json
 	uv run --project oracle/scb1 --frozen python scripts/check_schema_epoch_vector.py
 	uv run --project oracle/scb1 --frozen python scripts/check_state_root_vector.py
 	uv run --project oracle/scb1 --frozen python scripts/check_repository_pack_vector.py
@@ -66,6 +71,7 @@ adversarial:
 	cargo test -p sley-mutate mutation_value_codec_adversarial --locked
 	cargo test -p sley-store --locked
 	cargo test -p sley-repo --locked
+	cargo test -p sley-txn --locked
 	cargo test -p sley-adapter authorized_adapter_request_binding_confusion_fails_before_charge --locked
 	python3 scripts/check_m1_gate.py adversarial
 
@@ -115,6 +121,11 @@ mutation-candidate-persistent-fuzz-smoke:
 candidate-result-persistent-fuzz-smoke:
 	python3 scripts/check_candidate_result_persistent_fuzz_slice.py
 	python3 scripts/run_candidate_result_persistent_fuzz.py
+
+transaction-receipt-persistent-fuzz-smoke:
+	python3 scripts/generate_transaction_receipt_fixtures.py --check
+	python3 scripts/check_transaction_receipt_persistent_fuzz_slice.py
+	python3 scripts/run_transaction_receipt_persistent_fuzz.py
 
 check-changed: quick core conformance adversarial fuzz-smoke
 	@python3 scripts/check_changed.py

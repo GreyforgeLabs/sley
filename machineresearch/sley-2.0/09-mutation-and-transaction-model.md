@@ -2,8 +2,9 @@
 
 Status: S20-340 immutable mutation-schema generation and S20-345 candidate
 contract/identity freeze complete; S20-350 proposal construction is complete;
-restricted S20-360 candidate validation is complete; S20-390 commit and
-receipt work remains required and has no implementation.
+restricted S20-360 candidate validation and restricted S20-390 atomic commit
+are complete. Semantic operation entities, selected tests, named refs, and
+full recovery remain required.
 
 The refined DAG makes the complete validator depend on protected policy and
 capability work. S20-340 through S20-390 must prove exact preimages, monotonic
@@ -23,10 +24,11 @@ precondition records, and an exact candidate builder/importer. It remains
 proposal data, not mutation authority. S20-360 now uses the pure in-memory
 candidate applier plus the owning semantic, policy, capability, contract, test,
 and root builders to issue a canonical monotonic result for an explicit
-operation-free success subset. There is no repository write,
-workspace/root/session authority, transaction, receipt, ref CAS, or durable
-accepted-state mutation surface. S20-390 remains required before M3/M4 or any
-accepted-state change.
+executable-program-operation-free success subset. S20-390 now revalidates that
+candidate against a verified live accepted closure and may durably advance one
+fixed accepted head only after immutable objects and a complete receipt are
+synced. Named refs, sessions, runtime authority, and M3/M4 completion remain
+absent.
 
 S20-350 native construction binds workspace, roots, principal, capability
 summary, expiry, all sixteen mutation payload classes, and exact preconditions
@@ -46,8 +48,10 @@ digest contract, and proposal-versus-authority boundary were frozen. S20-345
 froze those surfaces, and ADR-0019 then removed the remaining generic
 `Option<T>` contradiction without changing a production epoch or accepted
 root. S20-350 is therefore complete as construction. Restricted semantic
-validation now exists under S20-360, while every durable state-transition
-boundary remains deferred.
+validation exists under S20-360, and restricted fixed-head durable commit
+exists under S20-390. Full semantic operation analysis, selected-test
+execution, named refs, and runtime state-transition boundaries remain
+deferred.
 
 S20-345 now freezes those proposal contracts in six normative specs and
 ADR-0017. The candidate has thirteen digest-bound fields; operations select
@@ -56,15 +60,17 @@ use only absence/exact-entity/exact-container payloads; capability summaries
 are unauthoritative projections; validation profiles require all fourteen
 phases; and expiry uses explicit Unix milliseconds without ambient clock
 access. The native builder and decoder now exist. S20-360 supplies pure
-in-memory apply, root construction, and restricted semantic validation. No
-session authority, capability consumption, transaction, receipt, repository
-write, or CAS exists.
+in-memory apply, root construction, and restricted semantic validation.
+S20-390 adds canonical transactions/receipts and one fixed accepted-head CAS.
+No session authority, named branch authority, capability-ledger consumption,
+or live runtime surface exists.
 
 S20-345 also adds identifier-domain types and fixed vectors for
 capability-summary and validation-profile identities. Nabu and Vulcan found no
 open P0, P1, or P2 issue in the freeze. S20-350's independent conformance,
 production candidate fuzz smoke, and focused local security review pass.
-S20-360 now produces the separate monotonic validation result, but that result
-is evidence rather than commit authority. S20-390 must recheck the exact
-candidate, accepted base, policy/context, and result before it can atomically
-commit or issue a receipt.
+S20-360 produces the separate monotonic validation result, but imported result
+bytes remain evidence rather than commit authority. S20-390 closes the
+restricted boundary by constructing a fresh context from durable accepted
+facts, rerunning validation, consuming only its private plan, and installing
+objects and receipt before fixed-head visibility.

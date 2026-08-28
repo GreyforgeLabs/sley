@@ -58,9 +58,9 @@ def main() -> int:
 
         frontier = summary.get("local_completion_frontier", {})
         expected_frontier = {
-            "status": "S20_360_RESTRICTED_COMPLETE_S20_390_READY",
+            "status": "S20_390_RESTRICTED_COMPLETE_S20_500_READY",
             "goal_complete": False,
-            "next_authority_safe_package": "S20-390-ATOMIC-COMMIT-AND-RECEIPTS",
+            "next_authority_safe_package": "S20-500-NATIVE-REFS-AND-BRANCH-MODEL",
             "blocked_lane_count": 6,
             "blocked_lanes": [
                 "semantics_and_queries",
@@ -83,14 +83,20 @@ def main() -> int:
             "s20_360_operation_analysis_complete": False,
             "s20_360_independent_conformance_complete": True,
             "s20_360_persistent_fuzz_complete": True,
+            "s20_390_restricted_atomic_commit_complete": True,
+            "s20_390_independent_conformance_complete": True,
+            "s20_390_persistent_fuzz_complete": True,
+            "s20_390_full_recovery_complete": False,
             "session_authority_available": False,
-            "transaction_boundary_available": False,
+            "transaction_boundary_available": True,
+            "fixed_accepted_head_available": True,
+            "named_ref_boundary_available": False,
             "protocol_boundary_available": False,
             "merge_boundary_available": False,
             "real_benchmark_run_authorized": False,
             "root_license_text_approved": False,
             "release_artifact_available": False,
-            "required_specialist_review": "PASS_S20_360_ARIADNE_VULCAN",
+            "required_specialist_review": "PASS_S20_390_NABU_ARIADNE_VULCAN",
             "focused_semantic_security_review": "PASS_NO_OPEN_REPORT_GRADE_FINDINGS",
             "full_v2_eligible": False,
             "release_check_eligible": False,
@@ -140,20 +146,20 @@ def main() -> int:
             summary.get("s20_700_remaining_surface_audit", {}).get(
                 "next_dependency_complete_package"
             ),
-            "S20-390-ATOMIC-COMMIT-AND-RECEIPTS",
+            "S20-500-NATIVE-REFS-AND-BRANCH-MODEL",
             "S20-700 next package",
         )
         validation = summary.get("s20_360_candidate_validation", {})
         require_equal(
             validation.get("status"),
-            "COMPLETE_RESTRICTED_OPERATION_FREE_VALIDATION_BOUNDARY",
+            "COMPLETE_RESTRICTED_EXECUTABLE_PROGRAM_OPERATION_FREE_VALIDATION_BOUNDARY",
             "S20-360 restricted status",
         )
         require_equal(validation.get("validation_phases"), 14, "S20-360 phases")
         require_equal(validation.get("terminal_decisions"), 16, "S20-360 decisions")
         require_equal(
             validation.get("operation_success_subset"),
-            "operation-free",
+            "executable-program-operation-free",
             "S20-360 success subset",
         )
         require_equal(
@@ -176,6 +182,38 @@ def main() -> int:
             "full_ga_fingerprint_requirement_complete",
         ):
             require_equal(validation.get(field), False, f"S20-360 {field}")
+        transaction = summary.get("s20_390_atomic_commit", {})
+        require_equal(
+            transaction.get("status"),
+            "COMPLETE_RESTRICTED_EXECUTABLE_PROGRAM_OPERATION_FREE_TEST_FREE_BOUNDARY",
+            "S20-390 restricted status",
+        )
+        for field in (
+            "fresh_commit_time_revalidation",
+            "fixed_accepted_head",
+            "independent_conformance_complete",
+            "persistent_fuzz_complete",
+            "trusted_genesis",
+        ):
+            require_equal(transaction.get(field), True, f"S20-390 {field}")
+        for field in (
+            "full_crash_recovery_complete",
+            "named_refs_and_branches",
+            "runtime_authority",
+            "selected_test_execution",
+        ):
+            require_equal(transaction.get(field), False, f"S20-390 {field}")
+        require_equal(transaction.get("fault_boundaries"), 5, "S20-390 faults")
+        require_equal(
+            transaction.get("ariadne_review"),
+            "PASS_FINDINGS_CLOSED_NO_OPEN_P0_P1_P2_P3_P4",
+            "S20-390 Ariadne review",
+        )
+        require_equal(
+            transaction.get("vulcan_review"),
+            "PASS_MANIFEST_LENGTH_FINDINGS_CLOSED_NO_OPEN_P0_P1_P2_P3_P4",
+            "S20-390 Vulcan review",
+        )
         require_equal(
             summary.get("s20_710_pre_release_audit", {}).get("full_s20_710_complete"),
             False,
@@ -207,7 +245,6 @@ def main() -> int:
                 fail(f"S20-250 core body appeared; re-audit required: {type_name}")
 
         for relative in (
-            "crates/sley-txn",
             "crates/sley-protocol",
             "crates/sley-json-bridge",
             "crates/sley-cli",
@@ -230,10 +267,10 @@ def main() -> int:
 
         audit = AUDIT.read_text(encoding="utf-8")
         for marker in (
-            "restricted S20-360 validation is complete",
+            "restricted S20-390 atomic commit is complete",
             "S20-250 remains incomplete",
             "candidate construction is proposal-only",
-            "S20-390 transaction work is next",
+            "S20-500 native refs are next",
         ):
             if marker not in audit:
                 fail(f"frontier audit marker missing: {marker}")
@@ -254,7 +291,7 @@ def main() -> int:
                 "blocked_lanes": 6,
                 "full_gate_run": False,
                 "goal_complete": False,
-                "next_authority_safe_package": "S20-390-ATOMIC-COMMIT-AND-RECEIPTS",
+                "next_authority_safe_package": "S20-500-NATIVE-REFS-AND-BRANCH-MODEL",
                 "result": "PASS",
             },
             indent=2,
