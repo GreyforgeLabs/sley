@@ -879,6 +879,8 @@ impl FieldValue {
 /// Closed descriptor-selectable proposal-value discriminant.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum ProposalValueKind {
+    /// Unit operation payload with no body bytes.
+    Unit,
     /// One complete entity-body kind.
     EntityBody(EntityBodyValueKind),
     /// One exact body-field kind.
@@ -888,6 +890,8 @@ pub enum ProposalValueKind {
 /// Closed proposal value before any candidate record exists.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProposalValue {
+    /// Unit operation payload with no body bytes.
+    Unit,
     /// One complete entity body.
     EntityBody(EntityBodyValue),
     /// One exact entity-body field.
@@ -899,6 +903,7 @@ impl ProposalValue {
     #[must_use]
     pub const fn value_kind(&self) -> ProposalValueKind {
         match self {
+            Self::Unit => ProposalValueKind::Unit,
             Self::EntityBody(value) => ProposalValueKind::EntityBody(value.value_kind()),
             Self::Field(value) => ProposalValueKind::Field(value.value_kind()),
         }
@@ -912,7 +917,7 @@ pub struct TypedValueBinding {
     pub class: MutationClass,
     /// Exact target entity kind.
     pub target_kind: u16,
-    /// Exact field tag, or `None` for a complete body.
+    /// Exact field tag, or `None` for a complete body or Unit operation.
     pub field_tag: Option<u16>,
     /// Exact closed proposal-value kind.
     pub value_kind: ProposalValueKind,
@@ -1140,109 +1145,109 @@ pub const TYPED_VALUE_BINDINGS: &[TypedValueBinding] = &[
         class: MutationClass::DeleteEntityBinding,
         target_kind: 1,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Workspace),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 2,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Package),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 3,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Namespace),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 4,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::TypeDef),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 5,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Function),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 6,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Parameter),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 7,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Block),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 8,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Operation),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 9,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Constant),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 10,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::GlobalValue),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 11,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::EffectDef),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 12,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::CapabilityRequirement),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 13,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::Contract),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 14,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::TestCase),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 15,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::AdapterImport),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 16,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::EntryPoint),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 17,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::PolicyBinding),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::DeleteEntityBinding,
         target_kind: 18,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::DependencyBinding),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::SetScalarField,
@@ -1962,7 +1967,7 @@ pub const TYPED_VALUE_BINDINGS: &[TypedValueBinding] = &[
         class: MutationClass::RemoveEntryPoint,
         target_kind: 16,
         field_tag: None,
-        value_kind: ProposalValueKind::EntityBody(EntityBodyValueKind::EntryPoint),
+        value_kind: ProposalValueKind::Unit,
     },
     TypedValueBinding {
         class: MutationClass::AddTest,

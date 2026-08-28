@@ -302,6 +302,8 @@ def render(entities: list[Entity], operations) -> str:
         "/// Closed descriptor-selectable proposal-value discriminant.",
         "#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]",
         "pub enum ProposalValueKind {",
+        "    /// Unit operation payload with no body bytes.",
+        "    Unit,",
         "    /// One complete entity-body kind.",
         "    EntityBody(EntityBodyValueKind),",
         "    /// One exact body-field kind.",
@@ -311,6 +313,8 @@ def render(entities: list[Entity], operations) -> str:
         "/// Closed proposal value before any candidate record exists.",
         "#[derive(Clone, Debug, Eq, PartialEq)]",
         "pub enum ProposalValue {",
+        "    /// Unit operation payload with no body bytes.",
+        "    Unit,",
         "    /// One complete entity body.",
         "    EntityBody(EntityBodyValue),",
         "    /// One exact entity-body field.",
@@ -322,6 +326,7 @@ def render(entities: list[Entity], operations) -> str:
         "    #[must_use]",
         "    pub const fn value_kind(&self) -> ProposalValueKind {",
         "        match self {",
+        "            Self::Unit => ProposalValueKind::Unit,",
         "            Self::EntityBody(value) => ProposalValueKind::EntityBody(value.value_kind()),",
         "            Self::Field(value) => ProposalValueKind::Field(value.value_kind()),",
         "        }",
@@ -335,7 +340,7 @@ def render(entities: list[Entity], operations) -> str:
         "    pub class: MutationClass,",
         "    /// Exact target entity kind.",
         "    pub target_kind: u16,",
-        "    /// Exact field tag, or `None` for a complete body.",
+        "    /// Exact field tag, or `None` for a complete body or Unit operation.",
         "    pub field_tag: Option<u16>,",
         "    /// Exact closed proposal-value kind.",
         "    pub value_kind: ProposalValueKind,",
@@ -347,7 +352,10 @@ def render(entities: list[Entity], operations) -> str:
     entity_by_tag = {entity.tag: entity for entity in entities}
     for operation in operations:
         entity = entity_by_tag[operation.target_kind]
-        if operation.field_tag is None:
+        if operation.value_type == "Unit":
+            field_tag = "None"
+            value_kind = "ProposalValueKind::Unit"
+        elif operation.field_tag is None:
             field_tag = "None"
             value_kind = (
                 "ProposalValueKind::EntityBody("

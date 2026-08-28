@@ -272,6 +272,137 @@ RECORDS: dict[str, RecordFields] = {
     ),
 }
 
+RECORDS.update(
+    {
+        "VariantCase": (
+            (1, "member_id", "FixedBytes32"),
+            (2, "payload_type", "Option<TypeExpr>"),
+        ),
+        "ConstValue": (
+            (1, "value_type", "TypeExpr"),
+            (2, "data", "ConstData"),
+        ),
+        "RecordConst": (
+            (1, "definition", "EntityId"),
+            (2, "fields", "List<FieldConst>"),
+        ),
+        "FieldConst": (
+            (1, "member_id", "FixedBytes32"),
+            (2, "value", "ConstValue"),
+        ),
+        "VariantConst": (
+            (1, "definition", "EntityId"),
+            (2, "member_id", "FixedBytes32"),
+            (3, "payload", "Option<ConstValue>"),
+        ),
+        "MapEntryConst": (
+            (1, "key", "ConstValue"),
+            (2, "value", "ConstValue"),
+        ),
+        "TrapTerminator": (
+            (1, "code", "TrapCode"),
+            (2, "payload", "Option<ValueRef>"),
+        ),
+        "ReplayBinding": (
+            (1, "adapter_import", "EntityId"),
+            (2, "request", "List<ConstValue>"),
+            (3, "response", "ResultConst"),
+        ),
+        "AdapterConfig": (
+            (1, "adapter_import", "EntityId"),
+            (2, "configuration", "ConstValue"),
+        ),
+        "ExpectedObservation": (
+            (1, "observation_id", "FixedBytes32"),
+            (2, "value", "ConstValue"),
+        ),
+        "NamespaceBody": (
+            (1, "parent", "Option<EntityId>"),
+            (2, "members", "Set<EntityId>"),
+        ),
+        "TypeDefBody": (
+            (1, "type_parameters", "List<TypeParameterDef>"),
+            (2, "form", "TypeDefForm"),
+            (3, "invariants", "Set<EntityId>"),
+            (4, "visibility", "Visibility"),
+        ),
+        "BlockBody": (
+            (1, "function", "EntityId"),
+            (2, "parameters", "List<EntityId>"),
+            (3, "operations", "List<EntityId>"),
+            (4, "terminator", "Terminator"),
+            (5, "reachability", "Reachability"),
+        ),
+        "ConstantBody": ((1, "value", "ConstValue"),),
+        "CapabilityRequirementBody": (
+            (1, "effect", "EntityId"),
+            (2, "allowed_scopes", "List<ConstValue>"),
+            (3, "constraint_contracts", "Set<EntityId>"),
+        ),
+        "ContractBody": (
+            (1, "target", "EntityId"),
+            (2, "contract_kind", "ContractKind"),
+            (3, "predicate", "EntityId"),
+            (4, "bindings", "List<ContractBinding>"),
+            (5, "resource_limits", "ResourceLimits"),
+        ),
+        "TestCaseBody": (
+            (1, "target", "EntityId"),
+            (2, "inputs", "List<ConstValue>"),
+            (3, "effect_environment", "EffectEnvironment"),
+            (4, "expected", "ExpectedOutcome"),
+            (5, "observations", "List<ExpectedObservation>"),
+            (6, "resource_limits", "ResourceLimits"),
+        ),
+        "OrderedInsert": (
+            (1, "index", "UInt32"),
+            (2, "child", "EntityId"),
+        ),
+        "OrderedRemove": (
+            (1, "index", "UInt32"),
+            (2, "expected_child", "EntityId"),
+        ),
+        "OrderedMove": (
+            (1, "from", "UInt32"),
+            (2, "to", "UInt32"),
+            (3, "expected_child", "EntityId"),
+        ),
+        "ExpectedIdentityAbsent": ((1, "entity_id", "EntityId"),),
+        "ExactEntityVersion": (
+            (1, "entity_id", "EntityId"),
+            (2, "object_id", "ObjectId"),
+        ),
+        "ExactContainerVersion": (
+            (1, "container_id", "EntityId"),
+            (2, "object_id", "ObjectId"),
+            (3, "field_tag", "UInt32"),
+        ),
+        "CandidateExpiry": (
+            (1, "clock", "UInt16"),
+            (2, "not_after", "UInt64"),
+        ),
+        "ValidationProfileRecord": (
+            (1, "format_version", "UInt32"),
+            (2, "phase_tags", "List<UInt32>"),
+            (3, "max_operations", "UInt32"),
+            (4, "max_preconditions", "UInt32"),
+            (5, "max_candidate_bytes", "UInt64"),
+            (6, "max_decoded_value_bytes", "UInt64"),
+            (7, "max_graph_work", "UInt64"),
+            (8, "max_selected_tests", "UInt32"),
+        ),
+    }
+)
+
+
+# Optional record fields are represented by field presence on the SCB1 wire,
+# not by a nested Option<T> union. Fixture JSON still uses the explicit
+# {"variant":"None|Some"} form so absence cannot be confused with malformed
+# input. Field-mutation values remain ordinary Option<T> values.
+OPTIONAL_RECORD_FIELDS: dict[str, frozenset[str]] = {
+    "ContractBody": frozenset({"resource_limits"}),
+}
+
 
 UNIONS: dict[str, UnionVariants] = {
     "TypeExpr": {
@@ -324,6 +455,52 @@ UNIONS: dict[str, UnionVariants] = {
         "Global": (4, "EntityId"),
     },
 }
+
+UNIONS.update(
+    {
+        "TypeDefForm": {
+            "Record": (1, "List<RecordField>"),
+            "Variant": (2, "List<VariantCase>"),
+        },
+        "ConstData": {
+            "Unit": (1, None),
+            "Bool": (2, "Bool"),
+            "SInt": (3, "SInt128"),
+            "UInt": (4, "UInt128"),
+            "F32Bits": (5, "F32Bits"),
+            "F64Bits": (6, "F64Bits"),
+            "Bytes": (7, "Bytes"),
+            "Text": (8, "Text"),
+            "Sequence": (9, "List<ConstValue>"),
+            "Record": (10, "RecordConst"),
+            "Variant": (11, "VariantConst"),
+            "Map": (12, "CanonicalMapEntries"),
+            "Option": (13, "Option<ConstValue>"),
+            "Result": (14, "ResultConst"),
+            "FunctionRef": (15, "FunctionRefValue"),
+            "BuiltinFailure": (16, "BuiltinFailureValue"),
+        },
+        "ResultConst": {
+            "Ok": (1, "ConstValue"),
+            "Err": (2, "ConstValue"),
+        },
+        "Terminator": {
+            "Return": (1, "ReturnTerminator"),
+            "Branch": (2, "BranchTerminator"),
+            "CondBranch": (3, "CondBranchTerminator"),
+            "VariantSwitch": (4, "VariantSwitchTerminator"),
+            "Trap": (5, "TrapTerminator"),
+        },
+        "EffectEnvironment": {
+            "Replay": (1, "List<ReplayBinding>"),
+            "DeterministicAdapters": (2, "List<AdapterConfig>"),
+        },
+        "ExpectedOutcome": {
+            "Value": (1, "ConstValue"),
+            "FailureCode": (2, "UInt32"),
+        },
+    }
+)
 
 
 def encode_accepted_mutation_vector(vector: Mapping[str, object]) -> bytes:
@@ -448,9 +625,13 @@ def _fixture_checksum_problems(
 
 def _encode_type(declared_type: str, value: object, depth: int) -> bytes:
     _check_depth(depth)
+    if declared_type.startswith("Option<") and declared_type.endswith(">"):
+        return _encode_option(declared_type[7:-1], value, depth)
     if declared_type.startswith("List<") and declared_type.endswith(">"):
         inner = declared_type[5:-1]
         return _encode_list(inner, value, depth)
+    if declared_type == "CanonicalMapEntries":
+        return _encode_canonical_map_entries(value, depth)
     if declared_type in {"Set<EntityId>", "EntityIdSet"}:
         return _encode_entity_id_set(value, depth)
     if declared_type in RECORDS:
@@ -459,7 +640,21 @@ def _encode_type(declared_type: str, value: object, depth: int) -> bytes:
         return _encode_union_value(declared_type, value, depth)
     if declared_type in SIMPLE_ENUMS:
         return _encode_enum(declared_type, value)
-    if declared_type in {"EntityId", "StateRoot", "MemberId", "FixedBytes32"}:
+    if declared_type in {
+        "EntityId",
+        "StateRoot",
+        "MemberId",
+        "ObjectId",
+        "WorkspaceId",
+        "TransactionId",
+        "SchemaEpochId",
+        "PolicyRootId",
+        "PrincipalId",
+        "CapabilitySummaryDigest",
+        "ValidationProfileId",
+        "CandidateNonce",
+        "FixedBytes32",
+    }:
         return _bytes_from_hex(value, 32)
     if declared_type in {"UInt16", "IntegerWidth"}:
         return _encode_uint(value, 16)
@@ -467,8 +662,16 @@ def _encode_type(declared_type: str, value: object, depth: int) -> bytes:
         return _encode_uint(value, 32)
     if declared_type == "UInt64":
         return _encode_uint(value, 64)
+    if declared_type == "UInt128":
+        return _encode_uint(value, 128)
     if declared_type == "SInt64":
-        return _encode_sint64(value)
+        return _encode_sint(value, 64)
+    if declared_type == "SInt128":
+        return _encode_sint(value, 128)
+    if declared_type == "Unit":
+        if value is not None:
+            raise ValueError("Unit fixture value must be null")
+        return b""
     if declared_type == "Bool":
         if not isinstance(value, bool):
             raise ValueError("Bool fixture value must be true or false")
@@ -490,8 +693,12 @@ def _decode_type(
     declared_type: str, cursor: Cursor, depth: int, budget: DecodeBudget
 ) -> None:
     _check_depth(depth)
-    if declared_type.startswith("List<") and declared_type.endswith(">"):
+    if declared_type.startswith("Option<") and declared_type.endswith(">"):
+        _decode_option(declared_type[7:-1], cursor, depth, budget)
+    elif declared_type.startswith("List<") and declared_type.endswith(">"):
         _decode_list(declared_type[5:-1], cursor, depth, budget)
+    elif declared_type == "CanonicalMapEntries":
+        _decode_canonical_map_entries(cursor, depth, budget)
     elif declared_type in {"Set<EntityId>", "EntityIdSet"}:
         _decode_entity_id_set(cursor, depth, budget)
     elif declared_type in RECORDS:
@@ -500,7 +707,21 @@ def _decode_type(
         _decode_union_value(declared_type, cursor, depth, budget)
     elif declared_type in SIMPLE_ENUMS:
         _decode_enum(declared_type, cursor)
-    elif declared_type in {"EntityId", "StateRoot", "MemberId", "FixedBytes32"}:
+    elif declared_type in {
+        "EntityId",
+        "StateRoot",
+        "MemberId",
+        "ObjectId",
+        "WorkspaceId",
+        "TransactionId",
+        "SchemaEpochId",
+        "PolicyRootId",
+        "PrincipalId",
+        "CapabilitySummaryDigest",
+        "ValidationProfileId",
+        "CandidateNonce",
+        "FixedBytes32",
+    }:
         cursor.read(32)
     elif declared_type in {"UInt16", "IntegerWidth"}:
         decode_uvar_width(cursor, 16)
@@ -508,8 +729,14 @@ def _decode_type(
         decode_uvar_width(cursor, 32)
     elif declared_type == "UInt64":
         decode_uvar_width(cursor, 64)
+    elif declared_type == "UInt128":
+        decode_uvar_width(cursor, 128)
     elif declared_type == "SInt64":
         decode_uvar_width(cursor, 64)
+    elif declared_type == "SInt128":
+        decode_uvar_width(cursor, 128)
+    elif declared_type == "Unit":
+        return
     elif declared_type == "Bool":
         _decode_bool(cursor)
     elif declared_type == "Bytes":
@@ -553,6 +780,90 @@ def _decode_list(
         _decode_nested_exact(inner_type, payload, depth + 1, budget)
 
 
+def _encode_option(inner_type: str, value: object, depth: int) -> bytes:
+    _check_container_depth(depth)
+    source = _expect_mapping(value)
+    variant = source.get("variant")
+    if variant == "None":
+        if "value" in source:
+            raise ValueError("Option.None must not include a payload")
+        return encode_uvar(0) + encode_sized(b"")
+    if variant == "Some":
+        if "value" not in source:
+            raise ValueError("Option.Some must include a payload")
+        payload = _encode_type(inner_type, source["value"], depth + 1)
+        return encode_uvar(1) + encode_sized(payload)
+    raise ValueError("Option fixture variant must be None or Some")
+
+
+def _decode_option(
+    inner_type: str, cursor: Cursor, depth: int, budget: DecodeBudget
+) -> None:
+    _check_container_depth(depth)
+    tag = decode_uvar_width(cursor, 32)
+    payload = read_sized(cursor)
+    budget.charge(len(payload))
+    if tag == 0:
+        if payload:
+            raise ScbError("SCB_UNION_INVALID")
+        return
+    if tag == 1:
+        _decode_nested_exact(inner_type, payload, depth + 1, budget)
+        return
+    raise ScbError("SCB_UNION_INVALID")
+
+
+def _encode_canonical_map_entries(value: object, depth: int) -> bytes:
+    _check_container_depth(depth)
+    items = _expect_sequence(value)
+    if len(items) > MAX_ELEMENTS:
+        raise ScbError("SCB_RESOURCE_LIMIT")
+    encoded_items: list[bytes] = []
+    keys: list[bytes] = []
+    for item in items:
+        source = _expect_mapping(item)
+        if set(source) != {"key", "value"}:
+            raise ValueError("MapEntryConst fixture fields mismatch")
+        keys.append(_encode_type("ConstValue", source["key"], depth + 2))
+        encoded_items.append(_encode_type("MapEntryConst", item, depth + 1))
+    _check_strict_bytes_order(keys)
+    return encode_uvar(len(encoded_items)) + b"".join(
+        encode_sized(item) for item in encoded_items
+    )
+
+
+def _decode_canonical_map_entries(
+    cursor: Cursor, depth: int, budget: DecodeBudget
+) -> None:
+    _check_container_depth(depth)
+    count = decode_uvar_width(cursor, 64)
+    if count > MAX_ELEMENTS:
+        raise ScbError("SCB_RESOURCE_LIMIT")
+    prior: bytes | None = None
+    for _ in range(count):
+        payload = read_sized(cursor)
+        budget.charge(len(payload))
+        _decode_nested_exact("MapEntryConst", payload, depth + 1, budget)
+        key = _record_field_payload(payload, 1)
+        if prior is not None:
+            if key == prior:
+                raise ScbError("SCB_MAP_DUPLICATE")
+            if key < prior:
+                raise ScbError("SCB_MAP_ORDER")
+        prior = key
+
+
+def _record_field_payload(record: bytes, expected_tag: int) -> bytes:
+    cursor = Cursor(record)
+    count = decode_uvar_width(cursor, 64)
+    for _ in range(count):
+        tag = decode_uvar_width(cursor, 32)
+        payload = read_sized(cursor)
+        if tag == expected_tag:
+            return payload
+    raise ScbError("SCB_FIELD_MISSING")
+
+
 def _encode_entity_id_set(value: object, depth: int) -> bytes:
     _check_container_depth(depth)
     items = [_bytes_from_hex(item, 32) for item in _expect_sequence(value)]
@@ -594,10 +905,23 @@ def _encode_record_value(declared_type: str, value: object, depth: int) -> bytes
         raise ValueError(
             f"{declared_type} fixture fields mismatch; missing={missing} unknown={unknown}"
         )
-    encoded_fields = [
-        (tag, _encode_type(field_type, source[name], depth + 1))
-        for tag, name, field_type in fields
-    ]
+    optional_names = OPTIONAL_RECORD_FIELDS.get(declared_type, frozenset())
+    encoded_fields: list[tuple[int, bytes]] = []
+    for tag, name, field_type in fields:
+        field_value = source[name]
+        if name in optional_names:
+            option_value = _expect_mapping(field_value)
+            variant = option_value.get("variant")
+            if variant == "None":
+                if "value" in option_value:
+                    raise ValueError(f"{declared_type}.{name}.None must not have a value")
+                continue
+            if variant != "Some" or "value" not in option_value:
+                raise ValueError(f"{declared_type}.{name} must be explicit None or Some")
+            field_value = option_value["value"]
+        encoded_fields.append(
+            (tag, _encode_type(field_type, field_value, depth + 1))
+        )
     return encode_record(encoded_fields)
 
 
@@ -607,12 +931,16 @@ def _decode_record_value(
     _check_container_depth(depth)
     fields = RECORDS[declared_type]
     count = decode_uvar_width(cursor, 64)
-    expected_count = len(fields)
-    if count != expected_count:
-        raise ScbError("SCB_FIELD_MISSING" if count < expected_count else "SCB_FIELD_UNKNOWN")
+    optional_names = OPTIONAL_RECORD_FIELDS.get(declared_type, frozenset())
+    required_count = len(fields) - len(optional_names)
+    if count < required_count:
+        raise ScbError("SCB_FIELD_MISSING")
+    if count > len(fields):
+        raise ScbError("SCB_FIELD_UNKNOWN")
     prior: int | None = None
-    expected_tags = [tag for tag, _, _ in fields]
-    for expected_tag, _, field_type in fields:
+    fields_by_tag = {tag: (name, field_type) for tag, name, field_type in fields}
+    seen_names: set[str] = set()
+    for _ in range(count):
         tag = decode_uvar_width(cursor, 32)
         if prior is not None:
             if tag == prior:
@@ -620,12 +948,17 @@ def _decode_record_value(
             if tag < prior:
                 raise ScbError("SCB_FIELD_ORDER")
         prior = tag
-        if tag != expected_tag:
-            code = "SCB_FIELD_ORDER" if tag in expected_tags else "SCB_FIELD_UNKNOWN"
-            raise ScbError(code)
+        try:
+            name, field_type = fields_by_tag[tag]
+        except KeyError as error:
+            raise ScbError("SCB_FIELD_UNKNOWN") from error
+        seen_names.add(name)
         payload = read_sized(cursor)
         budget.charge(len(payload))
         _decode_nested_exact(field_type, payload, depth + 1, budget)
+    required_names = {name for _, name, _ in fields} - optional_names
+    if not required_names.issubset(seen_names):
+        raise ScbError("SCB_FIELD_MISSING")
 
 
 def _encode_union_value(declared_type: str, value: object, depth: int) -> bytes:
@@ -747,11 +1080,11 @@ def _decode_uvar(cursor: Cursor, width: int) -> int:
             return value
 
 
-def _encode_sint64(value: object) -> bytes:
+def _encode_sint(value: object, width: int) -> bytes:
     value = _fixture_integer(value)
-    if value < -(1 << 63) or value >= 1 << 63:
-        raise ValueError("signed integer fixture value exceeds SInt64")
-    return encode_uvar((value << 1) ^ (value >> 63))
+    if value < -(1 << (width - 1)) or value >= 1 << (width - 1):
+        raise ValueError(f"signed integer fixture value exceeds SInt{width}")
+    return encode_uvar((value << 1) ^ (value >> (width - 1)))
 
 
 def _fixture_integer(value: object) -> int:

@@ -61,6 +61,30 @@ impl MutationClass {
             Self::UpdateDependencyBinding => 16,
         }
     }
+
+    /// Returns the closed mutation class for an exact generated tag.
+    #[must_use]
+    pub const fn from_tag(tag: u16) -> Option<Self> {
+        match tag {
+            1 => Some(Self::CreateEntity),
+            2 => Some(Self::ReplaceEntityVersion),
+            3 => Some(Self::DeleteEntityBinding),
+            4 => Some(Self::SetScalarField),
+            5 => Some(Self::ReplaceTypedField),
+            6 => Some(Self::RetargetReference),
+            7 => Some(Self::InsertOrderedChild),
+            8 => Some(Self::RemoveOrderedChild),
+            9 => Some(Self::MoveOrderedChild),
+            10 => Some(Self::AddEntryPoint),
+            11 => Some(Self::RemoveEntryPoint),
+            12 => Some(Self::AddTest),
+            13 => Some(Self::ReplaceTest),
+            14 => Some(Self::AddContract),
+            15 => Some(Self::ReplaceContract),
+            16 => Some(Self::UpdateDependencyBinding),
+            _ => None,
+        }
+    }
 }
 
 /// Closed preimage shape required before a later candidate may carry an operation.
@@ -72,6 +96,29 @@ pub enum PreimageRequirement {
     ExactEntityVersion,
     /// Collection mutation must bind the exact current containing entity version.
     ExactContainerVersion,
+}
+
+impl PreimageRequirement {
+    /// Returns the closed precondition-requirement tag.
+    #[must_use]
+    pub const fn tag(self) -> u16 {
+        match self {
+            Self::ExpectedIdentityAbsent => 1,
+            Self::ExactEntityVersion => 2,
+            Self::ExactContainerVersion => 3,
+        }
+    }
+
+    /// Returns the closed precondition requirement for an exact tag.
+    #[must_use]
+    pub const fn from_tag(tag: u16) -> Option<Self> {
+        match tag {
+            1 => Some(Self::ExpectedIdentityAbsent),
+            2 => Some(Self::ExactEntityVersion),
+            3 => Some(Self::ExactContainerVersion),
+            _ => None,
+        }
+    }
 }
 
 /// Closed additional field-operation shape inferred from the exact manifest type.
@@ -132,7 +179,17 @@ pub struct MutationOperationDescriptor {
 
 include!("generated.rs");
 
+mod candidate;
 mod codec;
+
+pub use candidate::{
+    BoundPrecondition, CandidateError, CandidateExpiry, CandidateRecord, ExactContainerVersion,
+    ExactEntityVersion, ExpectedIdentityAbsent, ImportedCandidate, MutationOperation,
+    MutationPayload, OrderedInsert, OrderedMove, OrderedRemove, PreconditionPayload,
+    ReferenceTarget, ValidationProfileRecord, build_candidate, decode_candidate_record,
+    encode_candidate_record, full_validation_profile_id, full_validation_profile_record,
+    import_candidate,
+};
 
 pub mod value;
 
@@ -152,6 +209,20 @@ pub fn operations_for(
     MUTATION_OPERATIONS
         .iter()
         .filter(move |descriptor| descriptor.class == class)
+}
+
+/// Returns the exact immutable descriptor for one operation key.
+#[must_use]
+pub fn mutation_operation_descriptor(
+    class: MutationClass,
+    target_kind: u16,
+    field_tag: Option<u16>,
+) -> Option<&'static MutationOperationDescriptor> {
+    MUTATION_OPERATIONS.iter().find(|descriptor| {
+        descriptor.class == class
+            && descriptor.target_kind == target_kind
+            && descriptor.field_tag == field_tag
+    })
 }
 
 #[cfg(test)]

@@ -87,6 +87,7 @@ dependencies = [
  "sley-adapter",
  "sley-check",
  "sley-id",
+ "sley-mutate",
  "sley-query",
  "sley-repo",
  "sley-scb1",

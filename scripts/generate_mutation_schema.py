@@ -170,7 +170,13 @@ def build_operations(entities: list[Entity], enum_names: set[str]) -> list[Opera
         ("DeleteEntityBinding", "ExactEntityVersion"),
     ]:
         operations.extend(
-            Operation(class_name, entity.tag, None, entity.body_name, preimage)
+            Operation(
+                class_name,
+                entity.tag,
+                None,
+                "Unit" if class_name == "DeleteEntityBinding" else entity.body_name,
+                preimage,
+            )
             for entity in entities
         )
 
@@ -202,7 +208,13 @@ def build_operations(entities: list[Entity], enum_names: set[str]) -> list[Opera
     for class_name, kind_tag in special_classes:
         entity = entities[kind_tag - 1]
         operations.append(
-            Operation(class_name, kind_tag, None, entity.body_name, "ExactEntityVersion")
+            Operation(
+                class_name,
+                kind_tag,
+                None,
+                "Unit" if class_name == "RemoveEntryPoint" else entity.body_name,
+                "ExactEntityVersion",
+            )
         )
     return operations
 

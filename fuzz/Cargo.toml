@@ -38,10 +38,15 @@ path = "targets/vm_canonical_inputs.rs"
 name = "adapter_responses"
 path = "targets/adapter_responses.rs"
 
+[[bin]]
+name = "mutation_candidate"
+path = "targets/mutation_candidate.rs"
+
 [dependencies]
 sley-adapter = { path = "../crates/sley-adapter" }
 sley-check = { path = "../crates/sley-check" }
 sley-id = { path = "../crates/sley-id" }
+sley-mutate = { path = "../crates/sley-mutate" }
 sley-query = { path = "../crates/sley-query" }
 sley-repo = { path = "../crates/sley-repo" }
 sley-scb1 = { path = "../crates/sley-scb1" }
