@@ -13,6 +13,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 INVENTORY_PATH = ROOT / "evidence/security/T52/pre-release-inventory.json"
 SECRET_SCAN_PATH = ROOT / "evidence/security/T54/secret-scan.json"
+SUMMARY_PATH = ROOT / "machineresearch/sley-2.0/machine-summary.json"
 EXPECTED_BLOCKERS = ["workspace-license-text:missing-operator-approved-root-license"]
 EXPECTED_ANCHOR = "51863f7b93271bd7a73f9b7b3b02eeca93447d9a"
 EXPECTED_COUNTS = {
@@ -168,6 +169,43 @@ def check_secret_scan(scan: dict[str, Any]) -> None:
         fail("required secret-bearing ignore patterns are missing")
 
 
+def check_machine_summary(summary: dict[str, Any]) -> None:
+    profile = summary.get("s20_710_pre_release_audit", {})
+    expected = {
+        "status": "DEFERRED_ROOT_LICENSE_AND_RELEASE_BOUNDARY",
+        "full_s20_710_complete": False,
+        "contract": "docs/audits/S20_710_PRE_RELEASE_AUDIT.md",
+        "inventory_contract": "s20-710-pre-release-inventory-v1",
+        "secret_scan_contract": "s20-710-secret-scan-v1",
+        "history_anchor_commit": EXPECTED_ANCHOR,
+        "cargo_lock_sha256": "64e391c06b8d4541a626b7777714d7bd9dc306c965473c00466a2c20ae6b92b0",
+        "uv_lock_sha256": "cb9621b8ad4b538672784f022632b4ec554d69b8ff1286992231645eca5cf446",
+        "cargo_workspace_packages": 14,
+        "cargo_registry_packages": 22,
+        "python_workspace_packages": 1,
+        "python_registry_packages": 2,
+        "dependency_relationships": 80,
+        "t52_local_lock_inventory": "PASS",
+        "t54_high_confidence_scan": "PASS",
+        "history_blobs_scanned": 499,
+        "history_bytes_scanned": 4_082_788,
+        "secret_patterns": 8,
+        "secret_findings": 0,
+        "matched_secret_values_emitted": False,
+        "candidate_scan_recomputed_by_generator": True,
+        "root_license_text_approved": False,
+        "standards_sbom": False,
+        "release_provenance": False,
+        "release_candidate_history_reanchored": False,
+        "final_argus_disposition": "DEFERRED_FORGE_OAUTH_401",
+        "final_vulcan_disposition": "DEFERRED_FORGE_OAUTH_401",
+        "publication_authorized": False,
+    }
+    for field, expected_value in expected.items():
+        if profile.get(field) != expected_value:
+            fail(f"S20-710 machine summary mismatch: {field}")
+
+
 def check_no_host_paths(*documents: dict[str, Any]) -> None:
     for document in documents:
         for value in strings(document):
@@ -180,8 +218,10 @@ def main() -> int:
         check_generated_files()
         inventory = load(INVENTORY_PATH)
         scan = load(SECRET_SCAN_PATH)
+        summary = load(SUMMARY_PATH)
         check_inventory(inventory)
         check_secret_scan(scan)
+        check_machine_summary(summary)
         check_no_host_paths(inventory, scan)
     except AssertionError as error:
         print(json.dumps({"result": "FAIL", "reason": str(error)}, sort_keys=True))
@@ -192,6 +232,7 @@ def main() -> int:
                 "release_sbom": False,
                 "result": "DEFERRED",
                 "root_license_text_approved": False,
+                "machine_summary_registered": True,
                 "t52_local_lock_inventory": "PASS",
                 "t54_high_confidence_scan": "PASS",
             },

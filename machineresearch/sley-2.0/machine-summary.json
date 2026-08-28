@@ -1028,6 +1028,36 @@
     "public_claim_authorized": false,
     "full_s20_650_complete": true
   },
+  "s20_710_pre_release_audit": {
+    "status": "DEFERRED_ROOT_LICENSE_AND_RELEASE_BOUNDARY",
+    "full_s20_710_complete": false,
+    "contract": "docs/audits/S20_710_PRE_RELEASE_AUDIT.md",
+    "inventory_contract": "s20-710-pre-release-inventory-v1",
+    "secret_scan_contract": "s20-710-secret-scan-v1",
+    "history_anchor_commit": "51863f7b93271bd7a73f9b7b3b02eeca93447d9a",
+    "cargo_lock_sha256": "64e391c06b8d4541a626b7777714d7bd9dc306c965473c00466a2c20ae6b92b0",
+    "uv_lock_sha256": "cb9621b8ad4b538672784f022632b4ec554d69b8ff1286992231645eca5cf446",
+    "cargo_workspace_packages": 14,
+    "cargo_registry_packages": 22,
+    "python_workspace_packages": 1,
+    "python_registry_packages": 2,
+    "dependency_relationships": 80,
+    "t52_local_lock_inventory": "PASS",
+    "t54_high_confidence_scan": "PASS",
+    "history_blobs_scanned": 499,
+    "history_bytes_scanned": 4082788,
+    "secret_patterns": 8,
+    "secret_findings": 0,
+    "matched_secret_values_emitted": false,
+    "candidate_scan_recomputed_by_generator": true,
+    "root_license_text_approved": false,
+    "standards_sbom": false,
+    "release_provenance": false,
+    "release_candidate_history_reanchored": false,
+    "final_argus_disposition": "DEFERRED_FORGE_OAUTH_401",
+    "final_vulcan_disposition": "DEFERRED_FORGE_OAUTH_401",
+    "publication_authorized": false
+  },
   "succession": {
     "corpus_version": 1,
     "corpus_sha256": "7370b6ccb8ccd3f58fa2a90e316edf4bc5a1319b41a55253a2ee14bb5d73988d",
@@ -1080,6 +1110,7 @@
     "S20-350 has a crate-private partial value-codec foundation with 11 body codecs and independent fixtures for 65 of 75 fields; locked generic Option<T> and ConstValue canon decisions still block the remaining recursive families, aggregate codecs, preconditions, candidate records, and construction",
     "S20-370 protects policy, oracle roots, and named entity bindings; S20-380 adds narrow local authenticated tokens plus exact scope/expiry/replay/budget enforcement for the in-memory reference wrapper, but policy-transition authentication, candidate/VM integration, live-host confinement, commit, and production-epoch assembly remain blocked",
     "S20-610 preserves offline injected digest claims only; no raw fixture, executable adapter, external head anchor, artifact/oracle/accounting verification, or benchmark trial exists",
+    "S20-710 local lock inventory and bounded high-confidence scan pass, but operator-approved root license text, a standards SBOM, release provenance, release-candidate re-anchoring, and final independent dispositions remain blocked",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]
 }
