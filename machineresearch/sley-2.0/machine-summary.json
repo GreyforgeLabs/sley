@@ -979,6 +979,34 @@
     "live_legacy_checkout_interaction": false,
     "vulcan_review": "DEFERRED_FORGE_OAUTH_401"
   },
+  "s20_610_offline_raw_runner": {
+    "status": "IMPLEMENTED_OFFLINE_UNVERIFIED_CLAIM_CHAIN_ONLY",
+    "full_s20_610_complete": false,
+    "contract": "docs/spec/RAW_BASELINE_RUNNER_V1.md",
+    "run_manifest_contract": "sley2.raw-run-manifest.v1",
+    "trial_claim_contract": "sley2.raw-trial-digest-claim.v1",
+    "benchmark_plan_sha256": "10dae462f0a9520cbe4b3d4fd763897ea2d8af2b3d66915e00db802f8b8560ad",
+    "corpus_sha256": "7370b6ccb8ccd3f58fa2a90e316edf4bc5a1319b41a55253a2ee14bb5d73988d",
+    "task_statement_digest": "737c0c8ba618f527816df84a38e7b28b1e975284ef28c1a9a250189808275c2a",
+    "required_arms": 3,
+    "tasks": 15,
+    "run_freeze_controls": 17,
+    "benchmark_metrics": 25,
+    "stable_error_codes": 16,
+    "offline_smoke_tests": 4,
+    "create_only_manifest": true,
+    "append_only_claim_chain": true,
+    "external_head_anchor": false,
+    "artifact_bytes_verified": false,
+    "oracle_claims_verified": false,
+    "accounting_claims_verified": false,
+    "provider_or_model_execution": false,
+    "actual_trials": 0,
+    "accepted_change_tokens_derived": false,
+    "public_claim_authorized": false,
+    "implementation_complete": true,
+    "nabu_review": "REVISE_TO_OFFLINE_APPEND_ONLY_CONTRACT"
+  },
   "s20_650_external_comparison": {
     "status": "EXPLICIT_UNAVAILABLE",
     "scope": "REPOSITORY_REGISTERED_EVIDENCE_ONLY",
@@ -1009,6 +1037,7 @@
     "metrics": 25,
     "s20_040_review": "VULCAN_PASS",
     "s20_600_artifact_adapter": "VERIFIED_VERSION_SMOKE_ONLY",
+    "s20_610_raw_runner": "OFFLINE_UNVERIFIED_CLAIM_CHAIN_ONLY",
     "s20_650_optional_external_arm": "EXPLICIT_UNAVAILABLE",
     "trials_executed": 0,
     "strict_correctness_raw": null,
@@ -1050,6 +1079,7 @@
     "S20-340 is immutable descriptor codegen only; executable operations, fully bound candidate/preimage construction, validation, policy/capability authority, commit, receipts, M3/M4, and GA remain blocked",
     "S20-350 has a crate-private partial value-codec foundation with 11 body codecs and independent fixtures for 65 of 75 fields; locked generic Option<T> and ConstValue canon decisions still block the remaining recursive families, aggregate codecs, preconditions, candidate records, and construction",
     "S20-370 protects policy, oracle roots, and named entity bindings; S20-380 adds narrow local authenticated tokens plus exact scope/expiry/replay/budget enforcement for the in-memory reference wrapper, but policy-transition authentication, candidate/VM integration, live-host confinement, commit, and production-epoch assembly remain blocked",
+    "S20-610 preserves offline injected digest claims only; no raw fixture, executable adapter, external head anchor, artifact/oracle/accounting verification, or benchmark trial exists",
     "The succession corpus is frozen but no benchmark trial has executed"
   ]
 }

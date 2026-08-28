@@ -63,6 +63,7 @@ print(
                 "S20-370 registry-authorized protected policy roots and mandatory test rules",
                 "S20-380 authenticated local capability tokens and authorized adapter wrapper",
                 "S20-600 verified frozen legacy artifact and retained version-smoke adapter",
+                "S20-610 offline raw baseline manifest and unverified digest-claim chain",
                 "S20-650 optional external comparison explicit-unavailability record",
             ],
             "selected_checks": [
@@ -104,7 +105,7 @@ print(
                 "v2",
                 "release-check",
             ],
-            "skip_rationale": "M1 canonical-state implementation and scoped exit profiles pass; S20-200 through S20-230, restricted epoch-1 S20-240 through S20-320, immutable descriptor-only S20-340, protected-root/pure-judgment S20-370, narrow local authenticated-token/reference-wrapper S20-380, verified-artifact/version-smoke-only S20-600 mechanics, and the S20-650 optional-arm explicit-unavailability record are implemented. Executable candidates/mutations, authenticated policy transitions, full-GA semantic surfaces, VM-integrated/live adapters, canonical/persistent execution reports, complete-root/useful cache indexes, nineteen-class root-backed queries, master context capsules with lawful omission/continuation, clone-equivalent profiles, real benchmark trials/accounting, and later product/release gates remain unavailable.",
+            "skip_rationale": "M1 canonical-state implementation and scoped exit profiles pass; S20-200 through S20-230, restricted epoch-1 S20-240 through S20-320, immutable descriptor-only S20-340, protected-root/pure-judgment S20-370, narrow local authenticated-token/reference-wrapper S20-380, verified-artifact/version-smoke-only S20-600 mechanics, offline unverified-claim-chain S20-610 mechanics, and the S20-650 optional-arm explicit-unavailability record are implemented. Executable candidates/mutations, authenticated policy transitions, full-GA semantic surfaces, VM-integrated/live adapters, canonical/persistent execution reports, complete-root/useful cache indexes, nineteen-class root-backed queries, master context capsules with lawful omission/continuation, clone-equivalent profiles, real benchmark trials/accounting, and later product/release gates remain unavailable.",
             "v2_required": False,
             "cache_use": "none",
             "result": "PASS",

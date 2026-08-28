@@ -24,6 +24,7 @@ bench_readme = read("bench/README.md")
 raw_readme = read("bench/raw/README.md")
 work_packages = read("docs/WORK_PACKAGES.md")
 makefile = read("Makefile")
+summary = json.loads(read("machineresearch/sley-2.0/machine-summary.json"))
 problems: list[str] = []
 
 for token in [
@@ -104,6 +105,47 @@ if "ships no external command" not in adr:
 if runner.count("61_0") < 16:
     problems.append("fewer than sixteen frozen raw-runner numeric codes")
 
+summary_profile = summary.get("s20_610_offline_raw_runner", {})
+expected_summary = {
+    "status": "IMPLEMENTED_OFFLINE_UNVERIFIED_CLAIM_CHAIN_ONLY",
+    "full_s20_610_complete": False,
+    "contract": "docs/spec/RAW_BASELINE_RUNNER_V1.md",
+    "run_manifest_contract": "sley2.raw-run-manifest.v1",
+    "trial_claim_contract": "sley2.raw-trial-digest-claim.v1",
+    "benchmark_plan_sha256": "10dae462f0a9520cbe4b3d4fd763897ea2d8af2b3d66915e00db802f8b8560ad",
+    "corpus_sha256": "7370b6ccb8ccd3f58fa2a90e316edf4bc5a1319b41a55253a2ee14bb5d73988d",
+    "task_statement_digest": "737c0c8ba618f527816df84a38e7b28b1e975284ef28c1a9a250189808275c2a",
+    "required_arms": 3,
+    "tasks": 15,
+    "run_freeze_controls": 17,
+    "benchmark_metrics": 25,
+    "stable_error_codes": 16,
+    "offline_smoke_tests": 4,
+    "create_only_manifest": True,
+    "append_only_claim_chain": True,
+    "external_head_anchor": False,
+    "artifact_bytes_verified": False,
+    "oracle_claims_verified": False,
+    "accounting_claims_verified": False,
+    "provider_or_model_execution": False,
+    "actual_trials": 0,
+    "accepted_change_tokens_derived": False,
+    "public_claim_authorized": False,
+    "implementation_complete": True,
+    "nabu_review": "REVISE_TO_OFFLINE_APPEND_ONLY_CONTRACT",
+}
+summary_registered = True
+for field, expected in expected_summary.items():
+    if summary_profile.get(field) != expected:
+        summary_registered = False
+        problems.append(f"raw-runner machine summary mismatch: {field}")
+if (
+    summary.get("succession", {}).get("s20_610_raw_runner")
+    != "OFFLINE_UNVERIFIED_CLAIM_CHAIN_ONLY"
+):
+    summary_registered = False
+    problems.append("succession summary omits the scoped S20-610 boundary")
+
 smoke = subprocess.run(
     [sys.executable, "-m", "unittest", "discover", "-s", "bench/raw/tests"],
     cwd=ROOT,
@@ -129,6 +171,7 @@ result = {
     "accounting_claims_verified": False,
     "act_derived": False,
     "nabu_review": "REVISE_TO_OFFLINE_APPEND_ONLY_CONTRACT",
+    "machine_summary_registered": summary_registered,
     "problems": problems,
     "result": "PASS" if not problems else "FAIL",
 }
