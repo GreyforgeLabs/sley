@@ -164,7 +164,7 @@ def main() -> int:
         (
             "one fixed durable `accepted` head",
             "does not depend on `sley-repo`",
-            "S20-500 owns native named refs",
+            "S20-500 owns native named branch refs",
         ),
         "transaction-repository-model",
         problems,

@@ -1,0 +1,36 @@
+{
+  "authority": {
+    "deploy": false,
+    "external_runtime_mutation": false,
+    "provider_call": false,
+    "publication": false,
+    "push": false,
+    "spend": false,
+    "trading": false
+  },
+  "commands": {
+    "contract_checker": "PASS",
+    "tier_1_make_quick": "PASS"
+  },
+  "contract": "s20-500-ref-branch-contract-freeze-v1",
+  "deterministic_inputs": {
+    "branch_origin_fields": 8,
+    "branch_update_statuses": 3,
+    "error_codes": 21,
+    "maximum_ancestry_nodes": 65536,
+    "mutable_ref_fields": 9
+  },
+  "full_gate": {
+    "make_v1": "SKIPPED_NOT_SUBSYSTEM_OR_RELEASE_BOUNDARY",
+    "make_v2": "NOT_IMPLEMENTED_FAIL_CLOSED",
+    "release_check": "NOT_IMPLEMENTED_FAIL_CLOSED"
+  },
+  "implementation_complete": false,
+  "result": "PASS_CONTRACT_FROZEN",
+  "reviews": {
+    "ariadne": "PASS_PRIOR_P2_P3_CLOSED_NO_NEW_P0_P1_P2_P3_P4",
+    "nabu": "PASS_ONE_WAY_BOUNDARY_AND_DRAFT_REQUIREMENTS",
+    "vulcan": "PASS_PRIOR_P1_P1_P2_CLOSED_NO_NEW_P0_P1_P2_P3_P4"
+  },
+  "validation_tier": "TIER_1_CONTRACT_CHECKPOINT"
+}

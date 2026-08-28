@@ -1,6 +1,7 @@
 # Repository Model v1
 
-Status: M0 normative draft.
+Status: M0 normative model with the S20-500 native branch/ref contract drafted
+for independent review.
 
 A Sley repository contains immutable objects, schema epochs, protected policy
 roots, refs, a transaction DAG, pack manifests, pins/leases, and derived lock,
@@ -21,9 +22,25 @@ the exact parent transaction/root, epoch, policy, dependencies, and ancestry.
 
 S20-390 first provides one fixed durable `accepted` head as the atomic commit
 visibility primitive. It is owned by `sley-txn`, is not caller-named, and does
-not implement branches. S20-500 owns native named refs, branches, ancestry
-operations, and exchange on top of S20-390 transaction records. `sley-txn`
-does not depend on `sley-repo`.
+not implement branches. S20-500 owns native named branch refs and bounded
+ancestry operations on top of verified S20-390 transaction records.
+`sley-repo` may depend on `sley-txn`; `sley-txn` does not depend on
+`sley-repo`.
+
+`NATIVE_REFS_BRANCHES_V1.md` freezes the S20-500 draft boundary. Canonical
+lowercase ASCII branch names are embedded in strict branch/ref records but are
+mapped to host paths only through a domain-separated digest. An immutable
+origin record preserves the exact creation transaction/root/workspace/epoch/
+policy/dependency facts. A mutable ref record binds that origin to one current
+verified transaction. One refs lock serializes create, resolve, list, advance,
+and restricted stage recovery. Named refs never create transactions or make
+imported receipts authoritative.
+
+The initial S20-500 profile permits idempotent creation and direct-parent
+fast-forward CAS only. Delete, force movement, rename, symbolic refs, tags,
+named-branch candidate commit, and pack exchange remain unavailable. This
+avoids inventing ABA, retention, authority, or clone semantics before their
+owning packages are frozen.
 
 Root comparison emits typed entity, type, signature, CFG, call, effect,
 capability, contract, test, entry-point, and dependency deltas. Three-way merge

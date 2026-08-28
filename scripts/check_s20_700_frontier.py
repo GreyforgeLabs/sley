@@ -89,9 +89,11 @@ for marker in [
     if marker not in mutation_model:
         problems.append(f"mutation-model-marker-missing:{marker}")
 
-repository_model = REPOSITORY_MODEL.read_text(encoding="utf-8")
+repository_model = " ".join(REPOSITORY_MODEL.read_text(encoding="utf-8").split())
 if "fixed accepted-head transaction boundary is implemented" not in repository_model:
     problems.append("repository-merge-model-drift")
+if "S20-500 native named-ref and branch contract is frozen" not in repository_model:
+    problems.append("repository-ref-contract-freeze-drift")
 if (ROOT / "crates/sley-repo/src/merge.rs").exists():
     problems.append("merge-production-boundary-now-present:reaudit-required")
 work_packages = WORK_PACKAGES.read_text(encoding="utf-8")

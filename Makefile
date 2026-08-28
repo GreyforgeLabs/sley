@@ -40,6 +40,7 @@ quick:
 	python3 scripts/generate_transaction_receipt_fixtures.py --check
 	python3 scripts/check_transaction_contract.py
 	python3 scripts/check_transaction_receipt_persistent_fuzz_slice.py
+	python3 scripts/check_ref_branch_contract.py
 	cargo fmt --all -- --check
 	cargo check --workspace --locked
 	cargo test --workspace --locked

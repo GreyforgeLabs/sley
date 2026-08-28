@@ -294,6 +294,38 @@ advance the head. S20-390 codes do not claim S20-500 named refs, S20-530 full
 cross-process recovery, selected-test execution, policy transitions, M3/M4, or
 GA.
 
+S20-500 freezes numeric codes 50000 through 50020 for strict native branch and
+named-ref metadata. ADR-0022 and `NATIVE_REFS_BRANCHES_V1.md` passed Nabu,
+Ariadne, and Vulcan review before implementation:
+
+| Numeric | Symbolic |
+|---:|---|
+| 50000 | `REF_FORMAT_VERSION` |
+| 50001 | `REF_NAME_INVALID` |
+| 50002 | `REF_NAME_RESERVED` |
+| 50003 | `REF_DIGEST_MISMATCH` |
+| 50004 | `REF_FIELD_SHAPE` |
+| 50005 | `REF_BRANCH_BINDING_MISMATCH` |
+| 50006 | `REF_NOT_FOUND` |
+| 50007 | `REF_ALREADY_EXISTS` |
+| 50008 | `REF_NAME_COLLISION` |
+| 50009 | `REF_TARGET_MISMATCH` |
+| 50010 | `REF_NAMED_CAS_STALE` |
+| 50011 | `BRANCH_RECORD_FORMAT_VERSION` |
+| 50012 | `BRANCH_RECORD_DIGEST_MISMATCH` |
+| 50013 | `BRANCH_RECORD_FIELD_SHAPE` |
+| 50014 | `BRANCH_ORIGIN_MISMATCH` |
+| 50015 | `BRANCH_NOT_FAST_FORWARD` |
+| 50016 | `BRANCH_ANCESTRY_CYCLE` |
+| 50017 | `BRANCH_RESOURCE_LIMIT` |
+| 50018 | `RECOVERY_NAMED_REF_INCOMPLETE` |
+| 50019 | `REF_IO` |
+| 50020 | `REF_INTERNAL_INVARIANT` |
+
+Exact upstream `SCB_*`, `TXN_*`, `STATE_ROOT_*`, `POLICY_*`, and `STORE_*`
+failures are preserved. This range does not authorize deletion, force movement,
+symbolic refs, tags, named-branch candidate commit, merge, or full recovery.
+
 Every validation phase has one declared default terminal state and a finite
 set of more specific codes in that namespace. Retryability is an enum
 (`NEVER`, `AFTER_REQUERY`, `AFTER_CAPABILITY`, `AFTER_LIMIT_CHANGE`,
