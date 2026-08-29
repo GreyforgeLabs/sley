@@ -1,6 +1,7 @@
 .PHONY: quick core conformance adversarial fuzz-smoke legacy-runner-smoke scb1-persistent-fuzz-smoke schema-persistent-fuzz-smoke pack-persistent-fuzz-smoke semantic-checkers-persistent-fuzz-smoke query-persistent-fuzz-smoke vm-persistent-fuzz-smoke adapter-responses-persistent-fuzz-smoke mutation-candidate-persistent-fuzz-smoke candidate-result-persistent-fuzz-smoke transaction-receipt-persistent-fuzz-smoke v2 release-check check-changed
 
 quick:
+	python3 scripts/check_public_repository_policy.py
 	python3 scripts/check_m0.py
 	python3 scripts/check_benchmark_baseline.py
 	python3 scripts/check_scb1_spec.py

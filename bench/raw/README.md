@@ -10,7 +10,7 @@ The module has no subprocess, shell, provider, model, network, ambient clock,
 live oracle, raw-workspace copier, or Sley 1.x adapter. Those interfaces are
 Protocols only. Actual trials require an operator-approved run manifest with
 real fixture, model, tool, oracle, hardware, cache, seed, budget, and
-environment facts. The separate `<LOCAL_HOME>/sley` deployment tree is not
+environment facts. The separate `<SLEY1_CHECKOUT>` deployment tree is not
 read, written, imported, or executed.
 
 The chain proves only continuity and tamper detection for the claim bytes it

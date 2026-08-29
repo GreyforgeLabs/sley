@@ -30,7 +30,7 @@ FUZZ_TARGET = ROOT / "fuzz/targets/transaction_receipt.rs"
 FUZZ_CHECK = ROOT / "scripts/check_transaction_receipt_persistent_fuzz_slice.py"
 CLOSEOUT = ROOT / "docs/audits/S20_390_ATOMIC_COMMIT_CLOSEOUT.md"
 EVIDENCE = ROOT / "evidence/validation/s20-390-atomic-commit-closeout-v1.json"
-MASTER = ROOT.parent / "machineresearch/sley/in-progress/2.0/Sley2.0mastergoal.md"
+PRODUCT_CONSTRAINTS = ROOT / "docs/spec/PRODUCT_CONSTRAINTS_PUBLIC.md"
 
 
 ERROR_CODES = (
@@ -111,7 +111,7 @@ def main() -> int:
         FUZZ_CHECK,
         CLOSEOUT,
         EVIDENCE,
-        MASTER,
+        PRODUCT_CONSTRAINTS,
     )
     for path in paths:
         if not path.is_file():

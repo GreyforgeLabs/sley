@@ -73,7 +73,7 @@ for forbidden in [
     "shell=True",
     "os.system",
     "os.popen",
-    '"<LOCAL_HOME>/sley"',
+    '"/home/',
 ]:
     if forbidden in runner:
         problems.append(f"legacy adapter contains forbidden surface {forbidden!r}")

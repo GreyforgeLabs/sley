@@ -89,7 +89,7 @@
     "trade": false
   },
   "recorded_at": "2026-08-28T01:18:46-04:00",
-  "repository": "<LOCAL_HOME>/sley2",
+  "repository": ".",
   "result": "PASS_RESTRICTED_OPERATION_FREE",
   "reviews": {
     "ariadne": "PASS_AFTER_RESOURCE_LIMIT_DECISION_FIX",

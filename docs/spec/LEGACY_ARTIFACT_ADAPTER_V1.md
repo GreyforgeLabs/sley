@@ -18,8 +18,8 @@ The live Sley 1.2 checkout is outside its authority and remains untouched.
 
 Admission requires all of the following exact values before archive parsing:
 
-- path default
-  `<LOCAL_HOME>/archive/sley/1.2.0/sley-1.2.0-linux-x86_64.tar.gz`;
+- path from `SLEY1_ARTIFACT_PATH`, with user-home fallback
+  `$HOME/archive/sley/1.2.0/sley-1.2.0-linux-x86_64.tar.gz`;
 - SHA-256
   `b24f19c6a348751c93c9cf63f6f4154f6132796112c26f9d8c0e71324080dbc7`;
 - size 4,611,024 bytes;

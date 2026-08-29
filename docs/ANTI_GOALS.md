@@ -30,4 +30,4 @@ Each prohibition must remain mechanically testable or independently reviewable.
 | source-based merge | merge contracts | typed delta/conflict objects; no text markers |
 | failed-trial erasure | benchmark manifest accounting | every attempted trial present in denominator |
 | premature superiority or GA claim | dossier decision gate | Section 22 evidence complete before PASS |
-| unauthorized publication/deploy/spend | repo metadata and operator gate | local commit only; no remote/tag/upload/deploy action |
+| unauthorized release/deploy/spend | repo policy and operator gate | public source mirror allowed; no tag/package/release/deploy action |

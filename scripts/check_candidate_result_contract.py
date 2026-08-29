@@ -24,10 +24,7 @@ CLOSEOUT = ROOT / "docs/audits/S20_360_CANDIDATE_VALIDATION_CLOSEOUT.md"
 VALIDATION_EVIDENCE = (
     ROOT / "evidence/validation/s20-360-candidate-validation-closeout-v1.json"
 )
-MASTER = (
-    ROOT.parent
-    / "machineresearch/sley/in-progress/2.0/Sley2.0mastergoal.md"
-)
+PRODUCT_CONSTRAINTS = ROOT / "docs/spec/PRODUCT_CONSTRAINTS_PUBLIC.md"
 
 PHASES = [
     "canonical frame",
@@ -78,7 +75,7 @@ def main() -> int:
         TRANSACTION,
         ADR,
         ERRORS,
-        MASTER,
+        PRODUCT_CONSTRAINTS,
         VALIDATOR,
         PROGRAM,
         RESULT_CODEC,
@@ -125,7 +122,7 @@ def main() -> int:
         (PROFILE, ("phase_tags", "ordered list `1..14`", "caller-asserted phase success")),
         (TRANSACTION, ("14. candidate result digest", "exact fourteen-phase order")),
         (ADR, ("fourteen phases", "Malformed or noncanonical candidate bytes have no `CandidateId`")),
-        (MASTER, ("14. candidate digest and result generation",)),
+        (PRODUCT_CONSTRAINTS, ("14. candidate digest and result generation",)),
     ):
         text = normalized(path)
         for marker in markers:

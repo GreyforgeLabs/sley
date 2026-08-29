@@ -2,6 +2,16 @@
 
 Status: M0 threat register. Implementation evidence is not yet available.
 
+## Public repository boundary
+
+This is an operator-authorized public source repository. Public visibility
+does not authorize releases, deployments, provider calls, credentials, private
+evidence, machine-local paths, or product claims. The automated public-policy
+gate scans every tracked path and text blob before changes are accepted.
+Security reports should use GitHub private vulnerability reporting when
+available or a private operator-approved channel; do not disclose suspected
+vulnerabilities in a public issue.
+
 ## Security invariants
 
 The kernel fails closed. Unknown, incomparable, ambiguous, missing, stale, or
@@ -52,6 +62,7 @@ tracks all 55 required threats without claiming mitigations are implemented.
 
 ## Reporting
 
-Do not open a public issue for a suspected vulnerability. Record it locally and
-route it to the operator and independent reviewer. Public disclosure or release
-communication requires separate authorization.
+Do not open a public issue for a suspected vulnerability. Use private
+vulnerability reporting or route it through an operator-approved private
+channel. Public disclosure or release communication requires separate
+authorization.

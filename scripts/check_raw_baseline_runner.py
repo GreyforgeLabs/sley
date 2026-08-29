@@ -78,7 +78,7 @@ for forbidden in [
     "os.popen",
     "Popen",
     "run_command",
-    "<LOCAL_HOME>/sley",
+    "/home/",
 ]:
     if forbidden in runner:
         problems.append(f"runner contains forbidden execution/Sley1 surface {forbidden!r}")

@@ -12,5 +12,6 @@ The M0 baseline is commit
 `3a0fd1b46858e31a1e040dda9d4fafe65e83ed38`; Ariadne and Nabu each returned
 PASS against that clean commit.
 
-Current release decision: not eligible. No semantic kernel exists, succession
-evidence is absent, and publication is unauthorized.
+Current release decision: not eligible. The sanitized source repository is
+authorized for public GitHub visibility, but product publication, releases,
+deployments, and general-availability claims remain unauthorized.

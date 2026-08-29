@@ -1,7 +1,7 @@
 {
   "contract": "s20-700-mutation-value-bounded-validation-v1",
   "recorded_at": "2026-08-27T16:52:03-04:00",
-  "repository": "<LOCAL_HOME>/sley2",
+  "repository": ".",
   "branch": "main",
   "implementation_commit": "f9dcd053fab82b85dcefc73b89397f3c18a7099c",
   "worktree_clean_before_validation": true,

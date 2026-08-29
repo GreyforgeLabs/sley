@@ -14,6 +14,8 @@
   "final_commit": null,
   "status": "IN_PROGRESS",
   "publication_authorized": false,
+  "source_repository_visibility": "public",
+  "source_repository_hosting_authorized": true,
   "scb1": {
     "status": "S20_100_SPEC_S20_120_CODEC_S20_130_ORACLE_COMPLETE",
     "accepted_vectors": 23,

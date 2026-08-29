@@ -2,6 +2,11 @@
 
 Status: M0 refined dependency and ownership baseline
 
+Repository visibility policy: the sanitized source repository is public under
+`repository-policy.json`. Source visibility is independent from package, tag,
+release, deployment, provider-spend, benchmark, and GA approval. Every work
+package remains subject to those separate gates.
+
 One package has one accountable owner. Reviewers do not share write ownership.
 “Gate” names the smallest focused validation; broader gates run only at the
 subsystem and release boundaries described below.

@@ -152,20 +152,29 @@ document their manual indefinite-run form.
 
 ## Authority
 
-- Product goal: `<LOCAL_HOME>/machineresearch/sley/in-progress/2.0/Sley2.0mastergoal.md`
+- Public repository policy: [`repository-policy.json`](repository-policy.json)
 - Local architecture: `ARCHITECTURE.md`
 - Security and threat register: `SECURITY.md`
 - Normative drafts: `docs/spec/`
 - Work-package DAG: `docs/WORK_PACKAGES.md`
 - Evidence dossier: `machineresearch/sley-2.0/`
 
-The product goal controls when this repository disagrees with a local draft.
+The operator-controlled product goal remains the decision authority for
+development and release work. This repository contains only the sanitized,
+public-safe projection needed to understand and validate the source.
 
 ## Authority boundaries
 
-This repository is local-only. No push, tag, upload, deployment, publication,
-provider spend, or public claim is authorized. Sley 1.2 deployment and release
-work belongs to a separate session and repository worktree.
+GitHub source visibility is explicitly authorized as a sanitized public
+repository. That authorization covers source hosting only. It does not
+authorize a release, tag, package publication, deployment, provider spend,
+performance claim, or general-availability claim.
+
+Machine-local paths, private evidence, credentials, tokens, and operator-only
+authority files must never be committed. `scripts/check_public_repository_policy.py`
+enforces this boundary locally and in GitHub Actions. The workspace continues
+to declare `LicenseRef-Proprietary`; public visibility does not grant a
+software license. Exact root license text remains a separate operator decision.
 
 ## Validation
 

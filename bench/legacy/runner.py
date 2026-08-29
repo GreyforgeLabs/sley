@@ -33,7 +33,10 @@ from typing import Any, Iterator, Mapping
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_ARTIFACT_PATH = Path(
-    "<LOCAL_HOME>/archive/sley/1.2.0/sley-1.2.0-linux-x86_64.tar.gz"
+    os.environ.get(
+        "SLEY1_ARTIFACT_PATH",
+        Path.home() / "archive" / "sley" / "1.2.0" / "sley-1.2.0-linux-x86_64.tar.gz",
+    )
 )
 VERSION_ARGUMENTS = ("--version",)
 SMOKE_CONTRACT = "sley2.legacy-version-smoke.v1"

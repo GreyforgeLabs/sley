@@ -142,7 +142,7 @@ checksum = "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
 
 [[package]]
 name = "sley-adapter"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "blake3",
  "sley-check",
@@ -153,7 +153,7 @@ dependencies = [
 
 [[package]]
 name = "sley-check"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "sley-id",
  "sley-ssmc",
@@ -161,7 +161,7 @@ dependencies = [
 
 [[package]]
 name = "sley-conformance"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "sley-check",
  "sley-id",
@@ -171,14 +171,14 @@ dependencies = [
 
 [[package]]
 name = "sley-id"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "blake3",
 ]
 
 [[package]]
 name = "sley-mutate"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "blake3",
  "serde",
@@ -191,7 +191,7 @@ dependencies = [
 
 [[package]]
 name = "sley-policy"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "blake3",
  "sley-check",
@@ -205,7 +205,7 @@ dependencies = [
 
 [[package]]
 name = "sley-query"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "sley-check",
  "sley-id",
@@ -214,7 +214,7 @@ dependencies = [
 
 [[package]]
 name = "sley-repo"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "blake3",
  "sley-id",
@@ -229,7 +229,7 @@ dependencies = [
 
 [[package]]
 name = "sley-scb1"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "blake3",
  "serde",
@@ -240,7 +240,7 @@ dependencies = [
 
 [[package]]
 name = "sley-schema"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "blake3",
  "sley-id",
@@ -249,14 +249,14 @@ dependencies = [
 
 [[package]]
 name = "sley-ssmc"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "sley-id",
 ]
 
 [[package]]
 name = "sley-state-root"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "sley-id",
  "sley-scb1",
@@ -265,7 +265,7 @@ dependencies = [
 
 [[package]]
 name = "sley-store"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "sley-id",
  "sley-scb1",
@@ -273,7 +273,7 @@ dependencies = [
 
 [[package]]
 name = "sley-txn"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "blake3",
  "sley-id",
@@ -286,7 +286,7 @@ dependencies = [
 
 [[package]]
 name = "sley-vm"
-version = "2.0.0-alpha.0"
+version = "2.0.0-alpha.1"
 dependencies = [
  "sley-check",
  "sley-id",

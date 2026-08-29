@@ -1,7 +1,7 @@
 {
   "contract": "s20-350-candidate-closeout-validation-v1",
   "recorded_at": "2026-08-27T23:14:37-04:00",
-  "repository": "<LOCAL_HOME>/sley2",
+  "repository": ".",
   "branch": "main",
   "implementation_commit": "e9b32f1b2b3d23378b432728619f13cc9af815bc",
   "worktree_clean_before_validation": false,

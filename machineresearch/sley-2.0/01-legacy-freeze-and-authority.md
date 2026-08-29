@@ -9,10 +9,10 @@ Observation time: 2026-08-27 EDT
 - Frozen worktree state: clean; local branch observed 53 commits ahead of
   `origin/public`
 - Remote: `https://github.com/GreyforgeLabs/sley.git`
-- Artifact: `<LOCAL_HOME>/archive/sley/1.2.0/sley-1.2.0-linux-x86_64.tar.gz`
+- Artifact: `<LOCAL_ARCHIVE>/sley/1.2.0/sley-1.2.0-linux-x86_64.tar.gz`
 - SHA-256: `b24f19c6a348751c93c9cf63f6f4154f6132796112c26f9d8c0e71324080dbc7`
 - Size: `4,611,024` bytes
-- Exact source snapshot: `<LOCAL_HOME>/archive/sley/1.2.0/sley-1.2.0-source-397fa28.tar.gz`
+- Exact source snapshot: `<LOCAL_ARCHIVE>/sley/1.2.0/sley-1.2.0-source-397fa28.tar.gz`
 - Source SHA-256: `1c866d360305d0b511dc2c33c4907b33544fc73bc6cb6fa4c0e1687df48eb90e`
 
 The snapshot contains the frozen revision’s 99 JSON schemas, 187 contract
@@ -24,7 +24,7 @@ unsigned, publication/tag/upload unauthorized state.
 
 ## Live legacy checkout observation
 
-The primary `<LOCAL_HOME>/sley` checkout was on `public` at
+The primary `<SLEY1_CHECKOUT>` checkout was on `public` at
 `7b6fb16b32d256442c44538ee35d761b244228cc`, ahead 3 and behind 3 relative to
 `origin/public`, with user/session changes in `README.md`,
 `docs/SleyClaimEvidence.md`, and `llms.txt`. Sley 2 did not modify it.
