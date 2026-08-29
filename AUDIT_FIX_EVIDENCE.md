@@ -20,3 +20,5 @@ Before public visibility is enabled, the remote history is backed up locally,
 machine-local paths are rewritten from reachable history, the rewritten
 history is rescanned, and the default branch is force-updated under the
 operator-authorized audit closeout.
+The pre-release history-scan anchor is re-anchored to the rewritten equivalent
+commit so deterministic supply-chain evidence remains reproducible.

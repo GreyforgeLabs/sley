@@ -5,7 +5,8 @@ Status: **BLOCKED — operator-approved root license text required**
 This is a bounded, offline pre-release audit. It is not the S20-710 acceptance
 record, a legal opinion, a standards SBOM, release provenance, or permission to
 publish. The audit is frozen through Git commit
-`51863f7b93271bd7a73f9b7b3b02eeca93447d9a`; a later release audit must use a
+`9e958289086d715acedcb0899f84a1c855665ca9`; this is the sanitized-history
+equivalent of the original pre-release anchor. A later release audit must use a
 new anchor and cover all subsequent history.
 
 ## Local results

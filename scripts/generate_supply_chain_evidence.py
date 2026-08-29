@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-HISTORY_ANCHOR = "51863f7b93271bd7a73f9b7b3b02eeca93447d9a"
+HISTORY_ANCHOR = "9e958289086d715acedcb0899f84a1c855665ca9"
 MAX_SCANNED_BLOB_BYTES = 64 * 1024 * 1024
 REGISTRY_SOURCE = "registry+https://github.com/rust-lang/crates.io-index"
 

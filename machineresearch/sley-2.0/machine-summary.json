@@ -1181,7 +1181,7 @@
     "contract": "docs/audits/S20_710_PRE_RELEASE_AUDIT.md",
     "inventory_contract": "s20-710-pre-release-inventory-v1",
     "secret_scan_contract": "s20-710-secret-scan-v1",
-    "history_anchor_commit": "51863f7b93271bd7a73f9b7b3b02eeca93447d9a",
+    "history_anchor_commit": "9e958289086d715acedcb0899f84a1c855665ca9",
     "cargo_lock_sha256": "acb7945fdd18cad7652883f0a3921b4449a3e34b5e016fce1db14af20423e59a",
     "uv_lock_sha256": "cb9621b8ad4b538672784f022632b4ec554d69b8ff1286992231645eca5cf446",
     "cargo_workspace_packages": 15,
