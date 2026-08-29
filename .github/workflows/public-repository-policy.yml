@@ -14,7 +14,7 @@ jobs:
     env:
       SLEY2_ACTUAL_VISIBILITY: ${{ github.event.repository.visibility }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - run: python3 scripts/check_public_repository_policy.py
