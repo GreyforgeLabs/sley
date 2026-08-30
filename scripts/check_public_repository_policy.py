@@ -49,7 +49,7 @@ def tracked_paths() -> list[str]:
 policy = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
 expected = {
     "schema": "sley2.repository-policy.v1",
-    "source_repository": "GreyforgeLabs/sley2",
+    "source_repository": "GreyforgeLabs/sley",
     "source_visibility": "public",
     "source_hosting_authorized": True,
     "releases_authorized": False,

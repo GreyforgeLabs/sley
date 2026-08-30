@@ -8,7 +8,7 @@ Observation time: 2026-08-27 EDT
 - Frozen worktree branch: `codex/sley-ai-foundation-20260822`
 - Frozen worktree state: clean; local branch observed 53 commits ahead of
   `origin/public`
-- Remote: `https://github.com/GreyforgeLabs/sley.git`
+- Remote: `https://github.com/GreyforgeLabs/sley-legacy.git`
 - Artifact: `<LOCAL_ARCHIVE>/sley/1.2.0/sley-1.2.0-linux-x86_64.tar.gz`
 - SHA-256: `b24f19c6a348751c93c9cf63f6f4154f6132796112c26f9d8c0e71324080dbc7`
 - Size: `4,611,024` bytes
@@ -36,7 +36,8 @@ dependencies.
 
 ## Public state observation
 
-GitHub reported `GreyforgeLabs/sley` public with default branch `public` and
+GitHub reported the repository now named `GreyforgeLabs/sley-legacy` public
+with default branch `public` and
 v1.1 as latest published release at observation time. No v1.2.0 public release
 was observed. This is time-sensitive and may be changed by the separately owned
 1.2 deployment session.

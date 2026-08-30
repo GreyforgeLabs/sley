@@ -1,6 +1,6 @@
 {
   "schema": "sley2.repository-policy.v1",
-  "source_repository": "GreyforgeLabs/sley2",
+  "source_repository": "GreyforgeLabs/sley",
   "source_visibility": "public",
   "source_hosting_authorized": true,
   "releases_authorized": false,

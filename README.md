@@ -1,4 +1,8 @@
-# Sley 2 — Machine Genesis
+# Sley
+
+This repository is the canonical home of the active machine-native Sley 2.x
+lineage and future first-party Sley implementation, specification, tooling,
+program, example, ecosystem, and conformance work.
 
 Sley 2 is a new, incompatible programming-system lineage in which programs are
 created, stored, changed, executed, tested, versioned, and exchanged as typed
@@ -162,6 +166,33 @@ document their manual indefinite-run form.
 The operator-controlled product goal remains the decision authority for
 development and release work. This repository contains only the sanitized,
 public-safe projection needed to understand and validate the source.
+
+## Repository map
+
+- `crates/` contains the implemented Sley 2 kernel and supporting component
+  boundaries.
+- `docs/spec/` contains normative Sley 2 specification drafts.
+- `docs/` contains work-package, architecture-decision, and development
+  documentation.
+- `conformance/` and `oracle/` contain cross-implementation fixtures and the
+  independent SCB1 oracle.
+- `bench/` contains bounded succession and resource evidence.
+- `fuzz/` and `scripts/` contain adversarial and deterministic validation
+  tooling.
+- `evidence/` and `machineresearch/sley-2.0/` contain public-safe development
+  evidence and architectural records.
+- `programs/` is the reserved first-party home for small Sley 2 programs and
+  ecosystem dogfooding. It does not accept Sley 1.x source or compatibility
+  tooling.
+
+## Sley 1.x
+
+Sley 1.x is a separate, completed, intentionally incompatible lineage. Its
+human-readable compiler, textual syntax, conventional LSP, Tree-sitter grammar,
+CI tools, learning material, workbench, conformance material, and historical
+research are preserved at
+[`GreyforgeLabs/sley-legacy`](https://github.com/GreyforgeLabs/sley-legacy).
+See [`LEGACY.md`](LEGACY.md) for the boundary.
 
 ## Authority boundaries
 
